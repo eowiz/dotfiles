@@ -1,0 +1,34 @@
+# -*- mode: gitignore; -*-
+*~
+.cache/
+eln-cache/
+
+elpa/
+el-get/
+straight/
+
+recentf
+undohist/
+history
+
+transient/
+
+prescient-save.el
+
+projectile-bookmarks.eld
+projects
+
+url/
+
+.lsp-session-*
+
+inits/init.el
+
+custom.el
+
+eshell/
+
+# Java
+eclipse.jdt.ls/
+
+workspace/

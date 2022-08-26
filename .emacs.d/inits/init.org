@@ -69,10 +69,13 @@
    #+begin_src emacs-lisp
    (leaf mac
      :when (eq system-type 'darwin)
-     :custom ((dired-use-ls-dired . t)
-              (insert-directory-program . "gls")
-              (dired-listing-switches . "-aBhl --group-directories-first"))
+     :custom ((dired-use-ls-dired . t))
      :config
+     (let ((gls (executable-find "gls")))
+       (when gls
+         (setq insert-directory-program gls
+               dired-listing-switches "-aBhl --group-directories-first")))
+
      (leaf key-config
        :custom ((mac-command-modifier . 'alt)
                 (mac-option-modifier . 'meta)
@@ -207,6 +210,27 @@
    (leaf prettify-symbols
      :diminish ""
      :hook org-mode-hook elm-mode-hook)
+   #+end_src
+  
+** Tab
+
+   #+begin_src emacs-lisp
+   (leaf centaur-tabs
+     :ensure t
+     :custom ((centaur-tabs--buffer-show-groups . nil)
+              (centaur-tabs-height . 32)
+              (centaur-tabs-cycle-scope . 'tabs)
+              (centaur-tabs-style . "wave")
+              (centaur-tabs-set-bar . 'under)
+              (centaur-tabs-set-icons . t)
+              (centaur-tabs-gray-out-icons . 'buffer)
+              (centaur-tabs-set-close-button . nil)
+              (centaur-tabs-set-modified-marker . t)
+              (centaur-tabs-modified-marker . "*")
+              )
+     :config
+     (centaur-tabs-mode t)
+     (centaur-tabs-group-by-projectile-project))
    #+end_src
 
 * auto-revert

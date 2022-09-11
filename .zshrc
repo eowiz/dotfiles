@@ -17,17 +17,6 @@ path=(
   $HOME/.rbenv/shims(N-/)
 )
 
-source $HOME/.cargo/env
-
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
-export VOLTA_HOME="$HOME/.volta"
-export PATH="$VOLTA_HOME/bin:$PATH"
-
-### starship
-eval "$(starship init zsh)"
-
 ### Load basic config
 source "$HOME/.zsh/basic.zsh"
 
@@ -40,7 +29,17 @@ source "$HOME/.zsh/plugins.zsh"
 ### Load alias
 source "$HOME/.zsh/alias.zsh"
 
-export FZF_TMUX=1
-export FZF_TMUX_OPTS="-p 80%"
+bin=(
+    "starship"
+    "fzf"
+    "cargo"
+    "opam"
+    "fnm"
+    "ghcup"
+    "sdkman"
+    "volta"
+)
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+for filename in $bin; do
+    source "$HOME/.zsh/config/$filename.zsh"
+done

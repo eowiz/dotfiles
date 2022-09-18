@@ -226,7 +226,8 @@
               (centaur-tabs-gray-out-icons . 'buffer)
               (centaur-tabs-set-close-button . nil)
               (centaur-tabs-set-modified-marker . t)
-              (centaur-tabs-modified-marker . "*")
+              ;; When Noto Sans Symbols 2 cloud not be installed
+              ;; (centaur-tabs-modified-marker . "*")
               )
      :config
      (centaur-tabs-mode t)
@@ -607,6 +608,7 @@
 
    #+begin_src emacs-lisp
    (leaf hl-line-mode
+     :disabled t
      :global-minor-mode global-hl-line-mode)
    #+end_src
 
@@ -903,6 +905,13 @@
              (elm-mode-hook . (lambda () (push '("|>" . ?▷) prettify-symbols-alist)
                                 (push '("<|" . ?◁) prettify-symbols-alist)
                                 (push '("->" . ?→) prettify-symbols-alist)))))
+    #+end_src
+
+*** F#
+
+    #+begin_src emacs-lisp
+    (leaf fsharp-mode
+      :ensure t)
     #+end_src
 
 *** Java

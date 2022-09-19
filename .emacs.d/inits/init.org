@@ -180,6 +180,12 @@
      :global-minor-mode mlscroll)
    #+end_src
 
+   #+begin_src emacs-lisp
+   (leaf hide-mode-line
+     :ensure t
+     :hook ((neotree-mode imenu-list-minor-mode minimap-mode) . hide-mode-line-mode))
+   #+end_src
+
 ** Scroll
 
    #+begin_src emacs-lisp
@@ -323,118 +329,6 @@
        :diminish ""
        :ensure t
        :global-minor-mode t))
-   #+end_src
-
-* ivy
-
-  #+begin_src emacs-lisp
-  (leaf ivy
-    :disabled t
-    :diminish ""
-    :ensure t
-    :bind (("C-c C-r" . ivy-resume))
-    :global-minor-mode ivy-mode
-    :custom ((ivy-count-format . "(%d/%d) ")
-             (ivy-use-selectable-prompt . t)
-             (ivy-on-del-error-function . #'ignore)
-             (ivy-use-virtual-buffers . t)
-             (ivy-wrap . t)
-             (enable-recursive-minibuffers . t))
-    :config
-    (leaf ivy-posframe
-      :disabled t
-      :diminish ""
-      :ensure t
-      :global-minor-mode ivy-posframe-mode
-      :custom ((ivy-posframe-height-alist . '((counsel-M-x . 15)
-                                              (t . 30)))
-               (ivy-posframe-display-functions-alist . '(
-                                                         ;; (counsel-M-x . ivy-posframe-display-at-point)
-                                                         (t . ivy-posframe-display)))))
-
-    (defface my-ivy-arrow-visible
-      '((((class color) (background light)) :foreground "orange")
-        (((class color) (background dark)) :foreground "#EE6363"))
-      "Face used by Ivy for highlighting the arrow.")
-
-    (defface my-ivy-arrow-invisible
-      `((((class color) (background light)) :foreground "#FFFFFF")
-        (((class color) (background dark)) :foreground "#31343F"))
-      "Face used by Ivy for highlighting the invisible arrow.")
-
-    (defun my-pre-prompt-function ()
-      (if window-system
-          (format "%s "
-                  (all-the-icons-faicon "sort-amount-asc")) ;; ""
-        (format "%s\n" (make-string (1- (frame-width)) ?\x2D))))
-    (setq ivy-pre-prompt-function #'my-pre-prompt-function)
-
-    (if window-system
-        (when (require 'all-the-icons nil t)
-          (defun my-ivy-format-function-arrow (cands)
-            "Transform CANDS into a string for minibuffer."
-            (ivy--format-function-generic
-             (lambda (str)
-               (concat (all-the-icons-faicon
-                        "hand-o-right"
-                        :v-adjust -0.2 :face 'my-ivy-arrow-visible)
-                       " " (ivy--add-face str 'ivy-current-match)))
-             (lambda (str)
-               (concat (all-the-icons-faicon
-                        "hand-o-right" :face 'my-ivy-arrow-invisible) " " str))
-             cands
-             "\n"))
-          (setq ivy-format-functions-alist
-                '((t . my-ivy-format-function-arrow))))
-      (setq ivy-format-functions-alist '((t . ivy-format-function-arrow))))
-
-    (leaf all-the-icons-ivy
-      :ensure t
-      :config
-      (all-the-icons-ivy-setup)
-
-      (dolist (command '(counsel-projectile-switch-project
-                         counsel-ibuffer))
-        (add-to-list 'all-the-icons-ivy-buffer-commands command)))
-
-    (leaf ivy-hydra
-      :ensure t
-      :setq ((ivy-read-action-function . #'ivy-hydra-read-action))))
-  #+end_src
-
-** counsel
-
-   #+begin_src emacs-lisp
-   (leaf counsel
-     :disabled t
-     :diminish ""
-     :ensure t
-     :bind (("C-M-s" . counsel-rg)
-            ("C-M-z" . counsel-fzf)
-            ("C-M-r" . counsel-recentf)
-            ("C-M-g" . counsel-git-grep))
-     :global-minor-mode counsel-mode
-     :config
-     (add-to-list 'ivy-more-chars-alist '(counsel-rg . 2)))
-   #+end_src
-
-*** counsel-ghq
-
-    #+begin_src emacs-lisp
-    (leaf counsel-ghq
-      :disabled t
-      :el-get SuzumiyaAoba/counsel-ghq
-      :bind (("C-c C-g" . counsel-ghq)))
-    #+end_src
-
-** swiper
-
-   #+begin_src emacs-lisp
-   (leaf swiper
-     :disabled t
-     :ensure t
-     :bind (("C-s" . swiper)
-            ("M-s p" . swiper-thing-at-point)))
    #+end_src
 
 ** vertico
@@ -637,6 +531,13 @@
 * Projectile
 
   #+begin_src emacs-lisp
+  (leaf projectile
+    :ensure t
+    :config
+    (projectile-mode +1))
+  #+end_src
+
+  #+begin_src emacs-lisp
   (leaf counsel-projectile
     :disabled t
     :diminish projectile
@@ -648,6 +549,48 @@
   #+begin_src emacs-lisp
   (leaf consult-projectile
     :ensure t)
+  #+end_src
+
+* imenu
+
+  #+begin_src emacs-lisp
+  (leaf imenu-list
+    :ensure t
+    :bind (("C-'" . imenu-list-smart-toggle)))
+  #+end_src
+
+* Directory
+
+  #+begin_src emacs-lisp
+  (leaf neotree
+    :ensure t
+    :bind (("M-\\" . neotree-projectile-toggle))
+    :custom ((neo-smart-open . t)
+             (neo-show-hidden-files . t)
+             (neo-create-file-auto-open . t)
+             (neo-window-fixed-size . nil)
+             (neo-window-width . 40))
+    :config
+    (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+
+    (defun neotree-projectile-toggle ()
+      (interactive)
+      (let ((project-dir
+             (ignore-errors
+         ;;; Pick one: projectile or find-file-in-project
+               (projectile-project-root)
+               ))
+            (file-name (buffer-file-name))
+            (neo-smart-open t))
+        (if (and (fboundp 'neo-global--window-exists-p)
+                 (neo-global--window-exists-p))
+            (neotree-hide)
+          (progn
+            (neotree-show)
+            (if project-dir
+                (neotree-dir project-dir))
+            (if file-name
+            (neotree-find file-name)))))))
   #+end_src
 
 * Completion

@@ -43,3 +43,4 @@ bin=(
 for filename in $bin; do
     source "$HOME/.zsh/config/$filename.zsh"
 done
+

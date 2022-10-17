@@ -818,7 +818,7 @@
     #+begin_src emacs-lisp
     (leaf web-mode
       :ensure t
-      :mode "\\.html?\\'"
+      :mode ("\\.html?\\'" "\\.njk\\'")
       :custom ((web-mode-markup-indent-offset . 2)))
     #+end_src
 

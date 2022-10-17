@@ -46,6 +46,16 @@
   (eval-when-compile (require 'cl-lib))
   #+end_src
 
+* Path
+
+  #+begin_src emacs-lisp
+  (leaf exec-path-from-shell
+    :ensure t
+    :config
+    (exec-path-from-shell-initialize))
+  #+end_src
+
+
 * Basic Configuration
 
   #+begin_src emacs-lisp
@@ -103,15 +113,6 @@
     (let ((init-file (org-inits-file "init.el")))
       (if (file-exists-p init-file)
           (byte-compile-file init-file))))
-  #+end_src
-
-* Path
-
-  #+begin_src emacs-lisp
-  (leaf exec-path-from-shell
-    :ensure t
-    :config
-    (exec-path-from-shell-initialize))
   #+end_src
 
 * Look & Feel

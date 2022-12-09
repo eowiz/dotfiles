@@ -32,9 +32,15 @@
 (push '(menu-bar-lines . 0) default-frame-alist)
 (push '(tool-bar-lines . 0) default-frame-alist)
 (push '(cursor-type . bar) default-frame-alist)
-(push '(left-fringe . 0) default-frame-alist)
-(push '(right-fringe . 0) default-frame-alist)
-(push '(font . "Cica-16") default-frame-alist)
+
+(push '(undecorated . t) default-frame-alist)
+(push '(left . 0) default-frame-alist)
+;; (push '(fullscreen . maximized) default-frame-alist)
+
+;; (push '(left-fringe . 0) default-frame-alist)
+;; (push '(right-fringe . 0) default-frame-alist)
+;; (push '(font . "Cica-16") default-frame-alist)
+(push '(font . "Iosevka-17") default-frame-alist)
 
 (setq inhibit-splash-screen t
       frame-inhibit-implied-resize t
@@ -55,7 +61,7 @@
 (setq ring-bell-function 'ignore)
 
 ;; line number
-(global-display-line-numbers-mode t)
-(custom-set-variables '(display-line-numbers-width-start t))
+;; (global-display-line-numbers-mode t)
+;; (custom-set-variables '(display-line-numbers-width-start t))
 
 ;;; early-init.el ends here

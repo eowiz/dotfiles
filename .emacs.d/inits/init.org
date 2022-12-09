@@ -1,66 +1,69 @@
-#+title: Emacs 
+#+title: Emacs
 #+options: toc:2 num:nil ^:nil
 
 * Emacs
 
-  #+begin_src emacs-lisp
-  ;;; init.el --- init.el -*- lexical-binding: t; -*-
-  #+end_src
+#+begin_src emacs-lisp
+;;; init.el --- init.el -*- lexical-binding: t; -*-
+#+end_src
 
 * leaf
 
-  #+begin_src emacs-lisp
-  ;; <leaf-install-code>
-  (eval-and-compile
-    (customize-set-variable
-     'package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
-                         ("melpa" . "https://melpa.org/packages/")
-                         ("org" . "https://orgmode.org/elpa/")))
-    (package-initialize)
-    (unless (package-installed-p 'leaf)
-      (package-refresh-contents)
-      (package-install 'leaf))
+[[https://github.com/conao3/leaf.el][conao3/leaf.el]]
 
-    (leaf leaf-keywords
-      :ensure t
-      :init
-      ;; optional packages if you want to use :hydra, :el-get, :blackout,,,
-      (leaf hydra :ensure t)
-      (leaf el-get :ensure t)
-      (leaf blackout :ensure t)
+#+begin_src emacs-lisp
+;; <leaf-install-code>
+(eval-and-compile
+  (customize-set-variable
+   'package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
+                       ("melpa" . "https://melpa.org/packages/")
+                       ("org" . "https://orgmode.org/elpa/")))
+  (package-initialize)
+  (unless (package-installed-p 'leaf)
+    (package-refresh-contents)
+    (package-install 'leaf))
 
-      :config
-      ;; initialize leaf-keywords.el
-      (leaf-keywords-init)))
-  ;; </leaf-install-code>
-  #+end_src
+  (leaf leaf-keywords
+    :ensure t
+    :init
+    ;; optional packages if you want to use :hydra, :el-get, :blackout,,,
+    (leaf hydra :ensure t)
+    (leaf el-get :ensure t)
+    (leaf blackout :ensure t)
 
-  #+begin_src emacs-lisp
-  (leaf diminish :ensure t)
-  (leaf el-get :ensure t)
-  #+end_src
+    :config
+    ;; initialize leaf-keywords.el
+    (leaf-keywords-init)))
+;; </leaf-install-code>
+#+end_src
+
+#+begin_src emacs-lisp
+(leaf diminish :ensure t)
+(leaf el-get :ensure t)
+#+end_src
 
 * Library
 
-  #+begin_src emacs-lisp
-  (eval-when-compile (require 'cl-lib))
-  #+end_src
+#+begin_src emacs-lisp
+(eval-when-compile (require 'cl-lib))
+#+end_src
 
 * Path
 
-  #+begin_src emacs-lisp
-  (leaf exec-path-from-shell
-    :ensure t
-    :config
-    (exec-path-from-shell-initialize))
-  #+end_src
+[[https://github.com/purcell/exec-path-from-shell][purcell/exec-path-from-shell]]
 
+#+begin_src emacs-lisp
+(leaf exec-path-from-shell
+  :ensure t
+  :config
+  (exec-path-from-shell-initialize))
+#+end_src
 
 * Basic Configuration
-
-  #+begin_src emacs-lisp
-  (leaf cus-start
-    :doc "define customization properties of builtins"
+  
+#+begin_src emacs-lisp
+(leaf cus-start
+  :doc "define customization properties of builtins"
     :tag "builtin" "internal"
     :custom `((indent-tabs-mode . nil)
               (make-backup-files . nil)
@@ -72,361 +75,392 @@
     (defalias 'yes-or-no-p 'y-or-n-p)
 
     (show-paren-mode t))
-  #+end_src
+#+end_src
 
 ** Mac
 
-   #+begin_src emacs-lisp
-   (leaf mac
-     :when (eq system-type 'darwin)
-     :custom ((dired-use-ls-dired . t))
-     :config
-     (let ((gls (executable-find "gls")))
-       (when gls
-         (setq insert-directory-program gls
-               dired-listing-switches "-aBhl --group-directories-first")))
+#+begin_src emacs-lisp
+(leaf mac
+  :when (eq system-type 'darwin)
+  :custom ((dired-use-ls-dired . t))
+  :config
+  (let ((gls (executable-find "gls")))
+    (when gls
+      (setq insert-directory-program gls
+            dired-listing-switches "-aBhl --group-directories-first")))
 
-     (leaf key-config
-       :custom ((mac-command-modifier . 'alt)
-                (mac-option-modifier . 'meta)
-                (default-directory . "~/")
-                (command-line-default-directory . "~/"))))
-   #+end_src
+  (leaf key-config
+    :custom ((mac-command-modifier . 'alt)
+             (mac-option-modifier . 'meta)
+             (default-directory . "~/")
+             (command-line-default-directory . "~/"))))
+#+end_src
 
 * Byte Compile
 
-  #+begin_src emacs-lisp
-  (defvar org-inits-dir (file-name-as-directory "~/.emacs.d/inits"))
+#+begin_src emacs-lisp
+(defvar org-inits-dir (file-name-as-directory "~/.emacs.d/inits"))
 
-  (defun org-inits-file (filename)
-    (concat org-inits-dir filename))
+(defun org-inits-file (filename)
+  (concat org-inits-dir filename))
 
-  (defun org-inits-rm-elc-files ()
-    (interactive)
-    (let ((init-elc-files (file-expand-wildcards (concat org-inits-dir "*.elc"))))
-      (dolist (file init-elc-files)
-        (if (file-exists-p file)
-            (delete-file file)))))
+(defun org-inits-rm-elc-files ()
+  (interactive)
+  (let ((init-elc-files (file-expand-wildcards (concat org-inits-dir "*.elc"))))
+    (dolist (file init-elc-files)
+      (if (file-exists-p file)
+          (delete-file file)))))
 
-  (defun org-inits-byte-compile-init-files ()
-    (interactive)
-    (let ((init-file (org-inits-file "init.el")))
-      (if (file-exists-p init-file)
-          (byte-compile-file init-file))))
-  #+end_src
+(defun org-inits-byte-compile-init-files ()
+  (interactive)
+  (let ((init-file (org-inits-file "init.el")))
+    (if (file-exists-p init-file)
+        (byte-compile-file init-file))))
+#+end_src
 
 * Look & Feel
 
+** Frame
+
+#+begin_src emacs-lisp
+(leaf moom
+  :ensure t
+  :config
+  (setq moom-use-font-module nil)
+  (moom-mode))
+#+end_src
+
+** Font
+
+[[https://github.com/be5invis/Iosevka][be5invis/losevka]]
+
+#+begin_src emacs
+(set-face-attribute 'default nil :family "Iosevka")
+(set-face-attribute 'variable-pitch nil :family "Iosevka Aile")
+(set-face-attribute 'org-modern-symbol nil :family "Iosevka")
+#+end_src
+
 ** Theme
 
-   [[https://protesilaos.com/emacs/modus-themes][Modus Themes]]
+[[https://protesilaos.com/emacs/modus-themes][Modus Themes]]
 
-   #+begin_src emacs-lisp
-   ;; (leaf modus-themes
-   ;;   :ensure t
-   ;;   :custom ((modus-themes-italic-constructs . t)
-   ;;            (modus-themes-bold-constructs . t)
-   ;;            (modus-themes-region . '(bg-only no-extend))
-   ;;            ((modus-themes-syntax . '(faint green-strings))))
-   ;;   :config
-   ;;   (modus-themes-load-themes)
-   ;;   ;; (modus-themes-load-vivendi)
-   ;;   (modus-themes-load-vivendi))
-   #+end_src
+#+begin_src emacs-lisp
+(leaf modus-themes
+  :ensure t
+  :custom ((modus-themes-italic-constructs . t)
+           (modus-themes-bold-constructs . t)
+           (modus-themes-region . '(bg-only no-extend))
+           ((modus-themes-syntax . '(faint green-strings))))
+  :config
+  (modus-themes-load-themes)
+  (modus-themes-load-operandi))
+#+end_src
 
-   #+begin_src emacs-lisp
-   (leaf doom-themes
-     :ensure t
-     :custom ((doom-themes-enable-bold . t)
-              (doom-themes-enable-italic . t))
-     :config
-     ;; (load-theme 'doom-oceanic-next t)
-     ;; (load-theme 'doom-one-light t)
-     ;; (load-theme 'doom-dark+ t)
-     (load-theme 'doom-gruvbox t)
-     ;; (load-theme 'doom-tomorrow-day t)
 
-     (doom-themes-org-config))
-   #+end_src
+* Mode line
 
-** Mode line
+[[https://github.com/tarsius/moody][tarsius/moody]]
 
-   [[https://github.com/tarsius/moody][tarsius/moody]]
+#+begin_src emacs-lisp
+(leaf moody
+  :ensure t
+  :disabled t
+  :custom ((x-underline-at-descent-line . t))
+  :config
+  (let ((line (face-attribute 'mode-line :underline)))
+    (set-face-attribute 'mode-line          nil :overline   line)
+    (set-face-attribute 'mode-line-inactive nil :overline   line)
+    (set-face-attribute 'mode-line-inactive nil :underline  line)
+    (set-face-attribute 'mode-line          nil :box        nil)
+    (set-face-attribute 'mode-line-inactive nil :box        nil)
+    (set-face-attribute 'mode-line-inactive nil :background "#f9f2d9"))
+  (moody-replace-mode-line-buffer-identification)
+  (moody-replace-vc-mode)
+  (moody-replace-eldoc-minibuffer-message-function))
+#+end_src
 
-   #+begin_src emacs-lisp
-   (leaf moody
-     :ensure t
-     :custom ((x-underline-at-descent-line . t))
-     :config
-     (let ((line (face-attribute 'mode-line :underline)))
-       (set-face-attribute 'mode-line          nil :overline   line)
-       (set-face-attribute 'mode-line-inactive nil :overline   line)
-       (set-face-attribute 'mode-line-inactive nil :underline  line)
-       (set-face-attribute 'mode-line          nil :box        nil)
-       (set-face-attribute 'mode-line-inactive nil :box        nil)
-       (set-face-attribute 'mode-line-inactive nil :background "#f9f2d9"))
-     (moody-replace-mode-line-buffer-identification)
-     (moody-replace-vc-mode)
-     (moody-replace-eldoc-minibuffer-message-function))
-   #+end_src
+#+begin_src emacs-lisp
+(leaf nano-modeline
+  :ensure t
+  :config
+  (nano-modeline-mode))
+#+end_src
 
-   #+begin_src emacs-lisp
-   (leaf mlscroll
-     :ensure t
-     :config
-     (custom-set-variables
-      '(mlscroll-in-color "#FFA07A") ;; light coral
-      '(mlscroll-out-color "#FFFFE0")
-      '(mlscroll-width-chars 12))
-     :global-minor-mode mlscroll)
-   #+end_src
+[[https://github.com/jdtsmith/mlscroll][jdtsmith/mlscroll]]
 
-   #+begin_src emacs-lisp
-   (leaf hide-mode-line
-     :ensure t
-     :hook ((neotree-mode imenu-list-minor-mode minimap-mode) . hide-mode-line-mode))
-   #+end_src
+#+begin_src emacs-lisp
+(leaf mlscroll
+  :ensure t
+  :config
+  (custom-set-variables
+   '(mlscroll-in-color "#FFA07A") ;; light coral
+   '(mlscroll-out-color "#FFFFE0")
+   '(mlscroll-width-chars 12))
+  :global-minor-mode mlscroll)
+#+end_src
+
+#+begin_src emacs-lisp
+(leaf hide-mode-line
+  :ensure t
+  :hook ((neotree-mode-hook . hide-mode-line-mode)
+         (imenu-list-minor-mode-hook . hide-mode-line-mode)
+         (minimap-mode-hook . hide-mode-line-mode)))
+#+end_src
 
 ** Scroll
 
-   #+begin_src emacs-lisp
-   (leaf smooth-scroll
-     :disabled t
-     :diminish ""
-     :ensure t
-     :global-minor-mode t)
-   #+end_src
+#+begin_src emacs-lisp
+(leaf smooth-scroll
+  :disabled t
+  :diminish ""
+  :ensure t
+  :global-minor-mode t)
+#+end_src
 
-   #+begin_src emacs-lisp
-   (leaf scroll
-     :custom
-     (scroll-margin . 0)
-     (scroll-conservatively . 100000)
-     (scroll-preserve-screen-position . t))
-   #+end_src
+#+begin_src emacs-lisp
+(leaf scroll
+  :custom
+  (scroll-margin . 0)
+  (scroll-conservatively . 100000)
+  (scroll-preserve-screen-position . t))
+#+end_src
 
 ** Icons
 
-   #+begin_src emacs-lisp
-   (leaf all-the-icons
-     :ensure t
-     :if (display-graphic-p))
-   #+end_src
+[[https://github.com/domtronn/all-the-icons.el][domtronn/all-the-icons.el]]
 
-   #+begin_src emacs-lisp
-   (leaf prettify-symbols
-     :diminish ""
-     :hook org-mode-hook elm-mode-hook)
-   #+end_src
+#+begin_src emacs-lisp
+(leaf all-the-icons
+  :ensure t
+  :if (display-graphic-p))
+#+end_src
+
+#+begin_src emacs-lisp
+(leaf prettify-symbols
+  :diminish ""
+  :hook org-mode-hook elm-mode-hook)
+#+end_src
   
 ** Tab
 
-   #+begin_src emacs-lisp
-   (leaf centaur-tabs
-     :ensure t
-     :custom ((centaur-tabs--buffer-show-groups . nil)
-              (centaur-tabs-height . 32)
-              (centaur-tabs-cycle-scope . 'tabs)
-              (centaur-tabs-style . "wave")
-              (centaur-tabs-set-bar . 'under)
-              (centaur-tabs-set-icons . t)
-              (centaur-tabs-gray-out-icons . 'buffer)
-              (centaur-tabs-set-close-button . nil)
-              (centaur-tabs-set-modified-marker . t)
-              ;; When Noto Sans Symbols 2 cloud not be installed
-              ;; (centaur-tabs-modified-marker . "*")
-              )
-     :config
-     (centaur-tabs-mode t)
-     (centaur-tabs-group-by-projectile-project))
-   #+end_src
+#+begin_src emacs-lisp
+(leaf centaur-tabs
+  :disabled t
+  :ensure t
+  :custom ((centaur-tabs--buffer-show-groups . nil)
+           (centaur-tabs-height . 32)
+           (centaur-tabs-cycle-scope . 'tabs)
+           (centaur-tabs-style . "wave")
+           (centaur-tabs-set-bar . 'under)
+           (centaur-tabs-set-icons . t)
+           (centaur-tabs-gray-out-icons . 'buffer)
+           (centaur-tabs-set-close-button . nil)
+           (centaur-tabs-set-modified-marker . t)
+           ;; When Noto Sans Symbols 2 cloud not be installed
+           ;; (centaur-tabs-modified-marker . "*")
+           )
+  :config
+  (centaur-tabs-mode t)
+  (centaur-tabs-group-by-projectile-project))
+#+end_src
 
 * auto-revert
 
-  #+begin_src emacs-lisp
-  (leaf autorevert
-    :diminish auto-revert
-    :global-minor-mode global-auto-revert-mode)
-  #+end_src
+#+begin_src emacs-lisp
+(leaf autorevert
+  :diminish auto-revert
+  :global-minor-mode global-auto-revert-mode)
+#+end_src
 
 * Terminal
 
 ** vterm
 
-    #+begin_src emacs-lisp
-    (leaf vterm
-      :ensure t)
-    #+end_src
+[[https://github.com/akermu/emacs-libvterm][akermu/emacs-libvterm]]
+
+#+begin_src emacs-lisp
+(leaf vterm
+  :ensure t)
+#+end_src
 
 * org-mode
 
-  #+begin_src emacs-lisp
-  (leaf org
-    :bind (("<f12>" . org-agenda))
-    :setq-default ((org-enforce-todo-dependencies . t))
-    :custom ((org-src-tab-acts-natively . t)
-             (org-src-preserve-indentation . t)
-             (org-edit-src-content-indentation . 0)
-             (org-agenda-files . '("~/org"))
-             (org-src-fontify-natively . t)
-             (org-adapt-indentation . t)
-             ;; (org-src-preserve-indentation . nil)
-             (org-edit-src-content-indentation . 0))
-    :config
-    (plist-put org-format-latex-options :scale 1.2)
+[[https://orgmode.org/ja/][org-mode]]
 
-    (setq-default prettify-symbols-alist '(("[ ]" . "") ;; ☐ 
-                                           ("[X]" . "" ) ;; ☑ 
-                                           ("[-]" . "" ))) ;; 
+#+begin_src emacs-lisp
+(leaf org
+  :bind (("<f12>" . org-agenda))
+  :setq-default ((org-enforce-todo-dependencies . t))
+  :custom (
+           (org-src-tab-acts-natively . t)
+           ;; (org-src-preserve-indentation . t)
+           (org-edit-src-content-indentation . 0)
+           ;; (org-agenda-files . '("~/org"))
+           ;; (org-src-fontify-natively . t)
+           ;; (org-adapt-indentation . t)
+           ;; (org-src-preserve-indentation . nil)
+           (org-edit-src-content-indentation . 0)
+           )
+  )
+#+end_src
 
-    ;; (custom-set-faces
-    ;;  '(org-block-begin-line
-    ;;    ((t (:weight bold :background "#E0E0E0" :extend t))))
-    ;;  '(org-block
-    ;;    ((t (:background "#FCFCFC" :extend t))))
-    ;;  '(org-block-end-line
-    ;;    ((t (:weight bold :background "#E0E0E0" :extend t)))))
+** org-modern
 
-    (let* ((base-font-color     (face-foreground 'default nil 'default))
-           (headline           `(:inherit default :weight bold :foreground ,base-font-color)))
+#+begin_src emacs-lisp
+(leaf org-modern
+  :ensure t
+  :hook ((org-mode-hook . (lambda () (org-modern-mode 1)))
+         (org-agenda-finalize-hook . #'org-modern-agenda))
+  :config
+  (dolist (face '(window-divider
+                  window-divider-first-pixel
+                  window-divider-last-pixel))
+    (face-spec-reset-face face)
+    (set-face-foreground face (face-attribute 'default :background)))
+  (set-face-background 'fringe (face-attribute 'default :background))
 
-      (custom-theme-set-faces
-       'user
-       `(org-level-8 ((t (,@headline))))
-       `(org-level-7 ((t (,@headline))))
-       `(org-level-6 ((t (,@headline))))
-       `(org-level-5 ((t (,@headline))))
-       `(org-level-4 ((t (,@headline :height 1.1))))
-       `(org-level-3 ((t (,@headline :height 1.2))))
-       `(org-level-2 ((t (,@headline :height 1.3))))
-       `(org-level-1 ((t (,@headline :height 1.4))))
-       `(org-document-title ((t (,@headline :underline nil)))))))
-  #+end_src
+  (setq
+   ;; Edit settings
+   org-auto-align-tags nil
+   org-tags-column 0
+   org-catch-invisible-edits 'show-and-error
+   org-special-ctrl-a/e t
+   org-insert-heading-respect-content t
 
-** org-bullets
+   ;; Org styling, hide markup etc.
+   org-hide-emphasis-markers t
+   org-pretty-entities t
+   org-ellipsis "…"
 
-   #+begin_src emacs-lisp
-   (leaf org-bullets
-     :ensure t
-     :hook (org-mode-hook . (lambda () (org-bullets-mode 1))))
-   #+end_src
+   ;; Agenda styling
+   org-agenda-tags-column 0
+   org-agenda-block-separator ?─
+   org-agenda-time-grid
+   '((daily today require-timed)
+     (800 1000 1200 1400 1600 1800 2000)
+     " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
+   org-agenda-current-time-string
+   "⭠ now ─────────────────────────────────────────────────"))
+#+end_src
 
 * Input Method
 
 ** ddskk
 
-   #+begin_src emacs-lisp
-   (leaf skk
-     :diminish ""
-     :ensure ddskk
-     :bind (("C-x C-j" . skk-mode))
-     :custom ((default-input-method . "japanese-skk"))
-     :pre-setq
-     (skk-byte-compile-init-file . t)
-     :hook ((text-mode-hook . (lambda () (skk-mode) (skk-latin-mode-on)))
-            (prog-mode-hook . (lambda () (skk-mode) (skk-latin-mode-on))))
-     :config
-     (leaf ddskk-posframe
-       :diminish ""
-       :ensure t
-       :global-minor-mode t))
-   #+end_src
+#+begin_src emacs-lisp
+(leaf skk
+  :diminish ""
+  :ensure ddskk
+  :bind (("C-x C-j" . skk-mode))
+  :custom ((default-input-method . "japanese-skk")
+           (skk-large-jisyo . "~/.emacs.d/dict/SKK-JISYO.L")
+           (skk-status-indicator . nil))
+  :pre-setq
+  (skk-byte-compile-init-file . t)
+  :hook ((text-mode-hook . (lambda () (skk-mode) (skk-latin-mode-on)))
+         (prog-mode-hook . (lambda () (skk-mode) (skk-latin-mode-on))))
+  :config
+  (leaf ddskk-posframe
+    :diminish ""
+    :ensure t
+    :global-minor-mode t))
+#+end_src
 
 ** vertico
 
-   #+begin_src emacs-lisp
-   (leaf vertico
-     :ensure t
-     :custom ((vertico-count . 20))
-     :init
-     (vertico-mode)
+#+begin_src emacs-lisp
+(leaf vertico
+  :ensure t
+  :custom ((vertico-count . 20))
+  :init
+  (vertico-mode)
 
-     :config
-     (leaf orderless
-       :ensure t
-       :init (setq completion-styles '(orderless)
-                   completion-category-defaults 'nil
-                   completion-category-overrides '((file (styles partial-completion)))))
+  :config
+  (leaf orderless
+    :ensure t
+    :init (setq completion-styles '(orderless)
+                completion-category-defaults 'nil
+                completion-category-overrides '((file (styles partial-completion)))))
 
-     (leaf emacs
-       :init
-       ;; Add prompt indicator to `completing-read-multiple'.
-       ;; Alternatively try `consult-completing-read-multiple'.
-       (defun crm-indicator (args)
-         (cons (concat "[CRM] " (car args)) (cdr args)))
-       (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+  (leaf emacs
+    :init
+    ;; Add prompt indicator to `completing-read-multiple'.
+    ;; Alternatively try `consult-completing-read-multiple'.
+    (defun crm-indicator (args)
+      (cons (concat "[CRM] " (car args)) (cdr args)))
+    (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
 
-       ;; Do not allow the cursor in the minibuffer prompt
-       (setq minibuffer-prompt-properties
-             '(read-only t cursor-intangible t face minibuffer-prompt))
-       (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+    ;; Do not allow the cursor in the minibuffer prompt
+    (setq minibuffer-prompt-properties
+          '(read-only t cursor-intangible t face minibuffer-prompt))
+    (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
 
-       ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
-       ;; Vertico commands are hidden in normal buffers.
-       ;; (setq read-extended-command-predicate
-       ;;       #'command-completion-default-include-p)
+    ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
+    ;; Vertico commands are hidden in normal buffers.
+    ;; (setq read-extended-command-predicate
+    ;;       #'command-completion-default-include-p)
 
-       ;; Enable recursive minibuffers
-       (setq enable-recursive-minibuffers t)))
-   #+end_src
+    ;; Enable recursive minibuffers
+    (setq enable-recursive-minibuffers t)))
+#+end_src
 
 ** cousult
 
-   #+begin_src emacs-lisp
-   (defun consult-thing-at-point (&optional at-point)
-     "Consult-line uses things-at-point."
-     (interactive "P")
-     (consult-line (thing-at-point 'symbol)))
+#+begin_src emacs-lisp
+(defun consult-thing-at-point (&optional at-point)
+  "Consult-line uses things-at-point."
+  (interactive "P")
+  (consult-line (thing-at-point 'symbol)))
 
-   (leaf consult
-     :ensure t
-     :bind (("C-s" . consult-line)
-            ("M-s M-s" . consult-thing-at-point)
-            ([remap goto-line] . consult-goto-line))
-     :custom `((consult-preview-raw-size . 1024000)
-               (consult-preview-key . ,(kbd "M-.")))
-     :config
+(leaf consult
+  :ensure t
+  :bind (("C-s" . consult-line)
+         ("M-s M-s" . consult-thing-at-point)
+         ([remap goto-line] . consult-goto-line))
+  :custom `((consult-preview-raw-size . 1024000)
+            (consult-preview-key . ,(kbd "M-.")))
+  :config
 
-     (leaf marginalia
-       :ensure t
-       :init
-       (marginalia-mode))
+  (leaf marginalia
+    :ensure t
+    :init
+    (marginalia-mode))
 
-     (leaf embark
-       :ensure t
-       :bind (("C-." . embark-act)
-              ("C-;" . embark-dwim)
-              ("C-h B" . embark-bindings))
-       :init
-       (setq prefix-help-command #'embark-prefix-help-command)
+  (leaf embark
+    :ensure t
+    :bind (("C-." . embark-act)
+           ("C-;" . embark-dwim)
+           ("C-h B" . embark-bindings))
+    :init
+    (setq prefix-help-command #'embark-prefix-help-command)
 
-       :config
-       ;; Hide the mode line of the Embark live/completions buffers
-       (add-to-list 'display-buffer-alist
-                    '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-                      nil
-                      (window-parameters (mode-line-format . none)))))
+    :config
+    ;; Hide the mode line of the Embark live/completions buffers
+    (add-to-list 'display-buffer-alist
+                 '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                   nil
+                   (window-parameters (mode-line-format . none)))))
 
-     (leaf embark-consult
-       :ensure t
-       :after embark consult
-       :leaf-defer nil
-       :hook ((embark-collect-mode . consult-preview-at-point-mode)))
+  (leaf embark-consult
+    :ensure t
+    :after embark consult
+    :leaf-defer nil
+    :hook ((embark-collect-mode . consult-preview-at-point-mode)))
 
-     (leaf affe
-       :ensure t
-       :after orderless
-       :bind (("C-c s" . affe-grep))
-       :init (setq affe-highlight-function 'orderless-highlight-matches
-                   affe-regexp-function 'orderless-pattern-compiler
-                   affe-find-command "fd --color=never --full-path")
-       :config
-       (consult-customize affe-grep :preview-key (kbd "M-."))))
+  (leaf affe
+    :ensure t
+    :after orderless
+    :bind (("C-c s" . affe-grep))
+    :init (setq affe-highlight-function 'orderless-highlight-matches
+                affe-regexp-function 'orderless-pattern-compiler
+                affe-find-command "fd --color=never --full-path")
+    :config
+    (consult-customize affe-grep :preview-key (kbd "M-."))))
 
-   (leaf consult-ghq
-     :ensure t
-     :bind (("C-c C-g" . consult-ghq-find)))
-   #+end_src
+(leaf consult-ghq
+  :ensure t
+  :bind (("C-c C-g" . consult-ghq-find)))
+#+end_src
 
 ** History
 
@@ -477,446 +511,439 @@
 
 ** volatile-highlights
 
-   #+begin_src emacs-lisp
-   (leaf volatile-highlights
-     :diminish ""
-     :ensure t
-     :global-minor-mode volatile-highlights-mode)
-   #+end_src
+#+begin_src emacs-lisp
+  (leaf volatile-highlights
+    :diminish ""
+    :ensure t
+    :global-minor-mode volatile-highlights-mode)
+#+end_src
 
 ** highlight-indent-guids
 
-   インデントが崩れるため無効化.
+インデントが崩れるため無効化.
 
-   #+begin_src emacs-lisp
-   (leaf highlight-indent-guides
-     :disabled t
-     :diminish ""
-     :ensure t
-     :hook prog-mode-hook yaml-mode-hook
-     :custom ((highlight-indent-guides-auto-enabled . t)
-              (highlight-indent-guides-responsive . t)
-              (highlight-indent-guides-method . 'character)))
-   #+end_src
+#+begin_src emacs-lisp
+  (leaf highlight-indent-guides
+    :disabled t
+    :diminish ""
+    :ensure t
+    :hook prog-mode-hook yaml-mode-hook
+    :custom ((highlight-indent-guides-auto-enabled . t)
+             (highlight-indent-guides-responsive . t)
+             (highlight-indent-guides-method . 'character)))
+#+end_src
 
 ** hl-line-mode
 
-   #+begin_src emacs-lisp
-   (leaf hl-line-mode
-     :disabled t
-     :global-minor-mode global-hl-line-mode)
-   #+end_src
+#+begin_src emacs-lisp
+(leaf hl-line-mode
+  :global-minor-mode global-hl-line-mode)
+#+end_src
 
 * undo
 
 ** undohist
 
-   #+begin_src emacs-lisp
-   (leaf undohist
-     :ensure t
-     :require t
-     :config
-     (undohist-initialize))
-   #+end_src
+#+begin_src emacs-lisp
+(leaf undohist
+  :ensure t
+  :require t
+  :config
+  (undohist-initialize))
+#+end_src
 
 ** undo-tree
 
-   #+begin_src emacs-lisp
-   (leaf undo-tree
-     :diminish ""
-     :ensure t
-     :custom ((undo-tree-auto-save-history . nil))
-     :global-minor-mode global-undo-tree-mode)
-   #+end_src
+#+begin_src emacs-lisp
+(leaf undo-tree
+  :diminish ""
+  :ensure t
+  :custom ((undo-tree-auto-save-history . nil))
+  :global-minor-mode global-undo-tree-mode)
+#+end_src
 
 * Projectile
 
-  #+begin_src emacs-lisp
-  (leaf projectile
-    :ensure t
-    :config
-    (projectile-mode +1))
-  #+end_src
+#+begin_src emacs-lisp
+(leaf projectile
+  :ensure t
+  :config
+  (projectile-mode +1))
+#+end_src
 
-  #+begin_src emacs-lisp
-  (leaf counsel-projectile
-    :disabled t
-    :diminish projectile
-    :ensure t
-    :global-minor-mode counsel-projectile-mode
-    :bind-keymap ("C-c p" . projectile-command-map))
-  #+end_src
+#+begin_src emacs-lisp
+(leaf counsel-projectile
+  :disabled t
+  :diminish projectile
+  :ensure t
+  :global-minor-mode counsel-projectile-mode
+  :bind-keymap ("C-c p" . projectile-command-map))
+#+end_src
 
-  #+begin_src emacs-lisp
-  (leaf consult-projectile
-    :ensure t)
-  #+end_src
+#+begin_src emacs-lisp
+(leaf consult-projectile
+  :ensure t)
+#+end_src
 
 * imenu
 
-  #+begin_src emacs-lisp
-  (leaf imenu-list
-    :ensure t
-    :bind (("C-'" . imenu-list-smart-toggle)))
-  #+end_src
+#+begin_src emacs-lisp
+(leaf imenu-list
+  :ensure t
+  :bind (("C-'" . imenu-list-smart-toggle)))
+#+end_src
 
 * Directory
 
-  #+begin_src emacs-lisp
-  (leaf neotree
-    :ensure t
-    :bind (("M-\\" . neotree-projectile-toggle))
-    :custom ((neo-smart-open . t)
-             (neo-show-hidden-files . t)
-             (neo-create-file-auto-open . t)
-             (neo-window-fixed-size . nil)
-             (neo-window-width . 40))
-    :config
-    (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+#+begin_src emacs-lisp
+(leaf neotree
+  :ensure t
+  :bind (("M-\\" . neotree-projectile-toggle))
+  :commands (neotree-show neotree-hide neotree-dir neotree-find)
+  :custom ((neo-smart-open . t)
+           (neo-show-hidden-files . t)
+           (neo-create-file-auto-open . t)
+           (neo-window-fixed-size . nil)
+           (neo-window-width . 40))
+  :config
+  (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
 
-    (defun neotree-projectile-toggle ()
-      (interactive)
-      (let ((project-dir
-             (ignore-errors
-         ;;; Pick one: projectile or find-file-in-project
-               (projectile-project-root)
-               ))
-            (file-name (buffer-file-name))
-            (neo-smart-open t))
-        (if (and (fboundp 'neo-global--window-exists-p)
-                 (neo-global--window-exists-p))
-            (neotree-hide)
-          (progn
-            (neotree-show)
-            (if project-dir
-                (neotree-dir project-dir))
-            (if file-name
-            (neotree-find file-name)))))))
-  #+end_src
+  (defun neotree-projectile-toggle ()
+    (interactive)
+    (let ((project-dir
+           (ignore-errors
+       ;;; Pick one: projectile or find-file-in-project
+             (projectile-project-root)
+             ))
+          (file-name (buffer-file-name))
+          (neo-smart-open t))
+      (if (and (fboundp 'neo-global--window-exists-p)
+               (neo-global--window-exists-p))
+          (neotree-hide)
+        (progn
+          (neotree-show)
+          (if project-dir
+              (neotree-dir project-dir))
+          (if file-name
+              (neotree-find file-name)))))))
+#+end_src
 
 * Completion
 
-  #+begin_src emacs-lisp
-  (leaf corfu
+#+begin_src emacs-lisp
+(leaf corfu
+  :ensure t
+  :pre-setq ((tab-always-indent . t)
+             (corfu-cycle . t)
+             (corfu-auto . t)
+             (corfu-auto-prefix . 1))
+  :global-minor-mode global-corfu-mode
+  :config
+
+  (leaf cape
     :ensure t
-    :pre-setq ((tab-always-indent . t)
-               (corfu-cycle . t)
-               (corfu-auto . t)
-               (corfu-auto-prefix . 1))
-    :global-minor-mode global-corfu-mode
+    :init
+    (add-to-list 'completion-at-point-functions #'cape-file)
+    (add-to-list 'completion-at-point-functions #'cape-tex)
+    (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+    (add-to-list 'completion-at-point-functions #'cape-keyword)
+    (add-to-list 'completion-at-point-functions #'cape-symbol))
+
+  (leaf kind-icon
+    :ensure t
+    :require t
+    :after corfu
+    :custom ((kind-icon-default-face . 'corfu-default))
     :config
-
-    (leaf cape
-      :ensure t
-      :init
-      (add-to-list 'completion-at-point-functions #'cape-file)
-      (add-to-list 'completion-at-point-functions #'cape-tex)
-      (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-      (add-to-list 'completion-at-point-functions #'cape-keyword)
-      (add-to-list 'completion-at-point-functions #'cape-symbol))
-
-    (leaf kind-icon
-      :ensure t
-      :require t
-      :after corfu
-      :custom ((kind-icon-default-face . 'corfu-default))
-      :config
-      (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
-
-    (leaf corfu-doc
-      :el-get galeo/corfu-doc
-      :bind (:corfu-map
-             ("M-p" . corfu-doc-scroll-down)
-             ("M-n" . corfu-doc-scroll-up))
-      :hook ((corfu-mode-hook . corfu-doc-mode))))
-  #+end_src
+    (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter)))
+#+end_src
 
 * Browser
 
-  #+begin_src emacs-lisp
-  (leaf eww
-    :bind (:eww-mode-map
-           ("h" . backward-char)
-           ("j" . next-line)
-           ("k" . previous-line)
-           ("l" . forward-char)
-           ("J" . view-scroll-line-forward)
-           ("K" . view-scroll-line-forward)
-           ("[" . eww-back-url)
-           ("]" . eww-forward-url))
-    :custom ((eww-search-prefix . "https://www.google.co.jp/search?kl=jp-jp&k1=-1&kf=-1&q="))
-    :config
-    (defun eww-mode-hook--rename-buffer ()
-      "Rename eww browser's buffer so sites open in new page."
-      (rename-buffer "eww" t))
-    (add-hook 'eww-mode-hook 'eww-mode-hook--rename-buffer))
-  #+end_src
+#+begin_src emacs-lisp
+(leaf eww
+  :bind (:eww-mode-map
+         ("h" . backward-char)
+         ("j" . next-line)
+         ("k" . previous-line)
+         ("l" . forward-char)
+         ("J" . view-scroll-line-forward)
+         ("K" . view-scroll-line-forward)
+         ("[" . eww-back-url)
+         ("]" . eww-forward-url))
+  :custom ((eww-search-prefix . "https://www.google.co.jp/search?kl=jp-jp&k1=-1&kf=-1&q="))
+  :config
+  (defun eww-mode-hook--rename-buffer ()
+    "Rename eww browser's buffer so sites open in new page."
+    (rename-buffer "eww" t))
+  (add-hook 'eww-mode-hook 'eww-mode-hook--rename-buffer))
+#+end_src
 
 * Parens
 
-  #+begin_src emacs-lisp
-  (leaf smartparens
-    :diminish ""
-    :ensure t
-    :require smartparens-config
-    :hook ((prog-mode-hook . turn-on-smartparens-mode)
-           (org-mode-hook . turn-on-smartparens-mode)))
-  #+end_src
+#+begin_src emacs-lisp
+(leaf smartparens
+  :diminish ""
+  :ensure t
+  :require smartparens-config
+  :hook ((prog-mode-hook . turn-on-smartparens-mode)
+         (org-mode-hook . turn-on-smartparens-mode)))
+#+end_src
 
 * Programming
 
 ** tree-sitter
 
-   #+begin_src emacs-lisp
-   (leaf tree-sitter
-     :ensure t
-     :hook ((tree-sitter-after-on-hook . tree-sitter-hl-mode))
-     :global-minor-mode global-tree-sitter-mode
+#+begin_src emacs-lisp
+(leaf tree-sitter
+  :ensure t
+  :hook ((tree-sitter-after-on-hook . tree-sitter-hl-mode))
+  :global-minor-mode global-tree-sitter-mode
 
-     :config
-     (leaf tree-sitter-langs
-       :ensure t
-       :config
-       (tree-sitter-require 'c)
-       (tree-sitter-require 'rust)
-       (tree-sitter-require 'typescript)
-       (tree-sitter-require 'java)))
-   #+end_src
+  :config
+  (leaf tree-sitter-langs
+    :ensure t
+    :config
+    (tree-sitter-require 'c)
+    (tree-sitter-require 'rust)
+    (tree-sitter-require 'typescript)
+    (tree-sitter-require 'java)))
+#+end_src
 
 ** eldoc
 
-   #+begin_src emacs-lisp
-   (leaf eldoc
-     :diminish ""
-     :config
-     (defun ad:eldoc-message (f &optional string)
-       (unless (active-minibuffer-window)
-         (funcall f string)))
-     (advice-add 'eldoc-message :around #'ad:eldoc-message))
-   #+end_src
+#+begin_src emacs-lisp
+(leaf eldoc
+  :diminish ""
+  :config
+  (defun ad:eldoc-message (f &optional string)
+    (unless (active-minibuffer-window)
+      (funcall f string)))
+  (advice-add 'eldoc-message :around #'ad:eldoc-message))
+#+end_src
 
 ** fill-column-indicator
 
-   #+begin_src emacs-lisp
-   (leaf display-fill-column-indicator
-     :hook git-commit-mode-hook
-     :custom
-     (display-fill-column-indicator-column . 50))
-   #+end_src
+#+begin_src emacs-lisp
+(leaf display-fill-column-indicator
+  :hook git-commit-mode-hook
+  :custom
+  (display-fill-column-indicator-column . 50))
+#+end_src
 
 ** rainbow-mode
 
-   #+begin_src emacs-lisp
-   (leaf rainbow-mode
-     :diminish ""
-     :ensure t
-     :hook prog-mode-hook)
-   #+end_src
+#+begin_src emacs-lisp
+(leaf rainbow-mode
+  :diminish ""
+  :ensure t
+  :hook prog-mode-hook)
+#+end_src
 
 ** rainbow-delimiters
 
-   #+begin_src emacs-lisp
-   ;; (leaf rainbow-delimiters
-   ;;   :diminish ""
-   ;;   :ensure t
-   ;;   :hook prog-mode-hook)
-   #+end_src
+#+begin_src emacs-lisp
+;; (leaf rainbow-delimiters
+;;   :diminish ""
+;;   :ensure t
+;;   :hook prog-mode-hook)
+#+end_src
 
 ** Syntax Check
 
-   #+begin_src emacs-lisp
-   (leaf flycheck
-     :diminish ""
-     :ensure t
-     :global-minor-mode global-flycheck-mode)
-   #+end_src
+#+begin_src emacs-lisp
+(leaf flycheck
+  :diminish ""
+  :ensure t
+  :global-minor-mode global-flycheck-mode)
+#+end_src
 
 ** Git
 
 *** magit
 
-    #+begin_src emacs-lisp
-    (leaf magit
-      :diminish ""
-      :ensure t
-      :custom ((magit-display-buffer-function . #'magit-display-buffer-fullframe-status-v1)
-               (magit-completing-read-function . 'ivy-completing-read)))
-    #+end_src
+#+begin_src emacs-lisp
+(leaf magit
+  :diminish ""
+  :ensure t
+  :custom ((magit-display-buffer-function . #'magit-display-buffer-fullframe-status-v1)
+           (magit-completing-read-function . 'ivy-completing-read)))
+#+end_src
 
 *** git-modes
 
-    #+begin_src emacs-lisp
-    (leaf git-modes
-      :ensure t)
-    #+end_src
+#+begin_src emacs-lisp
+(leaf git-modes
+  :ensure t)
+#+end_src
 
 *** git-gutter
 
-    #+begin_src emacs-lisp
-    (leaf git-gutter
-      :diminish ""
-      :ensure t
-      :custom
-      ((git-gutter:unchanged-sign . " ")
-       (git-gutter:modified-sign  . " ")
-       (git-gutter:added-sign     . " ")
-       (git-gutter:deleted-sign   . " "))
-      :custom-face
-      `((git-gutter:unchanged . '((t (:background ,(face-attribute 'line-number :background)))))
-        (git-gutter:modified  . '((t (:background "#f1fa8c"))))
-        (git-gutter:added     . '((t (:background "#50fa7b"))))
-        (git-gutter:deleted   . '((t (:background "#ff79c6")))))
-      :global-minor-mode global-git-gutter-mode)
-    #+end_src
+#+begin_src emacs-lisp
+(leaf git-gutter
+  :diminish ""
+  :ensure t
+  :custom
+  ((git-gutter:unchanged-sign . " ")
+   (git-gutter:modified-sign  . " ")
+   (git-gutter:added-sign     . " ")
+   (git-gutter:deleted-sign   . " "))
+  :custom-face
+  `((git-gutter:unchanged . '((t (:background ,(face-attribute 'line-number :background)))))
+    (git-gutter:modified  . '((t (:background "#f1fa8c"))))
+    (git-gutter:added     . '((t (:background "#50fa7b"))))
+    (git-gutter:deleted   . '((t (:background "#ff79c6")))))
+  :global-minor-mode global-git-gutter-mode)
+#+end_src
 
 ** LSP
 
-   #+begin_src emacs-lisp
-   (leaf lsp-mode
-     :ensure t
-     :pre-setq ((lsp-keymap-prefix . "M-l")
-                (lsp-idle-delay . 0.5)
-                (lsp-log-io . nil)
-                (lsp-completion-provider . :none))
-     :custom ((lsp-document-sync-method lsp--sync-incremental)))
-   #+end_src
+#+begin_src emacs-lisp
+(leaf lsp-mode
+  :ensure t
+  :pre-setq ((lsp-keymap-prefix . "M-l")
+             (lsp-idle-delay . 0.5)
+             (lsp-log-io . nil)
+             (lsp-completion-provider . :none))
+  :custom ((lsp-document-sync-method lsp--sync-incremental)))
+#+end_src
 
-   #+begin_src emacs-lisp
-   (leaf lsp-ui
-     :ensure t)
-   #+end_src
+#+begin_src emacs-lisp
+(leaf lsp-ui
+  :ensure t)
+#+end_src
 
 ** jump
 
-   #+begin_src emacs-lisp
-   (leaf dumb-jump
-     :ensure t
-     :config
+#+begin_src emacs-lisp
+(leaf dumb-jump
+  :ensure t
+  :config
 
-     (defhydra dumb-jump-hydra (:color blue :columns 3)
-       "Dumb Jump"
-       ("j" dumb-jump-go "Go")
-       ("o" dumb-jump-go-other-window "Other window")
-       ("e" dumb-jump-go-prefer-external "Go external")
-       ("x" dumb-jump-go-prefer-external-other-window "Go external other window")
-       ("i" dumb-jump-go-prompt "Prompt")
-       ("l" dumb-jump-quick-look "Quick look")
-       ("b" dumb-jump-back "Back")))
-   #+end_src
+  (defhydra dumb-jump-hydra (:color blue :columns 3)
+    "Dumb Jump"
+    ("j" dumb-jump-go "Go")
+    ("o" dumb-jump-go-other-window "Other window")
+    ("e" dumb-jump-go-prefer-external "Go external")
+    ("x" dumb-jump-go-prefer-external-other-window "Go external other window")
+    ("i" dumb-jump-go-prompt "Prompt")
+    ("l" dumb-jump-quick-look "Quick look")
+    ("b" dumb-jump-back "Back")))
+#+end_src
 
 ** Languages
 
 *** YAML
 
-    #+begin_src emacs-lisp
-    (leaf yaml-mode
-      :ensure t)
-    #+end_src
+#+begin_src emacs-lisp
+(leaf yaml-mode
+  :ensure t)
+#+end_src
 
 *** HTML
 
-    #+begin_src emacs-lisp
-    (leaf web-mode
-      :ensure t
-      :mode ("\\.html?\\'" "\\.njk\\'")
-      :custom ((web-mode-markup-indent-offset . 2)))
-    #+end_src
+#+begin_src emacs-lisp
+(leaf web-mode
+  :ensure t
+  :mode ("\\.html?\\'" "\\.njk\\'")
+  :custom ((web-mode-markup-indent-offset . 2)))
+#+end_src
 
 *** JavaScript
 
-    #+begin_src emacs-lisp
-    (leaf js-mode
-      :custom ((js-indent-level . 2)))
-    #+end_src
+#+begin_src emacs-lisp
+(leaf js-mode
+  :custom ((js-indent-level . 2)))
+#+end_src
 
 *** TypeScript
 
-    #+begin_src emacs-lisp
-    (leaf typescript-mode
-      ;; :ensure t
-      :el-get emacs-typescript/typescript.el
-      :mode ("\\.ts?\\'" "\\.tsx?\\'")
-      :custom ((indent-tabs-mode . nil)
-               (typescript-indent-level . 2)))
-    #+end_src
+#+begin_src emacs-lisp
+(leaf typescript-mode
+  ;; :ensure t
+  :el-get emacs-typescript/typescript.el
+  :mode ("\\.ts?\\'" "\\.tsx?\\'")
+  :custom ((indent-tabs-mode . nil)
+           (typescript-indent-level . 2)))
+#+end_src
 
 *** Elm
 
-    #+begin_src emacs-lisp
-    (leaf elm-mode
-      :ensure t
-      :hook ((elm-mode-hook . elm-format-on-save-mode)
-             (elm-mode-hook . (lambda () (push '("|>" . ?▷) prettify-symbols-alist)
-                                (push '("<|" . ?◁) prettify-symbols-alist)
-                                (push '("->" . ?→) prettify-symbols-alist)))))
-    #+end_src
+#+begin_src emacs-lisp
+(leaf elm-mode
+  :ensure t
+  :hook ((elm-mode-hook . elm-format-on-save-mode)
+         (elm-mode-hook . (lambda () (push '("|>" . ?▷) prettify-symbols-alist)
+                            (push '("<|" . ?◁) prettify-symbols-alist)
+                            (push '("->" . ?→) prettify-symbols-alist)))))
+#+end_src
 
 *** F#
 
-    #+begin_src emacs-lisp
-    (leaf fsharp-mode
-      :ensure t)
-    #+end_src
+#+begin_src emacs-lisp
+(leaf fsharp-mode
+  :ensure t)
+#+end_src
 
 *** Java
 
-    #+begin_src emacs-lisp
-    (leaf java
-      :config
-      (let* ((lombok-version "1.18.24")
-               (lombok-jar-dir (expand-file-name (format "~/.m2/repository/org/projectlombok/lombok/%s/" lombok-version)))
-               (lombok-jar-path (expand-file-name (format "~/.m2/repository/org/projectlombok/lombok/%s/lombok-%s.jar" lombok-version lombok-version)))
-               (lombok-jar-url (format "https://repo1.maven.org/maven2/org/projectlombok/lombok/%s/lombok-%s.jar" lombok-version lombok-version)))
-        (progn
-          (if (not (file-exists-p lombok-jar-path))
-              (progn
-                (make-directory lombok-jar-dir t)
-                (url-copy-file lombok-jar-url lombok-jar-path)))
+#+begin_src emacs-lisp
+(leaf java
+  :config
+  (let* ((lombok-version "1.18.24")
+         (lombok-jar-dir (expand-file-name (format "~/.m2/repository/org/projectlombok/lombok/%s/" lombok-version)))
+         (lombok-jar-path (expand-file-name (format "~/.m2/repository/org/projectlombok/lombok/%s/lombok-%s.jar" lombok-version lombok-version)))
+         (lombok-jar-url (format "https://repo1.maven.org/maven2/org/projectlombok/lombok/%s/lombok-%s.jar" lombok-version lombok-version)))
+    (progn
+      (if (not (file-exists-p lombok-jar-path))
+          (progn
+            (make-directory lombok-jar-dir t)
+            (url-copy-file lombok-jar-url lombok-jar-path)))
 
-          (leaf lsp-java
-          :ensure t
-          :custom ((lsp-java-format-enabled . t)
-                   (lsp-java-vmargs . `("-Xmx1G"
-                                        "-XX:+UseG1GC"
-                                        "-XX:+UseStringDeduplication"
-                                        ,(concat "-javaagent:" lombok-jar-path)
-                                        ,(concat "-Xbootclasspath/a:" lombok-jar-path))))
-          :hook ((java-mode-hook . lsp)
-                 (java-mode-hook . (lambda () (setq c-basic-offset 2))))))))
-    #+end_src
+      (leaf lsp-java
+        :ensure t
+        :custom ((lsp-java-format-enabled . t)
+                 (lsp-java-vmargs . `("-Xmx1G"
+                                      "-XX:+UseG1GC"
+                                      "-XX:+UseStringDeduplication"
+                                      ,(concat "-javaagent:" lombok-jar-path)
+                                      ,(concat "-Xbootclasspath/a:" lombok-jar-path))))
+        :hook ((java-mode-hook . lsp)
+               (java-mode-hook . (lambda () (setq c-basic-offset 2))))))))
+#+end_src
 
 *** Gradle
 
-    #+begin_src emacs-lisp
-    (leaf gradle-mode
-      :ensure t)
-    #+end_src
+#+begin_src emacs-lisp
+(leaf gradle-mode
+  :ensure t)
+#+end_src
 
 *** Groovy
 
-    #+begin_src emacs-lisp
-    (leaf groovy-mode
-      :ensure t)
-    #+end_src
+#+begin_src emacs-lisp
+(leaf groovy-mode
+  :ensure t)
+#+end_src
 
 * Writing
 
-  #+begin_src elisp
-  (leaf writeroom-mode
-    :ensure t)
-  #+end_src
+#+begin_src elisp
+(leaf writeroom-mode
+  :ensure t)
+#+end_src
 
 * Custom Key Bindings
 
-  #+begin_src emacs-lisp
-  (defun open-init-org ()
-    "Toggle current buffer between init.org."
-    (interactive)
-    (let ((path (buffer-file-name)))
-      (if (equal path (expand-file-name "~/.emacs.d/inits/init.org"))
-          (switch-to-buffer (other-buffer))
-        (find-file "~/.emacs.d/inits/init.org"))))
+#+begin_src emacs-lisp
+(defun open-init-org ()
+  "Toggle current buffer between init.org."
+  (interactive)
+  (let ((path (buffer-file-name)))
+    (if (equal path (expand-file-name "~/.emacs.d/inits/init.org"))
+        (switch-to-buffer (other-buffer))
+      (find-file "~/.emacs.d/inits/init.org"))))
 
-  (leaf custom-key-bindings
-    :bind (("M-SPC" . open-init-org)))
-  #+end_src
+(leaf custom-key-bindings
+  :bind (("M-SPC" . open-init-org)))
+#+end_src

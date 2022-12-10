@@ -37,10 +37,10 @@
 (push '(left . 0) default-frame-alist)
 ;; (push '(fullscreen . maximized) default-frame-alist)
 
-;; (push '(left-fringe . 0) default-frame-alist)
-;; (push '(right-fringe . 0) default-frame-alist)
+(push '(left-fringe . 0) default-frame-alist)
+(push '(right-fringe . 0) default-frame-alist)
 ;; (push '(font . "Cica-16") default-frame-alist)
-(push '(font . "Iosevka-17") default-frame-alist)
+(push '(font . "Sarasa Mono J-17") default-frame-alist)
 
 (setq inhibit-splash-screen t
       frame-inhibit-implied-resize t

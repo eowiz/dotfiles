@@ -129,12 +129,12 @@
 
 (leaf moom
   :ensure t
+  :custom ((moom-use-font-module . nil)
+           (moom-user-margin . '(0 60 0 0)))
   :config
-  (setq moom-use-font-module nil)
+  (moom-mode)
 
-  (setq moom-user-margin '(0 60 0 0))
-
-  (moom-mode))
+  (moom-fill-left))
 #+end_src
 
 ** Font
@@ -300,12 +300,11 @@
   :setq-default ((org-enforce-todo-dependencies . t))
   :custom (
            (org-src-tab-acts-natively . t)
-           ;; (org-src-preserve-indentation . t)
+           (org-src-preserve-indentation . t)
            (org-edit-src-content-indentation . 0)
-           ;; (org-agenda-files . '("~/org"))
-           ;; (org-src-fontify-natively . t)
+           (org-agenda-files . '("~/org"))
+           (org-src-fontify-natively . t)
            ;; (org-adapt-indentation . t)
-           ;; (org-src-preserve-indentation . nil)
            (org-edit-src-content-indentation . 0)
            )
   )

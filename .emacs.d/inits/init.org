@@ -163,7 +163,6 @@
   (modus-themes-load-operandi))
 #+end_src
 
-
 * Mode line
 
 [[https://github.com/tarsius/moody][tarsius/moody]]
@@ -186,6 +185,8 @@
   (moody-replace-eldoc-minibuffer-message-function))
 #+end_src
 
+[[https://github.com/rougier/nano-modeline][rougier/nano-modeline]]
+
 #+begin_src emacs-lisp
 (leaf nano-modeline
   :ensure t
@@ -205,6 +206,8 @@
    '(mlscroll-width-chars 12))
   :global-minor-mode mlscroll)
 #+end_src
+
+[[https://github.com/hlissner/emacs-hide-mode-line][hlissner/emacs-hide-mode-line]]
 
 #+begin_src emacs-lisp
 (leaf hide-mode-line
@@ -470,47 +473,47 @@
 
 ** History
 
-   #+begin_src emacs-lisp
-   (leaf savehist
-     :ensure t
-     :init
-     (savehist-mode))
-   #+end_src
+#+begin_src emacs-lisp
+(leaf savehist
+   :ensure t
+   :init
+   (savehist-mode))
+#+end_src
 
 ** prescient
 
-   #+begin_src emacs-lisp
-   (leaf prescient
-     :ensure t
-     :custom `((prescient-aggresive-file-save . t)
-               (prescient-save-file . ,(expand-file-name "~/.emacs.d/prescient-save.el")))
-     :global-minor-mode prescient-persist-mode
-     :config
+#+begin_src emacs-lisp
+(leaf prescient
+  :ensure t
+  :custom `((prescient-aggresive-file-save . t)
+            (prescient-save-file . ,(expand-file-name "~/.emacs.d/prescient-save.el")))
+  :global-minor-mode prescient-persist-mode
+  :config
 
-     (leaf ivy-prescient
-       :ensure t
-       :custom ((ivy-precient-retain-classic-highlighting . t))
-       :global-minor-mode ivy-prescient-mode
-       :config
-       (setf (alist-get 'counsel-M-x ivy-re-builders-alist)
-             #'ivy-prescient-re-builder)
-       (setf (alist-get t ivy-re-builders-alist) #'ivy--regex-ignore-order)))
+  (leaf ivy-prescient
+    :ensure t
+    :custom ((ivy-precient-retain-classic-highlighting . t))
+    :global-minor-mode ivy-prescient-mode
+    :config
+    (setf (alist-get 'counsel-M-x ivy-re-builders-alist)
+          #'ivy-prescient-re-builder)
+    (setf (alist-get t ivy-re-builders-alist) #'ivy--regex-ignore-order)))
    #+end_src
 
 * search
 
 ** anzu
 
-   #+begin_src emacs-lisp
-   (leaf anzu
-     :diminish ""
-     :ensure t
-     :bind (([remap query-replace] . 'anzu-query-replace)
-            ([remap query-replace-regex] . 'anzu-query-replace-regex))
-     :custom ((anzu-replace-threshold . 1000)
-              (anzu-search-threshold . 1000))
-     :config
-     (copy-face 'mode-line 'anzu-mode-line))
+#+begin_src emacs-lisp
+(leaf anzu
+  :diminish ""
+  :ensure t
+  :bind (([remap query-replace] . 'anzu-query-replace)
+         ([remap query-replace-regex] . 'anzu-query-replace-regex))
+  :custom ((anzu-replace-threshold . 1000)
+           (anzu-search-threshold . 1000))
+  :config
+  (copy-face 'mode-line 'anzu-mode-line))
    #+end_src
 
 * highlights
@@ -518,10 +521,10 @@
 ** volatile-highlights
 
 #+begin_src emacs-lisp
-  (leaf volatile-highlights
-    :diminish ""
-    :ensure t
-    :global-minor-mode volatile-highlights-mode)
+(leaf volatile-highlights
+  :diminish ""
+  :ensure t
+  :global-minor-mode volatile-highlights-mode)
 #+end_src
 
 ** highlight-indent-guids
@@ -529,14 +532,14 @@
 インデントが崩れるため無効化.
 
 #+begin_src emacs-lisp
-  (leaf highlight-indent-guides
-    :disabled t
-    :diminish ""
-    :ensure t
-    :hook prog-mode-hook yaml-mode-hook
-    :custom ((highlight-indent-guides-auto-enabled . t)
-             (highlight-indent-guides-responsive . t)
-             (highlight-indent-guides-method . 'character)))
+(leaf highlight-indent-guides
+  :disabled t
+  :diminish ""
+  :ensure t
+  :hook prog-mode-hook yaml-mode-hook
+  :custom ((highlight-indent-guides-auto-enabled . t)
+           (highlight-indent-guides-responsive . t)
+           (highlight-indent-guides-method . 'character)))
 #+end_src
 
 ** hl-line-mode

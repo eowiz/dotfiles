@@ -289,21 +289,20 @@
     :ensure t
     :global-minor-mode t))
 
-(leaf vertico
-  :ensure t
-  :custom ((vertico-count . 20)
-           (vertico-cycle . t)
-           (completion-style . '(basic substring partial-completion flex)))
-  :init
-  (vertico-mode)
-
-  :config
-  (leaf orderless
+(leaf orderless
     :ensure t
     :init (setq completion-styles '(orderless)
                 completion-category-defaults 'nil
                 completion-category-overrides '((file (styles partial-completion)))))
 
+(leaf vertico
+  :ensure t
+  :custom ((vertico-count . 20)
+           (vertico-cycle . t))
+  :init
+  (vertico-mode)
+
+  :config
   (leaf emacs
     :init
     ;; Add prompt indicator to `completing-read-multiple'.
@@ -334,46 +333,37 @@
   :ensure t
   :bind (("C-s" . consult-line)
          ("M-s M-s" . consult-thing-at-point)
+         ("C-c , s" . consult-line)
+         ("C-c , g" . consult-ripgrep)
          ([remap goto-line] . consult-goto-line))
   :custom `((consult-preview-raw-size . 1024000)
-            (consult-preview-key . ,(kbd "M-.")))
+            (consult-preview-key . ,(kbd "M-."))))
+
+(leaf marginalia
+  :ensure t
+  :init
+  (marginalia-mode))
+
+(leaf embark
+  :ensure t
+  :bind (("C-." . embark-act)
+         ("C-;" . embark-dwim)
+         ("C-h B" . embark-bindings))
+  :init
+  (setq prefix-help-command #'embark-prefix-help-command)
+
   :config
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none)))))
 
-  (leaf marginalia
-    :ensure t
-    :init
-    (marginalia-mode))
-
-  (leaf embark
-    :ensure t
-    :bind (("C-." . embark-act)
-           ("C-;" . embark-dwim)
-           ("C-h B" . embark-bindings))
-    :init
-    (setq prefix-help-command #'embark-prefix-help-command)
-
-    :config
-    ;; Hide the mode line of the Embark live/completions buffers
-    (add-to-list 'display-buffer-alist
-                 '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-                   nil
-                   (window-parameters (mode-line-format . none)))))
-
-  (leaf embark-consult
-    :ensure t
-    :after embark consult
-    :leaf-defer nil
-    :hook ((embark-collect-mode . consult-preview-at-point-mode)))
-
-  (leaf affe
-    :ensure t
-    :after orderless
-    :bind (("C-c s" . affe-grep))
-    :init (setq affe-highlight-function 'orderless-highlight-matches
-                affe-regexp-function 'orderless-pattern-compiler
-                affe-find-command "fd --color=never --full-path")
-    :config
-    (consult-customize affe-grep :preview-key (kbd "M-."))))
+(leaf embark-consult
+  :ensure t
+  :after embark consult
+  :leaf-defer nil
+  :hook ((embark-collect-mode . consult-preview-at-point-mode)))
 
 (leaf consult-ghq
   :ensure t
@@ -388,6 +378,14 @@
            (anzu-search-threshold . 1000))
   :config
   (copy-face 'mode-line 'anzu-mode-line))
+
+(leaf affe
+  :ensure t
+  :disabled t
+  :bind (("C-c a s" . affe-grep)
+         ("C-c a f" . affe-find))
+  :init (setq affe-highlight-function 'orderless-highlight-matches
+              affe-regexp-function 'orderless-pattern-compiler))
 
 ;;
 ;; Highlights
@@ -437,13 +435,18 @@
   :custom ((undo-tree-auto-save-history . nil))
   :global-minor-mode global-undo-tree-mode)
 
+;;
+;; projectile
+;;
+
 (leaf projectile
   :ensure t
   :config
   (projectile-mode +1))
 
 (leaf consult-projectile
-  :ensure t)
+  :ensure t
+  :bind (("C-c p f" . consult-projectile-find-file)))
 
 (leaf imenu-list
   :ensure t
@@ -694,3 +697,5 @@
 
 (leaf custom-key-bindings
   :bind (("M-SPC" . open-init-org)))
+
+;;; init.el ends here

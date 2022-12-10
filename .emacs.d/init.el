@@ -548,7 +548,8 @@
     (tree-sitter-require 'c)
     (tree-sitter-require 'rust)
     (tree-sitter-require 'typescript)
-    (tree-sitter-require 'java)))
+    (tree-sitter-require 'java)
+    (tree-sitter-require 'elm)))
 
 (leaf eldoc
   :diminish ""

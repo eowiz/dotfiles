@@ -77,19 +77,18 @@
 (leaf moom
   :ensure t
   :custom ((moom-use-font-module . nil)
-           (moom-user-margin . '(0 60 0 0)))
+           ;; (top bottom left right)
+           (moom-user-margin . '(10 70 10 0)))
   :bind (("C-c f f l" . moom-fill-left)
          ("C-c f f r" . moom-fill-right)
          ("C-c f f s" . moom-fill-screen)
          (:moom-mode-map
-          ("C-c o" . moom-transient-dispatch)))
+          ("C-c o " . moom-transient-dispatch)))
+  :require moom moom-transient
   :config
   (moom-mode)
 
-  (moom-fill-left)
-
-  (require 'moom-transient)
-  (moom-transient-hide-cursor))
+  (moom-fill-left))
 
 (leaf modus-themes
   :ensure t

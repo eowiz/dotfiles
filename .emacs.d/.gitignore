@@ -3,6 +3,9 @@
 .cache/
 eln-cache/
 
+custom.el
+
+# packages
 elpa/
 el-get/
 straight/
@@ -15,16 +18,14 @@ transient/
 
 prescient-save.el
 
+# projectile
 projectile-bookmarks.eld
 projects
 
 url/
 
+# LSP
 .lsp-session-*
-
-inits/init.el
-
-custom.el
 
 eshell/
 
@@ -35,3 +36,6 @@ workspace/
 
 # ddskk
 dict/
+
+# dap-mode
+.dap-breakpoints

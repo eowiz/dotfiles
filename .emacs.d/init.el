@@ -63,23 +63,9 @@
              (default-directory . "~/")
              (command-line-default-directory . "~/"))))
 
-(defvar org-inits-dir (file-name-as-directory "~/.emacs.d/inits"))
-
-(defun org-inits-file (filename)
-  (concat org-inits-dir filename))
-
-(defun org-inits-rm-elc-files ()
-  (interactive)
-  (let ((init-elc-files (file-expand-wildcards (concat org-inits-dir "*.elc"))))
-    (dolist (file init-elc-files)
-      (if (file-exists-p file)
-          (delete-file file)))))
-
-(defun org-inits-byte-compile-init-files ()
-  (interactive)
-  (let ((init-file (org-inits-file "init.el")))
-    (if (file-exists-p init-file)
-        (byte-compile-file init-file))))
+;;
+;; Look & Feel
+;;
 
 (modify-all-frames-parameters
  '((right-divider-width . 30)
@@ -120,6 +106,10 @@
   (moody-replace-vc-mode)
   (moody-replace-eldoc-minibuffer-message-function))
 
+;;
+;; Modeline
+;;
+
 (leaf nano-modeline
   :ensure t
   :config
@@ -127,6 +117,7 @@
 
 (leaf mlscroll
   :ensure t
+  :disabled t
   :config
   (custom-set-variables
    '(mlscroll-in-color "#FFA07A") ;; light coral
@@ -140,6 +131,28 @@
          (imenu-list-minor-mode-hook . hide-mode-line-mode)
          (minimap-mode-hook . hide-mode-line-mode)))
 
+;;
+;; Dashboard
+;;
+
+;; https://github.com/emacs-dashboard/emacs-dashboard
+
+(leaf dashboard
+  :ensure t
+  :custom ((dashboard-banner-logo-title . "")
+           (dashboard-startup-banner . nil)
+           (dashboard-set-footer . nil)
+           (dashboard-center-content . t)
+           (dashboard-show-shortcuts . t)
+           (dashboard-set-heading-icons . t)
+           (dashboard-set-file-icons . t))
+  :config
+  (dashboard-setup-startup-hook))
+
+;;
+;; Scroll
+;;
+
 (leaf smooth-scroll
   :disabled t
   :diminish ""
@@ -152,6 +165,10 @@
   (scroll-conservatively . 100000)
   (scroll-preserve-screen-position . t))
 
+;;
+;; Icons
+;;
+
 (leaf all-the-icons
   :ensure t
   :if (display-graphic-p))
@@ -159,6 +176,10 @@
 (leaf prettify-symbols
   :diminish ""
   :hook org-mode-hook elm-mode-hook)
+
+;;
+;; Tab
+;; 
 
 (leaf centaur-tabs
   :disabled t
@@ -186,6 +207,8 @@
 (leaf vterm
   :ensure t)
 
+;; org-mode
+
 (leaf org
   :bind (("<f12>" . org-agenda))
   :setq-default ((org-enforce-todo-dependencies . t))
@@ -193,7 +216,7 @@
            (org-src-tab-acts-natively . t)
            (org-src-preserve-indentation . t)
            (org-edit-src-content-indentation . 0)
-           (org-agenda-files . '("~/org"))
+           ;; (org-agenda-files . '("~/org"))
            (org-src-fontify-natively . t)
            ;; (org-adapt-indentation . t)
            (org-edit-src-content-indentation . 0)
@@ -235,6 +258,10 @@
    org-agenda-current-time-string
    "⭠ now ─────────────────────────────────────────────────"))
 
+;;
+;; IME
+;;
+
 (leaf skk
   :diminish ""
   :ensure ddskk
@@ -254,7 +281,9 @@
 
 (leaf vertico
   :ensure t
-  :custom ((vertico-count . 20))
+  :custom ((vertico-count . 20)
+           (vertico-cycle . t)
+           (completion-style . '(basic substring partial-completion flex)))
   :init
   (vertico-mode)
 
@@ -340,27 +369,6 @@
   :ensure t
   :bind (("C-c C-g" . consult-ghq-find)))
 
-(leaf savehist
-   :ensure t
-   :init
-   (savehist-mode))
-
-(leaf prescient
-  :ensure t
-  :custom `((prescient-aggresive-file-save . t)
-            (prescient-save-file . ,(expand-file-name "~/.emacs.d/prescient-save.el")))
-  :global-minor-mode prescient-persist-mode
-  :config
-
-  (leaf ivy-prescient
-    :ensure t
-    :custom ((ivy-precient-retain-classic-highlighting . t))
-    :global-minor-mode ivy-prescient-mode
-    :config
-    (setf (alist-get 'counsel-M-x ivy-re-builders-alist)
-          #'ivy-prescient-re-builder)
-    (setf (alist-get t ivy-re-builders-alist) #'ivy--regex-ignore-order)))
-
 (leaf anzu
   :diminish ""
   :ensure t
@@ -370,6 +378,10 @@
            (anzu-search-threshold . 1000))
   :config
   (copy-face 'mode-line 'anzu-mode-line))
+
+;;
+;; Highlights
+;;
 
 (leaf volatile-highlights
   :diminish ""
@@ -388,6 +400,21 @@
 (leaf hl-line-mode
   :global-minor-mode global-hl-line-mode)
 
+;;
+;; History
+;;
+
+(leaf savehist
+   :ensure t
+   :init
+   (savehist-mode))
+
+(leaf prescient
+  :ensure t
+  :custom `((prescient-aggresive-file-save . t)
+            (prescient-save-file . ,(expand-file-name "~/.emacs.d/prescient-save.el")))
+  :global-minor-mode prescient-persist-mode)
+
 (leaf undohist
   :ensure t
   :require t
@@ -404,13 +431,6 @@
   :ensure t
   :config
   (projectile-mode +1))
-
-(leaf counsel-projectile
-  :disabled t
-  :diminish projectile
-  :ensure t
-  :global-minor-mode counsel-projectile-mode
-  :bind-keymap ("C-c p" . projectile-command-map))
 
 (leaf consult-projectile
   :ensure t)
@@ -455,7 +475,7 @@
   :pre-setq ((tab-always-indent . t)
              (corfu-cycle . t)
              (corfu-auto . t)
-             (corfu-auto-prefix . 0)
+             (corfu-auto-prefix . 3)
              (corfu-popupinfo-delay . 0))
   :global-minor-mode global-corfu-mode
   :config

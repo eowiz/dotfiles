@@ -63,6 +63,9 @@
              (default-directory . "~/")
              (command-line-default-directory . "~/"))))
 
+(leaf transient
+  :ensure t)
+
 ;;
 ;; Look & Feel
 ;;
@@ -75,10 +78,18 @@
   :ensure t
   :custom ((moom-use-font-module . nil)
            (moom-user-margin . '(0 60 0 0)))
+  :bind (("C-c f f l" . moom-fill-left)
+         ("C-c f f r" . moom-fill-right)
+         ("C-c f f s" . moom-fill-screen)
+         (:moom-mode-map
+          ("C-c o" . moom-transient-dispatch)))
   :config
   (moom-mode)
 
-  (moom-fill-left))
+  (moom-fill-left)
+
+  (require 'moom-transient)
+  (moom-transient-hide-cursor))
 
 (leaf modus-themes
   :ensure t

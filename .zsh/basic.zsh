@@ -32,3 +32,6 @@ zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
 setopt globdots
 
+## 単語の区切りを調整
+export WORDCHARS="*?_-.[]~&;=!#$%^(){}<>"
+

@@ -333,7 +333,6 @@
   :ensure t
   :bind (("C-s" . consult-line)
          ("M-s M-s" . consult-thing-at-point)
-         ("C-c , s" . consult-line)
          ("C-c , g" . consult-ripgrep)
          ([remap goto-line] . consult-goto-line))
   :custom `((consult-preview-raw-size . 1024000)
@@ -582,8 +581,7 @@
 (leaf magit
   :diminish ""
   :ensure t
-  :custom ((magit-display-buffer-function . #'magit-display-buffer-fullframe-status-v1)
-           (magit-completing-read-function . 'ivy-completing-read)))
+  :custom ((magit-display-buffer-function . #'magit-display-buffer-fullframe-status-v1)))
 
 (leaf git-modes
   :ensure t)

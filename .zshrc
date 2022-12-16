@@ -38,6 +38,7 @@ bin=(
     "ghcup"
     "sdkman"
     "volta"
+    "rbenv"
 )
 
 for filename in $bin; do

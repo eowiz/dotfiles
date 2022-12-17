@@ -217,6 +217,10 @@
 (leaf vterm
   :ensure t)
 
+(leaf topsy
+  :el-get alphapapa/topsy.el
+  :hook ((prog-mode-hook . topsy-mode)))
+
 ;; org-mode
 
 (leaf org

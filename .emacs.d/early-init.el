@@ -33,7 +33,7 @@
 (push '(tool-bar-lines . 0) default-frame-alist)
 (push '(cursor-type . bar) default-frame-alist)
 
-(push '(undecorated . t) default-frame-alist)
+;; (push '(undecorated . t) default-frame-alist)
 (push '(left . 0) default-frame-alist)
 ;; (push '(fullscreen . maximized) default-frame-alist)
 

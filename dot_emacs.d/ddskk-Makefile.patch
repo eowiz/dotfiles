@@ -1,0 +1,13 @@
+diff --git a/Makefile b/Makefile
+index b601f77..2c8a667 100644
+--- a/Makefile
++++ b/Makefile
+@@ -23,7 +23,7 @@ TAR	  = gtar
+ TEE	  = tee
+ PWD       = pwd
+ CURL      = curl
+-XARGS	  = xargs --max-args=1 --verbose
++XARGS	  = gxargs --max-args=1 --verbose
+ SKK_DEFAULT_JISYO =
+ set_jisyo =
+ 

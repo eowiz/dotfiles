@@ -53,6 +53,8 @@
       (autoload f file docstring interactive type))
     t))
 
+(setq custom-file (locate-user-emacs-file "custom.el"))
+
 ;; Package Manager
 (eval-when-compile
   (unless (file-directory-p (locate-user-emacs-file "elpa/el-clone"))
@@ -122,8 +124,7 @@
 	make-backup-files nil
 	auto-save-default nil
 	suggest-key-bindings nil
-	delete-by-moving-to-trash t
-	custom-file (locate-user-emacs-file "custom.el"))
+	delete-by-moving-to-trash t)
   (defalias 'yes-or-no-p 'y-or-n-p))
 
 ;; exec-path-from-shell

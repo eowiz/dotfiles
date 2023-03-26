@@ -1,0 +1,30 @@
+window:
+  # decorations: None
+
+  padding:
+    x: 8
+    y: 4
+  dynamic_padding: true
+
+font:
+  normal:
+    family: 'Cica'
+    style: Regular
+  bold:
+    family: 'Cica'
+    style: Bold
+  size: 16.0
+  offset:
+    y: 1
+
+shell:
+  program: /bin/zsh
+  args:
+    - -l
+    - -c
+    - "source ~/.zshrc; tmux attach 2> /dev/null || tmux"
+
+key_bindings:
+ - { key: F, mods: Alt, chars: "\x1bf" }
+ - { key: B, mods: Alt, chars: "\x1bb" }
+

@@ -91,7 +91,7 @@
 (with-delayed-execution-priority-high
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/dash")))
 
-;; dash
+;; s
 (eval-when-compile
   (el-clone :repo "magnars/s.el"))
 
@@ -104,6 +104,20 @@
 
 (with-delayed-execution-priority-high
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/f")))
+
+;; ht
+(eval-when-compile
+  (el-clone :repo "Wilfred/ht.el"))
+
+(with-delayed-execution-priority-high
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/ht")))
+
+;; pfuture
+(eval-when-compile
+ (el-clone :repo "Alexander-Miller/pfuture"))
+
+(with-delayed-execution-priority-high
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/pfuture")))
 
 ;; shrink-path
 (eval-when-compile
@@ -119,12 +133,45 @@
 (with-delayed-execution-priority-high
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/svg-lib")))
 
+;; request
+(eval-when-compile
+  (el-clone :repo "tkf/emacs-request"))
+
+(with-delayed-execution-priority-high
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/emacs-request")))
+
+;; spinner
+(eval-when-compile
+  (el-clone :repo "Malabarba/spinner.el"))
+
+(with-delayed-execution-priority-high
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/spinner")))
+
+;; hydra
+(eval-when-compile
+  (el-clone :repo "abo-abo/hydra"))
+
+(with-delayed-execution-priority-high
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/hydra")))
+
+;; yasnippet
+(eval-when-compile
+  (el-clone :repo "joaotavora/yasnippet"))
+
+(with-delayed-execution
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/yasnippet"))
+
+  (autoload-if-found '(yas-global-mode 1) "yasnippet" nil t)
+
+  (yas-global-mode 1))
+
 (with-delayed-execution
   (setq indent-tabs-mode nil
 	make-backup-files nil
 	auto-save-default nil
 	suggest-key-bindings nil
 	delete-by-moving-to-trash t)
+  (setq insert-directory-program "gls")
   (defalias 'yes-or-no-p 'y-or-n-p))
 
 ;; exec-path-from-shell
@@ -188,12 +235,15 @@
   (el-clone :repo "skk-dev/ddskk"))
 
 (with-delayed-execution-priority-high
+  (setq skk-byte-compile-init-file t)
+
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/ddskk"))
 
   (autoload-if-found '(skk-mode) "skk-autoloads" nil t)
 
-  (locate-library "skk-autoloads")
-
+  (add-hook 'text-mode-hook (lambda () (skk-mode) (skk-latin-mode-on)))
+  (add-hook 'prog-mode-hook (lambda () (skk-mode) (skk-latin-mode-on)))
+  
   (global-set-key (kbd "C-x C-j") #'skk-mode)
 
   (with-eval-after-load 'skk
@@ -405,19 +455,19 @@
     (undohist-initialize)))
 
 ;; vundo
-(eval-when-compile
-  (el-clone :repo "casouri/vundo"))
+;; (eval-when-compile
+;;   (el-clone :repo "casouri/vundo"))
 
-(with-delayed-execution
-  (add-to-list 'load-path (locate-user-emacs-file "el-clone/vundo"))
+;; (with-delayed-execution
+;;   (add-to-list 'load-path (locate-user-emacs-file "el-clone/vundo"))
 
-  (autoload-if-found '(vundo vundo-default) "vundo" nil t)
+;;   (autoload-if-found '(vundo vundo-default) "vundo" nil t)
 
-  (global-set-key (kbd "C-x u") #'vundo)
+;;   (global-set-key (kbd "C-x u") #'vundo)
 
-  (when (require 'vundo)
-    (setq vundo-glyph-alist vundo-unicode-symbols)
-    (set-face-attribute 'vundo-default nil :family "Symbola")))
+;;   (when (require 'vundo)
+;;     (setq vundo-glyph-alist vundo-unicode-symbols)
+;;     (set-face-attribute 'vundo-default nil :family "Symbola")))
 
 ;; smartparens
 (eval-when-compile
@@ -526,8 +576,16 @@
 (with-delayed-execution
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/flycheck"))
 
- (when (require 'flycheck)
+  (when (require 'flycheck)
     (global-flycheck-mode)))
+
+;; treemacs
+(eval-when-compile
+  (el-clone :repo "Alexander-Miller/treemacs"))
+
+(with-delayed-execution-priority-high
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/treemacs/src/elisp"))
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/treemacs/src/extra")))
 
 ;; Markdown
 (eval-when-compile
@@ -555,6 +613,44 @@
     (setq indent-tabs-mode nil)
     (setq markdown-code-lang-modes (append '(("diff" . diff-mode))
 					   markdown-code-lang-modes))))
+
+;; lsp-mode
+(eval-when-compile
+  (el-clone :repo "emacs-lsp/lsp-mode"))
+
+(with-delayed-execution
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/lsp-mode"))
+
+  (require 'lsp-mode)
+  (require 'lsp-lens)
+  (require 'lsp-modeline)
+  (require 'lsp-headerline)
+  (require 'lsp-completion)
+  (autoload-if-found '(lsp-mode lsp) "lsp-mode" nil t)
+
+  (setq lsp-keymap-prefix "M-l")
+  (setq lsp-idle-delay 0.5)
+  (setq lsp-log-io nil)
+  (setq lsp-completion-provider :none))
+
+;; lsp-treemacs
+(eval-when-compile
+  (el-clone :repo "emacs-lsp/lsp-treemacs"))
+
+(with-delayed-execution-priority-high
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/lsp-treemacs")))
+
+;; lsp-java
+(eval-when-compile
+  (el-clone :repo "emacs-lsp/lsp-java"))
+
+(with-delayed-execution-priority-high
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/lsp-java"))
+
+  (require 'lsp-mode)
+  ;; (autoload-if-found '(lsp) "lsp-mode" nil t)
+
+  (add-hook 'java-mode-hook #'lsp))
 
 ;; yaml
 (eval-when-compile
@@ -726,16 +822,6 @@
 ;;   :leaf-defer nil
 ;;   :hook ((embark-collect-mode . consult-preview-at-point-mode)))
 
-;; (leaf anzu
-;;   :diminish ""
-;;   :ensure t
-;;   :bind (([remap query-replace] . 'anzu-query-replace)
-;;          ([remap query-replace-regex] . 'anzu-query-replace-regex))
-;;   :custom ((anzu-replace-threshold . 1000)
-;;            (anzu-search-threshold . 1000))
-;;   :config
-;;   (copy-face 'mode-line 'anzu-mode-line))
-
 ;; ;;
 ;; ;; Highlights
 ;; ;;
@@ -748,9 +834,6 @@
 ;;   :custom ((highlight-indent-guides-auto-enabled . t)
 ;;            (highlight-indent-guides-responsive . t)
 ;;            (highlight-indent-guides-method . 'character)))
-
-;; (leaf hl-line-mode
-;;   :global-minor-mode global-hl-line-mode)
 
 ;; ;;
 ;; ;; projectile

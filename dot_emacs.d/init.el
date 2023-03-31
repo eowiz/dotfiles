@@ -159,11 +159,7 @@
   (el-clone :repo "joaotavora/yasnippet"))
 
 (with-delayed-execution
-  (add-to-list 'load-path (locate-user-emacs-file "el-clone/yasnippet"))
-
-  (autoload-if-found '(yas-global-mode 1) "yasnippet" nil t)
-
-  (yas-global-mode 1))
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/yasnippet")))
 
 (with-delayed-execution
   (setq indent-tabs-mode nil
@@ -626,7 +622,6 @@
   (require 'lsp-modeline)
   (require 'lsp-headerline)
   (require 'lsp-completion)
-  (autoload-if-found '(lsp-mode lsp) "lsp-mode" nil t)
 
   (setq lsp-keymap-prefix "M-l")
   (setq lsp-idle-delay 0.5)
@@ -647,10 +642,11 @@
 (with-delayed-execution-priority-high
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/lsp-java"))
 
-  (require 'lsp-mode)
-  ;; (autoload-if-found '(lsp) "lsp-mode" nil t)
+  (autoload-if-found '(lsp) "lsp-mode" nil t)
 
-  (add-hook 'java-mode-hook #'lsp))
+  (with-eval-after-load 'lsp-mode
+    (require 'lsp-mode)
+    (add-hook 'java-mode-hook #'lsp)))
 
 ;; yaml
 (eval-when-compile

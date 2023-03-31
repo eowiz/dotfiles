@@ -5,6 +5,7 @@ window:
     x: 8
     y: 4
   dynamic_padding: true
+  option_as_alt: OnlyLeft
 
 font:
   normal:
@@ -23,8 +24,4 @@ shell:
     - -l
     - -c
     - "source ~/.zshrc; tmux attach 2> /dev/null || tmux"
-
-key_bindings:
- - { key: F, mods: Alt, chars: "\x1bf" }
- - { key: B, mods: Alt, chars: "\x1bb" }
 

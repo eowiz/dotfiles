@@ -248,6 +248,7 @@
 
   (setq skk-preload t)
   (global-set-key (kbd "C-x C-j") #'skk-mode)
+  (global-set-key (kbd "C-x ^") #'skk-kakutei)
   (add-hook 'text-mode-hook (lambda () (skk-mode) (skk-latin-mode-on)))
   (add-hook 'prog-mode-hook (lambda () (skk-mode) (skk-latin-mode-on))))
 
@@ -625,6 +626,7 @@
   (require 'lsp-headerline)
   (require 'lsp-completion)
 
+  (setq read-process-output-max (* 1024 1024))
   (setq lsp-keymap-prefix "M-l")
   (setq lsp-idle-delay 0.5)
   (setq lsp-log-io nil)
@@ -636,6 +638,19 @@
 
 (with-delayed-execution-priority-high
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/lsp-treemacs")))
+
+;; lsp-ui
+(eval-when-compile
+  (el-clone :repo "emacs-lsp/lsp-ui"))
+
+(with-delayed-execution-priority-high
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/lsp-ui"))
+
+  (with-eval-after-load 'lsp-mode
+    (require 'lsp-ui)
+    (setq lsp-ui-peek-always-show t)
+    (setq lsp-ui-sideline-show-hover t)
+    (setq lsp-ui-doc-enable t)))
 
 ;; lsp-java
 (eval-when-compile

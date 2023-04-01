@@ -246,10 +246,9 @@
   (autoload-if-found '(dirvish-override-dired-mode) "dirvish" nil t)
   (autoload-if-found '(dirvish-quick-access) "dirvish-quick-access" nil t)
   (autoload-if-found '(dirvish-emerge-mode dirvish-emerge-menu) "dirvish-emerge" nil t)
-  (autoload-if-found '(dirvish-side-follow-mode dirvish-side) "dirvish-side" nil t)
+  (autoload-if-found '(dirvish-side) "dirvish-side" nil t)
 
   (dirvish-override-dired-mode)
-  (dirvish-side-follow-mode)
 
   (define-key dirvish-mode-map (kbd "TAB") #'dirvish-subtree-toggle)
   (define-key dirvish-mode-map (kbd "a") #'dirvish-quick-access)
@@ -278,6 +277,11 @@
 
   (setq dirvish-emerge-groups '(("READMD" (regex . "README"))
 				("Emacs Lisp" (extensions "el"))))
+
+  (setq dirvish-quick-access-entries
+	`(("h" "~/"                      "Home")
+	  ("e" ,user-emacs-directory     "Emacs user directory")
+	  ("c" "~/.local/share/chezmoi/" "chezmoi")))
   )
 
 ;; ddskk

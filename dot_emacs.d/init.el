@@ -181,15 +181,25 @@
     (exec-path-from-shell-initialize)))
 
 ;; nord-theme
+;; (eval-when-compile
+;;   (el-clone :repo "nordtheme/emacs"
+;; 	    :load-paths `(,(locate-user-emacs-file "el-clone/emacs"))))
+
+;; (with-delayed-execution-priority-high
+;;   (add-to-list 'load-path (locate-user-emacs-file "el-clone/emacs"))
+  
+;;   (when (require 'nord-theme)
+;;     (load-theme 'nord t)))
+
+;; everforest
 (eval-when-compile
-  (el-clone :repo "nordtheme/emacs"
-	    :load-paths `(,(locate-user-emacs-file "el-clone/emacs"))))
+  (el-clone :repo "Theory-of-Everything/everforest-emacs"))
 
 (with-delayed-execution-priority-high
-  (add-to-list 'load-path (locate-user-emacs-file "el-clone/emacs"))
-  
-  (when (require 'nord-theme)
-    (load-theme 'nord t)))
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/everforest-emacs"))
+
+  (when (require 'everforest-hard-dark-theme)
+    (load-theme 'everforest-hard-dark t)))
 
 ;; all-the-icons
 (eval-when-compile
@@ -687,31 +697,6 @@
 ;;              (default-directory . "~/")
 ;;              (command-line-default-directory . "~/"))))
 
-;; (leaf transient
-;;   :ensure t)
-
-;; ;;
-;; ;; Dashboard
-;; ;;
-
-;; ;; https://github.com/emacs-dashboard/emacs-dashboard
-
-
-;; (leaf dashboard
-;;   :ensure t
-;;   :custom ((dashboard-banner-logo-title . "")
-;;            (dashboard-startup-banner . nil)
-;;            (dashboard-set-footer . nil)
-;;            (dashboard-center-content . t)
-;;            (dashboard-show-shortcuts . t)
-;;            (dashboard-set-heading-icons . t)
-;;            (dashboard-set-file-icons . t))
-;;   :config
-;;   (dashboard-setup-startup-hook))
-
-;; (leaf vterm
-;;   :ensure t)
-
 ;; ;; バッファの一番上にある関数の名前を表示するためのパッケージ
 ;; (leaf topsy
 ;;   :el-get alphapapa/topsy.el
@@ -767,22 +752,6 @@
 ;;      " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
 ;;    org-agenda-current-time-string
 ;;    "⭠ now ─────────────────────────────────────────────────"))
-
-;; ;;
-;; ;; IME
-;; ;;
-
-;; (leaf skk
-;;   :diminish ""
-;;   :ensure ddskk
-;;   :bind (("C-x C-j" . skk-mode))
-;;   :custom ((default-input-method . "japanese-skk")
-;;            (skk-large-jisyo . "~/.emacs.d/dict/SKK-JISYO.L")
-;;            (skk-status-indicator . nil))
-;;   :pre-setq
-;;   (skk-byte-compile-init-file . t)
-;;   :hook ((text-mode-hook . (lambda () (skk-mode) (skk-latin-mode-on)))
-;;          (prog-mode-hook . (lambda () (skk-mode) (skk-latin-mode-on))))
 
 ;; (defun consult-thing-at-point (&optional at-point)
 ;;   "Consult-line uses things-at-point."

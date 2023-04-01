@@ -235,6 +235,51 @@
   (setq scroll-conservatively 100000)
   (setq scroll-preserve-screen-position t))
 
+;; dirvish
+(eval-when-compile
+  (el-clone :repo "alexluigit/dirvish"))
+
+(with-delayed-execution-priority-high
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/dirvish"))
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/dirvish/extensions"))
+
+  (autoload-if-found '(dirvish-override-dired-mode) "dirvish" nil t)
+  (autoload-if-found '(dirvish-quick-access) "dirvish-quick-access" nil t)
+  (autoload-if-found '(dirvish-emerge-mode dirvish-emerge-menu) "dirvish-emerge" nil t)
+  (autoload-if-found '(dirvish-side-follow-mode dirvish-side) "dirvish-side" nil t)
+
+  (dirvish-override-dired-mode)
+  (dirvish-side-follow-mode)
+
+  (define-key dirvish-mode-map (kbd "TAB") #'dirvish-subtree-toggle)
+  (define-key dirvish-mode-map (kbd "a") #'dirvish-quick-access)
+  (define-key dirvish-mode-map (kbd "M-e") #'dirvish-emerge-menu)
+
+  (global-set-key (kbd "C-'") #'dirvish-side)
+
+  (setq dired-mouse-drag-files t)
+  (setq mouse-drag-and-drop-region-cross-program t)
+
+  (setq dirvish-subtree-prefix "  ")
+  (setq dirvish-subtree-always-show-state t)
+
+  (setq dirvish-attributes
+	'(vc-state subtree-state all-the-icons collapse file-time file-size))
+  (setq dired-listing-switches
+        "-l --almost-all --human-readable --group-directories-first --no-group")
+
+  (setq dirvish-use-header-line 'global)
+  (setq dirvish-header-line-height '(25 . 35))
+  (setq dirvish-mode-line-height 25)
+  (setq dirvish-header-line-format
+	'(:left (path) :right (free-space))
+	dirvish-mode-line-format
+	'(:left (sort file-time " " file-size symlink) :right (omit yank index)))
+
+  (setq dirvish-emerge-groups '(("READMD" (regex . "README"))
+				("Emacs Lisp" (extensions "el"))))
+  )
+
 ;; ddskk
 
 (eval-when-compile
@@ -454,19 +499,16 @@
     (undohist-initialize)))
 
 ;; vundo
-;; (eval-when-compile
-;;   (el-clone :repo "casouri/vundo"))
+(eval-when-compile
+  (el-clone :repo "casouri/vundo"))
 
-;; (with-delayed-execution
-;;   (add-to-list 'load-path (locate-user-emacs-file "el-clone/vundo"))
+(with-delayed-execution
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/vundo"))
 
-;;   (autoload-if-found '(vundo vundo-default) "vundo" nil t)
-
-;;   (global-set-key (kbd "C-x u") #'vundo)
-
-;;   (when (require 'vundo)
-;;     (setq vundo-glyph-alist vundo-unicode-symbols)
-;;     (set-face-attribute 'vundo-default nil :family "Symbola")))
+  (when (require 'vundo)
+    (global-set-key (kbd "C-x u") #'vundo)
+    (setq vundo-glyph-alist vundo-unicode-symbols)
+    (set-face-attribute 'vundo-default nil :family "Symbola")))
 
 ;; smartparens
 (eval-when-compile

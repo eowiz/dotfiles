@@ -231,23 +231,15 @@
   (el-clone :repo "skk-dev/ddskk"))
 
 (with-delayed-execution-priority-high
-  (setq skk-byte-compile-init-file t)
-
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/ddskk"))
+  ;; (autoload-if-found '(skk-mode) "skk" nil t)
 
-  (autoload-if-found '(skk-mode) "skk-autoloads" nil t)
+  (require 'skk-autoloads)
 
-  (add-hook 'text-mode-hook (lambda () (skk-mode) (skk-latin-mode-on)))
-  (add-hook 'prog-mode-hook (lambda () (skk-mode) (skk-latin-mode-on)))
-  
+  (setq skk-preload t)
   (global-set-key (kbd "C-x C-j") #'skk-mode)
-
-  (with-eval-after-load 'skk
-    ;; config
-    (setq skk-preload t))
-
-  (with-eval-after-load 'skk-vars
-    (setq skk-byte-compile-init-file t)))
+  (add-hook 'text-mode-hook (lambda () (skk-mode) (skk-latin-mode-on)))
+  (add-hook 'prog-mode-hook (lambda () (skk-mode) (skk-latin-mode-on))))
 
 (eval-when-compile
   (el-clone :repo "conao3/ddskk-posframe.el"))

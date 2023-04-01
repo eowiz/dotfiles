@@ -620,6 +620,22 @@
   (when (require 'flycheck)
     (global-flycheck-mode)))
 
+;; flycheck-posframe
+(eval-when-compile
+  (el-clone :repo "alexmurray/flycheck-posframe"))
+
+(with-delayed-execution
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/flycheck-posframe"))
+
+  (autoload-if-found '(flycheck-posframe-mode flycheck-posframe-configure-pretty-defaults) "flycheck-posframe" nil t)
+
+  (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode)
+
+  (flycheck-posframe-configure-pretty-defaults)
+  (setq flycheck-posframe-border-use-error-face t)
+  (setq flycheck-posframe-border-width 1)
+  )
+
 ;; treemacs
 (eval-when-compile
   (el-clone :repo "Alexander-Miller/treemacs"))

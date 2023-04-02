@@ -338,6 +338,18 @@
   (when (require 'anzu)
     (global-anzu-mode +1)))
 
+;; which-key
+(eval-when-compile
+  (el-clone :repo "justbur/emacs-which-key"))
+
+(with-delayed-execution
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/emacs-which-key"))
+
+  (autoload-if-found '(which-key-mode which-key-setup-side-window-bottom) "which-key" nil t)
+
+  (which-key-mode)
+  (which-key-setup-side-window-bottom))
+
 ;; corfu
 (eval-when-compile
   (el-clone :repo "minad/corfu"))

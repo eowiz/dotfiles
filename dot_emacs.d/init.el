@@ -15,7 +15,7 @@
 (defvar my/delayed-priority-low-configuration-timer nil)
 
 (add-hook 'emacs-startup-hook
-          (lambda ()
+	  (lambda ()
             (setq my/delayed-priority-high-configuration-timer
                   (run-with-timer
                    0.1 0.001
@@ -114,7 +114,7 @@
 
 ;; pfuture
 (eval-when-compile
- (el-clone :repo "Alexander-Miller/pfuture"))
+  (el-clone :repo "Alexander-Miller/pfuture"))
 
 (with-delayed-execution-priority-high
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/pfuture")))
@@ -187,7 +187,7 @@
 
 ;; (with-delayed-execution-priority-high
 ;;   (add-to-list 'load-path (locate-user-emacs-file "el-clone/emacs"))
-  
+
 ;;   (when (require 'nord-theme)
 ;;     (load-theme 'nord t)))
 
@@ -526,10 +526,6 @@
   (add-hook 'prog-mode-hook #'smartparens-mode))
 
 ;; volatile-highlights
-
-(eval-when-compile
-  (el-clone :repo "k-talo/volatile-highlights.el"))
-
 (eval-when-compile
   (el-clone :repo "k-talo/volatile-highlights.el"))
 
@@ -538,7 +534,50 @@
 
   (autoload-if-found '(volatile-highlights-mode) "volatile-highlights" nil t)
 
+  (custom-set-faces '(vhl/default-face ((nil (:foreground "#FF3333" :background "#FFCDCD")))))
+
   (volatile-highlights-mode t))
+
+;; highlight-indent-guides
+(eval-when-compile
+  (el-clone :repo "DarthFennec/highlight-indent-guides"))
+
+(with-delayed-execution
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/highlight-indent-guides"))
+
+  (autoload-if-found '(highlight-indent-guides-mode) "highlight-indent-guides" nil t)
+
+  (defun my/highlight-indent-guides--bitmap-line (width height crep zrep)
+    "Defines a solid guide line, one pixel wide.
+Use WIDTH, HEIGHT, CREP, and ZREP as described in
+`highlight-indent-guides-bitmap-function'."
+    (let* ((left (/ (- width 1) 2))
+           (right (- width left 1))
+           (row (append (make-list left zrep) (make-list 1 crep) (make-list right zrep)))
+           rows)
+      (dotimes (i height rows)
+	(setq rows (cons row rows)))))
+
+  (setq highlight-indent-guides-method 'bitmap)
+  (setq highlight-indent-guides-bitmap-function #'my/highlight-indent-guides--bitmap-line)
+  (setq highlight-indent-guides-auto-character-face-perc 40)
+  (setq highlight-indent-guides-auto-top-character-face-perc 100)
+
+  (setq highlight-indent-guides-auto-enabled t)
+  (setq highlight-indent-guides-responsive t)
+
+  (add-hook 'prog-mode-hook #'highlight-indent-guides-mode))
+
+;; rainbow-delimiters
+(eval-when-compile
+  (el-clone :repo "Fanael/rainbow-delimiters"))
+
+(with-delayed-execution
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/rainbow-delimiters"))
+
+  (autoload-if-found '(rainbow-delimiters-mode) "rainbow-delimiters" nil t)
+
+  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
 ;; git
 (eval-when-compile
@@ -710,9 +749,24 @@
 
   (with-eval-after-load 'lsp-mode
     (require 'lsp-ui)
+
     (setq lsp-ui-peek-always-show t)
     (setq lsp-ui-sideline-show-hover t)
-    (setq lsp-ui-doc-enable t)))
+
+    ;; lsp-ui-doc
+    (setq lsp-ui-doc-enable t)
+    (setq lsp-ui-doc-show-with-cursor t)
+    (setq lsp-ui-doc-position 'at-point)
+
+    ;; lsp-ui-imenu
+    (setq lsp-ui-imenu-auto-refresh t)
+
+    ;; lsp-ui-sideline
+    (setq lsp-ui-sideline-show-diagnostics t)
+
+    (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+    (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
+    (setq lsp-ui-peek-enable t)))
 
 ;; lsp-java
 (eval-when-compile
@@ -855,19 +909,6 @@
 ;;   :after embark consult
 ;;   :leaf-defer nil
 ;;   :hook ((embark-collect-mode . consult-preview-at-point-mode)))
-
-;; ;;
-;; ;; Highlights
-;; ;;
-
-;; (leaf highlight-indent-guides
-;;   :disabled t
-;;   :diminish ""
-;;   :ensure t
-;;   :hook prog-mode-hook yaml-mode-hook
-;;   :custom ((highlight-indent-guides-auto-enabled . t)
-;;            (highlight-indent-guides-responsive . t)
-;;            (highlight-indent-guides-method . 'character)))
 
 ;; ;;
 ;; ;; projectile

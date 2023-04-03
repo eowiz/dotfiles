@@ -1,8 +1,11 @@
+SHELL = /bin/zsh
 
 EMACS ?= emacs
 
-DDSKK_DIR            = el-clone/ddskk
-DDSKK_MAKEFILE_PATCH = ddskk-Makefile.patch
+DDSKK_DIR                := el-clone/ddskk
+DDSKK_MAKEFILE_PATCH     := ddskk-Makefile.patch
+DDSKK_SITE_LISP_PATH     := $(shell emacs -Q --batch --eval '(print (concat (expand-file-name (concat exec-directory "../../../../")) "share/emacs/site-lisp/skk"))')
+HOMEBREW_EMACS_SITE_LISP := /opt/homebrew/share/emacs/site-lisp/skk
 
 .PHONY: all
 all: byte-compile byte-compile-libraries
@@ -17,8 +20,10 @@ byte-compile-libraries:
 	cp $(DDSKK_MAKEFILE_PATCH) $(DDSKK_DIR)
 	cd $(DDSKK_DIR) && git apply $(DDSKK_MAKEFILE_PATCH) || :
 	$(EMACS) -Q --batch --eval "(progn (add-to-list 'load-path (locate-user-emacs-file \"elpa/el-clone\")) (require 'el-clone) (el-clone-byte-compile))"
-	make -C el-clone/ddskk install PREFIX=/opt/homebrew/share/emacs/site-lisp
+	make -C el-clone/ddskk install
+	ln -s $(DDSKK_SITE_LISP_PATH) $(HOMEBREW_EMACS_SITE_LISP)
 
 .PHONY: clean
 clean:
 	rm -rf elpa el-clone eln-cache init.eln init.elc early-init.eln early-init.elc
+	unlink $(HOMEBREW_EMACS_SITE_LISP)

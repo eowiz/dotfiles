@@ -699,6 +699,32 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/treemacs/src/elisp"))
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/treemacs/src/extra")))
 
+;; tree-sitter
+(eval-when-compile
+  (el-clone :repo "emacs-tree-sitter/elisp-tree-sitter"))
+
+(with-delayed-execution
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/elisp-tree-sitter/core"))
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/elisp-tree-sitter/lisp"))
+
+  (require 'tree-sitter)
+  (require 'tree-sitter-hl)
+  (require 'tree-sitter-debug)
+  (require 'tree-sitter-query))
+
+;; tree-sitter-lang
+(eval-when-compile
+  (el-clone :repo "emacs-tree-sitter/tree-sitter-langs"))
+
+(with-delayed-execution
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/tree-sitter-langs"))
+
+  (with-eval-after-load 'tree-sitter
+    (require 'tree-sitter-langs)
+
+    (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)))
+
+
 ;; Markdown
 (eval-when-compile
   (el-clone :repo "polymode/polymode"))

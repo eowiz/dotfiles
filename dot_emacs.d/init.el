@@ -727,6 +727,7 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 					   markdown-code-lang-modes))))
 
 ;; lsp-mode
+(setq lsp-use-plists t)
 (eval-when-compile
   (el-clone :repo "emacs-lsp/lsp-mode"))
 
@@ -743,7 +744,13 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   (setq lsp-keymap-prefix "M-l")
   (setq lsp-idle-delay 0.5)
   (setq lsp-log-io nil)
-  (setq lsp-completion-provider :none))
+  (setq lsp-completion-provider :none)
+
+  (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
+
+  ;; Turning
+  (setq read-process-output-max (* 1024 1024))
+  )
 
 ;; lsp-treemacs
 (eval-when-compile
@@ -768,17 +775,27 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
     ;; lsp-ui-doc
     (setq lsp-ui-doc-enable t)
     (setq lsp-ui-doc-show-with-cursor t)
-    (setq lsp-ui-doc-position 'at-point)
+    (setq lsp-ui-doc-use-childframe t)
+    (setq lsp-ui-doc-alignment 'window)
+    (define-key lsp-ui-mode-map (kbd "s-l h f") #'lsp-ui-doc-focus-frame)
 
     ;; lsp-ui-imenu
     (setq lsp-ui-imenu-auto-refresh t)
 
     ;; lsp-ui-sideline
+    (setq lsp-ui-sideline-enable t)
+    (setq lsp-ui-sideline-show-symbol t)
+    (setq lsp-ui-sideline-show-code-actions t)
     (setq lsp-ui-sideline-show-diagnostics t)
+    (setq lsp-ui-sideline-delay 0.5)
 
+    ;; lsp-ui-peek
+    (setq lsp-ui-peek-enable t)
+    (setq lsp-ui-peek-always-show t)
     (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
     (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
-    (setq lsp-ui-peek-enable t)))
+
+    (setq lsp-ui-flycheck-enable t)))
 
 ;; lsp-java
 (eval-when-compile

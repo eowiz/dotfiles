@@ -192,14 +192,25 @@
 ;;     (load-theme 'nord t)))
 
 ;; everforest
+;; (eval-when-compile
+;;   (el-clone :repo "Theory-of-Everything/everforest-emacs"))
+
+;; (with-delayed-execution-priority-high
+;;   (add-to-list 'load-path (locate-user-emacs-file "el-clone/everforest-emacs"))
+
+;;   (when (require 'everforest-hard-dark-theme)
+;;     (load-theme 'everforest-hard-dark t)))
+
+;; modus theme
 (eval-when-compile
-  (el-clone :repo "Theory-of-Everything/everforest-emacs"))
+  (el-clone :repo "protesilaos/modus-themes"))
 
 (with-delayed-execution-priority-high
-  (add-to-list 'load-path (locate-user-emacs-file "el-clone/everforest-emacs"))
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/modus-themes"))
 
-  (when (require 'everforest-hard-dark-theme)
-    (load-theme 'everforest-hard-dark t)))
+  (when (require 'modus-operandi-theme)
+    (load-theme 'modus-operandi-tinted t))
+  )
 
 ;; all-the-icons
 (eval-when-compile

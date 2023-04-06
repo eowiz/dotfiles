@@ -281,7 +281,8 @@
   (setq dirvish-quick-access-entries
 	`(("h" "~/"                      "Home")
 	  ("e" ,user-emacs-directory     "Emacs user directory")
-	  ("c" "~/.local/share/chezmoi/" "chezmoi")))
+	  ("c" "~/.local/share/chezmoi/" "chezmoi")
+	  ("o" "~/org"                   "Org")))
   )
 
 ;; ddskk
@@ -724,6 +725,50 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 
     (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)))
 
+;; org-mode
+(eval-when-compile
+  (el-clone :repo "minad/org-modern"))
+
+(with-delayed-execution
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/org-modern"))
+
+  (autoload-if-found '(org-modern-mode org-modern-agenda) "org-modern" nil t)
+
+  (add-hook 'org-mode-hook #'org-modern-mode)
+  (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
+
+  (dolist (face '(window-divider
+                  window-divider-first-pixel
+                  window-divider-last-pixel))
+    (face-spec-reset-face face)
+    (set-face-foreground face (face-attribute 'default :background)))
+  (set-face-background 'fringe (face-attribute 'default :background))
+
+  (setq org-auto-align-tags nil)
+  (setq org-tags-column 0)
+  (setq org-catch-invisible-edits 'show-and-error)
+  (setq org-special-ctrl-a/e t)
+  (setq org-insert-heading-respect-content t)
+  (setq org-hide-emphasis-markers t)
+  (setq org-pretty-entities t)
+  (setq org-ellipsis "…")
+
+  (setq org-agenda-tags-column 0)
+  (setq org-agenda-block-separator ?─)
+  (setq org-agenda-time-grid
+	'((daily today require-timed)
+	  (800 1000 1200 1400 1600 1800 2000)
+	  " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
+	org-agenda-current-time-string
+	"⭠ now ─────────────────────────────────────────────────")
+  )
+
+(with-delayed-execution
+  (setq org-src-tab-acts-natively t)
+  (setq org-src-preserve-indentation t)
+  (setq org-edit-src-content-indentation 0)
+  (setq org-agenda-files '("~/org"))
+  (setq org-src-fontify-natively t))
 
 ;; Markdown
 (eval-when-compile
@@ -862,6 +907,7 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 (native-compile-async "~/.emacs.d/init.el")
 (native-compile-async "~/.emacs.d/early-init.el")
 
+;;;###autoload
 (defun my/native-comp-packages ()
   (interactive)
   (native-compile-async "~/.emacs.d/init.el")

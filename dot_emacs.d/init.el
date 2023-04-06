@@ -755,6 +755,7 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
     (set-face-foreground face (face-attribute 'default :background)))
   (set-face-background 'fringe (face-attribute 'default :background))
 
+  (setq org-log-done 'time)
   (setq org-auto-align-tags nil)
   (setq org-tags-column 0)
   (setq org-catch-invisible-edits 'show-and-error)

@@ -53,14 +53,28 @@
       (autoload f file docstring interactive type))
     t))
 
+;; ------------------------------------------------------------------------------------------
+
 (setq custom-file (locate-user-emacs-file "custom.el"))
 
-;; Package Manager
-(eval-when-compile
-  (unless (file-directory-p (locate-user-emacs-file "elpa/el-clone"))
-    (package-vc-install "https://github.com/takeokunn/el-clone.git")))
+(defmacro minima (&rest body)
+  ""
+  `(eval-when-compile ,@body))
 
 (eval-and-compile
+  (setq byte-compile-warnings '(cl-functions))
+  (require 'cl-lib nil t))
+
+;; Package Manager
+(minima
+ (unless (file-directory-p (locate-user-emacs-file "elpa/el-clone"))
+   (package-vc-install "https://github.com/takeokunn/el-clone.git")))
+
+;; (eval-when-compile
+;;   (unless (file-directory-p (locate-user-emacs-file "elpa/el-clone"))
+;;     (package-vc-install "https://github.com/takeokunn/el-clone.git")))
+
+(minima
   (add-to-list 'load-path (locate-user-emacs-file "elpa/el-clone"))
   (require 'el-clone))
 
@@ -69,93 +83,89 @@
   (setq native-comp-async-jobs-number 8)
   (setq native-comp-speed 3))
 
-(eval-and-compile
-  (setq byte-compile-warnings '(cl-functions))
-  (require 'cl-lib nil t))
-
 ;;
 ;; packages
 ;;
 
 ;; compat
-(eval-when-compile
+(minima
   (el-clone :repo "emacs-compat/compat"))
 
 (with-delayed-execution-priority-high
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/compat")))
 
 ;; dash
-(eval-when-compile
+(minima
   (el-clone :repo "magnars/dash.el"))
 
 (with-delayed-execution-priority-high
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/dash")))
 
 ;; s
-(eval-when-compile
+(minima
   (el-clone :repo "magnars/s.el"))
 
 (with-delayed-execution-priority-high
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/s")))
 
 ;; f
-(eval-when-compile
+(minima
   (el-clone :repo "rejeep/f.el"))
 
 (with-delayed-execution-priority-high
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/f")))
 
 ;; ht
-(eval-when-compile
+(minima
   (el-clone :repo "Wilfred/ht.el"))
 
 (with-delayed-execution-priority-high
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/ht")))
 
 ;; pfuture
-(eval-when-compile
+(minima
   (el-clone :repo "Alexander-Miller/pfuture"))
 
 (with-delayed-execution-priority-high
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/pfuture")))
 
 ;; shrink-path
-(eval-when-compile
+(minima
   (el-clone :repo "zbelial/shrink-path.el"))
 
 (with-delayed-execution-priority-high
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/shrink-path")))
 
 ;; svg-lib
-(eval-when-compile
+(minima
   (el-clone :repo "rougier/svg-lib"))
 
 (with-delayed-execution-priority-high
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/svg-lib")))
 
 ;; request
-(eval-when-compile
+(minima
   (el-clone :repo "tkf/emacs-request"))
 
 (with-delayed-execution-priority-high
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/emacs-request")))
 
 ;; spinner
-(eval-when-compile
+(minima
   (el-clone :repo "Malabarba/spinner.el"))
 
 (with-delayed-execution-priority-high
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/spinner")))
 
 ;; hydra
-(eval-when-compile
+(minima
   (el-clone :repo "abo-abo/hydra"))
 
 (with-delayed-execution-priority-high
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/hydra")))
 
 ;; yasnippet
-(eval-when-compile
+(minima
   (el-clone :repo "joaotavora/yasnippet"))
 
 (with-delayed-execution
@@ -171,7 +181,7 @@
   (defalias 'yes-or-no-p 'y-or-n-p))
 
 ;; exec-path-from-shell
-(eval-when-compile
+(minima
   (el-clone :repo "purcell/exec-path-from-shell"))
 
 (with-delayed-execution-priority-high
@@ -202,7 +212,7 @@
 ;;     (load-theme 'everforest-hard-dark t)))
 
 ;; modus theme
-(eval-when-compile
+(minima
   (el-clone :repo "protesilaos/modus-themes"))
 
 (with-delayed-execution-priority-high
@@ -213,7 +223,7 @@
   )
 
 ;; all-the-icons
-(eval-when-compile
+(minima
   (el-clone :repo "domtronn/all-the-icons.el"))
 
 (with-delayed-execution-priority-high
@@ -221,7 +231,7 @@
 
 ;; doom-modeline
 
-(eval-when-compile
+(minima
   (el-clone :repo "seagle0128/doom-modeline"))
 
 (with-delayed-execution-priority-high
@@ -247,7 +257,7 @@
   (setq scroll-preserve-screen-position t))
 
 ;; dirvish
-(eval-when-compile
+(minima
   (el-clone :repo "alexluigit/dirvish"))
 
 (with-delayed-execution-priority-high
@@ -298,7 +308,7 @@
 
 ;; ddskk
 
-(eval-when-compile
+(minima
   (el-clone :repo "skk-dev/ddskk"))
 
 (with-delayed-execution-priority-high
@@ -313,7 +323,7 @@
   (add-hook 'text-mode-hook (lambda () (skk-mode) (skk-latin-mode-on)))
   (add-hook 'prog-mode-hook (lambda () (skk-mode) (skk-latin-mode-on))))
 
-(eval-when-compile
+(minima
   (el-clone :repo "conao3/ddskk-posframe.el"))
 
 (with-delayed-execution-priority-high
@@ -324,14 +334,14 @@
   (with-eval-after-load 'skk
     (add-hook 'skk-mode-hook #'ddskk-posframe-mode)))
 
-(eval-when-compile
+(minima
   (el-clone :repo "tumashu/posframe"))
 
 (with-delayed-execution-priority-high
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/posframe")))
 
 ;; anzu
-(eval-when-compile
+(minima
   (el-clone :repo "emacsorphanage/anzu"))
 
 (with-delayed-execution-priority-high
@@ -351,7 +361,7 @@
     (global-anzu-mode +1)))
 
 ;; which-key
-(eval-when-compile
+(minima
   (el-clone :repo "justbur/emacs-which-key"))
 
 (with-delayed-execution
@@ -363,7 +373,7 @@
   (which-key-setup-side-window-bottom))
 
 ;; corfu
-(eval-when-compile
+(minima
   (el-clone :repo "minad/corfu"))
 
 (with-delayed-execution-priority-high
@@ -384,7 +394,7 @@
     (corfu-popupinfo-mode)))
 
 ;; cape
-(eval-when-compile
+(minima
   (el-clone :repo "minad/cape"))
 
 (with-delayed-execution
@@ -400,7 +410,7 @@
 			      (add-to-list 'completion-at-point-functions #'cape-symbol))))
 
 ;; kind-icon
-(eval-when-compile
+(minima
   (el-clone :repo "jdtsmith/kind-icon"))
 
 (with-delayed-execution
@@ -414,7 +424,7 @@
   (setq kind-icon-default-face 'corfu-default))
 
 ;; vertico
-(eval-when-compile
+(minima
   (el-clone :repo "minad/vertico"))
 
 (with-delayed-execution-priority-high
@@ -424,7 +434,7 @@
     (setq vertico-count 20)
     (vertico-mode)))
 
-(eval-when-compile
+(minima
   (el-clone :repo "radian-software/prescient.el"))
 
 (with-delayed-execution-priority-high
@@ -442,7 +452,7 @@
   (prescient-persist-mode))
 
 ;; consult
-(eval-when-compile
+(minima
   (el-clone :repo "minad/consult"))
 
 (with-delayed-execution-priority-high
@@ -460,7 +470,7 @@
    :preview-key "M-."))
 
 ;; orderless
-(eval-when-compile
+(minima
   (el-clone :repo "oantolin/orderless"))
 
 (with-delayed-execution-priority-high
@@ -471,7 +481,7 @@
     (setq completion-category-overrides '((file (styles basic partial-completion))))))
 
 ;; marginalia
-(eval-when-compile
+(minima
   (el-clone :repo "minad/marginalia"))
 
 (with-delayed-execution-priority-high
@@ -481,7 +491,7 @@
     (marginalia-mode)))
 
 ;; affe
-(eval-when-compile
+(minima
   (el-clone :repo "minad/affe"))
 
 (with-delayed-execution-priority-high
@@ -497,7 +507,7 @@
   (setq affe-regexp-function #'orderless-pattern-compiler))
 
 ;; consult-ghq
-(eval-when-compile
+(minima
   (el-clone :repo "tomoya/consult-ghq"))
 
 (with-delayed-execution-priority-high
@@ -517,7 +527,7 @@
   (savehist-mode))
 
 ;; undohist
-(eval-when-compile
+(minima
   (el-clone :repo "emacsorphanage/undohist"))
 
 (with-delayed-execution
@@ -527,7 +537,7 @@
     (undohist-initialize)))
 
 ;; vundo
-(eval-when-compile
+(minima
   (el-clone :repo "casouri/vundo"))
 
 (with-delayed-execution
@@ -539,7 +549,7 @@
     (set-face-attribute 'vundo-default nil :family "Symbola")))
 
 ;; smartparens
-(eval-when-compile
+(minima
   (el-clone :repo "Fuco1/smartparens"))
 
 (with-delayed-execution
@@ -550,7 +560,7 @@
   (add-hook 'prog-mode-hook #'smartparens-mode))
 
 ;; volatile-highlights
-(eval-when-compile
+(minima
   (el-clone :repo "k-talo/volatile-highlights.el"))
 
 (with-delayed-execution
@@ -563,7 +573,7 @@
   (volatile-highlights-mode t))
 
 ;; highlight-indent-guides
-(eval-when-compile
+(minima
   (el-clone :repo "DarthFennec/highlight-indent-guides"))
 
 (with-delayed-execution
@@ -593,7 +603,7 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   (add-hook 'prog-mode-hook #'highlight-indent-guides-mode))
 
 ;; rainbow-delimiters
-(eval-when-compile
+(minima
   (el-clone :repo "Fanael/rainbow-delimiters"))
 
 (with-delayed-execution
@@ -604,7 +614,7 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
 ;; git
-(eval-when-compile
+(minima
   (el-clone :repo "Artawower/blamer.el"))
 
 (with-delayed-execution
@@ -612,7 +622,7 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 
   (autoload-if-found '(blamer-mode) "blamer" nil t))
 
-(eval-when-compile
+(minima
   (el-clone :repo "emacsmirror/git-timemachine"))
 
 (with-delayed-execution
@@ -621,7 +631,7 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   (autoload-if-found '(git-timemachine) "git-timemachine" nil t))
 
 ;; magit
-(eval-when-compile
+(minima
   (el-clone :repo "magit/magit"))
 
 (with-delayed-execution
@@ -631,14 +641,14 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 
   (global-set-key (kbd "C-x g") #'magit))
 
-(eval-when-compile
+(minima
   (el-clone :repo "magit/with-editor"))
 
 (with-delayed-execution
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/with-editor/lisp")))
 
 ;; git-modes
-(eval-when-compile
+(minima
   (el-clone :repo "magit/git-modes"))
 
 (with-delayed-execution
@@ -647,7 +657,7 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   (autoload-if-found '(gitattribute-mode gitconfig-mode gitignore-mode) "git-modes" nil t))
 
 ;; git-gutter
-(eval-when-compile
+(minima
   (el-clone :repo "emacsorphanage/git-gutter"))
 
 (with-delayed-execution
@@ -667,7 +677,7 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
     (set-face-background 'git-gutter:deleted "#ff79c6")))
 
 ;; hide-mode-line
-(eval-when-compile
+(minima
   (el-clone :repo "hlissner/emacs-hide-mode-line"))
 
 (with-delayed-execution
@@ -678,7 +688,7 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   (add-hook 'minimap-mode-hook #'hide-mode-line-mode))
 
 ;; flycheck
-(eval-when-compile
+(minima
   (el-clone :repo "flycheck/flycheck"))
 
 (with-delayed-execution
@@ -688,7 +698,7 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
     (global-flycheck-mode)))
 
 ;; flycheck-posframe
-(eval-when-compile
+(minima
   (el-clone :repo "alexmurray/flycheck-posframe"))
 
 (with-delayed-execution
@@ -704,7 +714,7 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   )
 
 ;; treemacs
-(eval-when-compile
+(minima
   (el-clone :repo "Alexander-Miller/treemacs"))
 
 (with-delayed-execution-priority-high
@@ -712,7 +722,7 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/treemacs/src/extra")))
 
 ;; tree-sitter
-(eval-when-compile
+(minima
   (el-clone :repo "emacs-tree-sitter/elisp-tree-sitter"))
 
 (with-delayed-execution
@@ -725,7 +735,7 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   (require 'tree-sitter-query))
 
 ;; tree-sitter-lang
-(eval-when-compile
+(minima
   (el-clone :repo "emacs-tree-sitter/tree-sitter-langs"))
 
 (with-delayed-execution
@@ -737,7 +747,7 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
     (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)))
 
 ;; org-mode
-(eval-when-compile
+(minima
   (el-clone :repo "minad/org-modern"))
 
 (with-delayed-execution
@@ -783,13 +793,13 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   (setq org-src-fontify-natively t))
 
 ;; Markdown
-(eval-when-compile
+(minima
   (el-clone :repo "polymode/polymode"))
 
 (with-delayed-execution
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/polymode")))
 
-(eval-when-compile
+(minima
   (el-clone :repo "polymode/poly-markdown")
   (el-clone :repo "jrblevin/markdown-mode"))
 
@@ -811,7 +821,7 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 
 ;; lsp-mode
 (setq lsp-use-plists t)
-(eval-when-compile
+(minima
   (el-clone :repo "emacs-lsp/lsp-mode"))
 
 (with-delayed-execution
@@ -836,14 +846,14 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   )
 
 ;; lsp-treemacs
-(eval-when-compile
+(minima
   (el-clone :repo "emacs-lsp/lsp-treemacs"))
 
 (with-delayed-execution-priority-high
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/lsp-treemacs")))
 
 ;; lsp-ui
-(eval-when-compile
+(minima
   (el-clone :repo "emacs-lsp/lsp-ui"))
 
 (with-delayed-execution-priority-high
@@ -881,7 +891,7 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
     (setq lsp-ui-flycheck-enable t)))
 
 ;; lsp-java
-(eval-when-compile
+(minima
   (el-clone :repo "emacs-lsp/lsp-java"))
 
 (with-delayed-execution-priority-high
@@ -894,7 +904,7 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
     (add-hook 'java-mode-hook #'lsp)))
 
 ;; yaml
-(eval-when-compile
+(minima
   (el-clone :repo "yoshiki/yaml-mode"))
 
 (with-delayed-execution
@@ -961,41 +971,6 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 ;;            (org-edit-src-content-indentation . 0)
 ;;            )
 ;;   )
-
-;; (leaf org-modern
-;;   :ensure t
-;;   :hook ((org-mode-hook . (lambda () (org-modern-mode 1)))
-;;          (org-agenda-finalize-hook . #'org-modern-agenda))
-;;   :config
-;;   (dolist (face '(window-divider
-;;                   window-divider-first-pixel
-;;                   window-divider-last-pixel))
-;;     (face-spec-reset-face face)
-;;     (set-face-foreground face (face-attribute 'default :background)))
-;;   (set-face-background 'fringe (face-attribute 'default :background))
-
-;;   (setq
-;;    ;; Edit settings
-;;    org-auto-align-tags nil
-;;    org-tags-column 0
-;;    org-catch-invisible-edits 'show-and-error
-;;    org-special-ctrl-a/e t
-;;    org-insert-heading-respect-content t
-
-;;    ;; Org styling, hide markup etc.
-;;    org-hide-emphasis-markers t
-;;    org-pretty-entities t
-;;    org-ellipsis "…"
-
-;;    ;; Agenda styling
-;;    org-agenda-tags-column 0
-;;    org-agenda-block-separator ?─
-;;    org-agenda-time-grid
-;;    '((daily today require-timed)
-;;      (800 1000 1200 1400 1600 1800 2000)
-;;      " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
-;;    org-agenda-current-time-string
-;;    "⭠ now ─────────────────────────────────────────────────"))
 
 ;; (defun consult-thing-at-point (&optional at-point)
 ;;   "Consult-line uses things-at-point."

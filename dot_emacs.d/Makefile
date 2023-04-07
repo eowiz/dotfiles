@@ -8,7 +8,7 @@ DDSKK_SITE_LISP_PATH     := $(shell emacs -Q --batch --eval '(print (concat (exp
 HOMEBREW_EMACS_SITE_LISP := /opt/homebrew/share/emacs/site-lisp/skk
 
 .PHONY: all
-all: byte-compile byte-compile-libraries
+all: byte-compile byte-compile-libraries touch-highlight-indent-guides
 
 .PHONY: byte-compile
 byte-compile:
@@ -22,6 +22,9 @@ byte-compile-libraries:
 	$(EMACS) -Q --batch --eval "(progn (add-to-list 'load-path (locate-user-emacs-file \"elpa/el-clone\")) (require 'el-clone) (el-clone-byte-compile))"
 	make -C el-clone/ddskk install
 	ln -s $(DDSKK_SITE_LISP_PATH) $(HOMEBREW_EMACS_SITE_LISP)
+
+touch-highlight-indent-guides:
+	touch el-clone/highlight-indent-guides/highlight-indent-guides.el
 
 .PHONY: clean
 clean:

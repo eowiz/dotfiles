@@ -833,7 +833,7 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 	      (make-local-variable 'web-mode-code-indent-offset)
 	      (setq web-mode-code-indent-offset 2)))
 
-  (setq auto-mode-alist (append '(("\\.astro\\'" . astro-ts-mode))
+  (setq auto-mode-alist (append '(("\\.astro\\'" . astro-mode))
 				auto-mode-alist))
   
   (with-eval-after-load 'lsp-mode

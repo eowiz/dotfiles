@@ -734,20 +734,35 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   (require 'tree-sitter-hl)
   (require 'tree-sitter-debug)
   (require 'tree-sitter-query)
+  (require 'tree-sitter-langs)
+
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
 
   (global-tree-sitter-mode))
 
-;; tree-sitter-lang
-;; (minima
-;;  :clone "emacs-tree-sitter/tree-sitter-langs")
+;; treesit-auto
+(minima
+ :clone "renzman/treesit-auto")
 
 (with-delayed-execution
-  ;; (add-to-list 'load-path (locate-user-emacs-file "el-clone/tree-sitter-langs"))
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/treesit-auto"))
 
-  (with-eval-after-load 'tree-sitter
-    (require 'tree-sitter-langs)
+  (autoload-if-found '(make-treesit-auto-recipe global-treesit-auto-mode) "treesit-auto" nil t)
 
-    (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)))
+  ;; Some one make astro-ts-mode then uncomment
+  ;; (setq astro-tsauto-config
+  ;; 	(make-treesit-auto-recipe
+  ;; 	 :lang 'astro
+  ;; 	 :ts-mode 'astro-ts-mode
+  ;; 	 :remap 'astro-mode
+  ;; 	 :url "https://github.com/virchau13/tree-sitter-astro"
+  ;; 	 :revision "master"
+  ;; 	 :source-dir "src"))
+  
+  ;; (add-to-list 'treesit-auto-recipe-list astro-tsauto-config)
+
+  (global-treesit-auto-mode))
+
 
 ;; ts-fold
 (minima
@@ -790,6 +805,45 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 
   (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
   (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-ts-mode))
+
+  (setq typescript-indent-level 2)
+  )
+
+;; web-mode
+(minima
+ :clone "fxbois/web-mode")
+
+(with-delayed-execution
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/web-mode"))
+
+  (autoload-if-found '(web-mode) "web-mode" nil t))
+
+;; Astro
+(with-delayed-execution
+  (define-derived-mode astro-mode web-mode "astro")
+
+  (add-hook 'astro-mode-hook
+	    (lambda ()
+	      (make-local-variable 'js-indent-level)
+	      (setq js-indent-level 2)
+
+	      (make-local-variable 'web-mode-markup-indent-offset)
+	      (setq web-mode-markup-indent-offset 2)
+
+	      (make-local-variable 'web-mode-code-indent-offset)
+	      (setq web-mode-code-indent-offset 2)))
+
+  (setq auto-mode-alist (append '(("\\.astro\\'" . astro-ts-mode))
+				auto-mode-alist))
+  
+  (with-eval-after-load 'lsp-mode
+    (add-to-list 'lsp-language-id-configuration
+		 '(astro-mode . "astro"))
+
+    (lsp-register-client
+     (make-lsp-client :new-connection (lsp-stdio-connection '("astro-ls" "--stdio"))
+		      :activation-fn (lsp-activate-on "astro")
+		      :server-id 'astro-ls)))
   )
 
 ;; org-mode

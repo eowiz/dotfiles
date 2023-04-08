@@ -72,11 +72,7 @@
 ;; Package Manager
 (eval-when-compile
  (unless (file-directory-p (locate-user-emacs-file "elpa/el-clone"))
-   (package-vc-install "https://github.com/takeokunn/el-clone.git")))
-
-;; (eval-when-compile
-;;   (unless (file-directory-p (locate-user-emacs-file "elpa/el-clone"))
-;;     (package-vc-install "https://github.com/takeokunn/el-clone.git")))
+   (package-vc-install "https://github.com/eowiz/el-clone.git")))
 
 (eval-when-compile
  (add-to-list 'load-path (locate-user-emacs-file "elpa/el-clone"))
@@ -732,6 +728,7 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 (with-delayed-execution
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/elisp-tree-sitter/core"))
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/elisp-tree-sitter/lisp"))
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/elisp-tree-sitter/langs"))
 
   (require 'tree-sitter)
   (require 'tree-sitter-hl)
@@ -741,11 +738,11 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   (global-tree-sitter-mode))
 
 ;; tree-sitter-lang
-(minima
- :clone "emacs-tree-sitter/tree-sitter-langs")
+;; (minima
+;;  :clone "emacs-tree-sitter/tree-sitter-langs")
 
 (with-delayed-execution
-  (add-to-list 'load-path (locate-user-emacs-file "el-clone/tree-sitter-langs"))
+  ;; (add-to-list 'load-path (locate-user-emacs-file "el-clone/tree-sitter-langs"))
 
   (with-eval-after-load 'tree-sitter
     (require 'tree-sitter-langs)
@@ -771,6 +768,29 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 
 (with-delayed-execution
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/fringe-helper")))
+
+;; js-mode
+(with-delayed-execution
+  (add-hook 'js-mode-hook
+	    (lambda ()
+	      (make-local-variable 'js-indent-level)
+	      (setq js-indent-level 2)))
+
+  (with-eval-after-load 'lsp-mode
+    (add-hook 'js-mode-hook #'lsp-deferred)))
+
+;; typescript
+(minima
+ :clone "emacs-typescript/typescript.el")
+
+(with-delayed-execution
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/typescript"))
+
+  (autoload-if-found '(typescript-ts-mode) "typescript" nil t)
+
+  (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-ts-mode))
+  )
 
 ;; org-mode
 (minima
@@ -854,6 +874,7 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 
 (with-delayed-execution
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/lsp-mode"))
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/lsp-mode/clients"))
 
   (require 'lsp-mode)
   (require 'lsp-lens)

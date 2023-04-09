@@ -831,7 +831,10 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 	      (setq web-mode-markup-indent-offset 2)
 
 	      (make-local-variable 'web-mode-code-indent-offset)
-	      (setq web-mode-code-indent-offset 2)))
+	      (setq web-mode-code-indent-offset 2)
+
+	      (make-local-variable 'web-mode-enable-current-element-highlight)
+	      (setq web-mode-enable-current-element-highlight t)))
 
   (setq auto-mode-alist (append '(("\\.astro\\'" . astro-mode))
 				auto-mode-alist))
@@ -845,6 +848,19 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 		      :activation-fn (lsp-activate-on "astro")
 		      :server-id 'astro-ls)))
   )
+
+;; prettier
+(minima
+ :clone "prettier/prettier-emacs")
+
+(with-delayed-execution
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/prettier-emacs"))
+
+  (autoload-if-found '(prettier-js-mode) "prettier-js" nil t)
+
+  (add-hook 'js2-mode-hook 'prettier-js-mode)
+  (add-hook 'web-mode 'prettier-js-mode)
+  (add-hook 'astro-mode 'prettier-js-mode))
 
 ;; org-mode
 (minima

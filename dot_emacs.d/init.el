@@ -5,6 +5,8 @@
 
 ;;; Code:
 
+
+
 (defconst my/saved-file-name-handler-alist file-name-handler-alist)
 (setq file-name-handler-alist nil)
 
@@ -63,9 +65,9 @@
 
 ;; ------------------------------------------------------------------------------------------
 
-(defmacro minima (&key clone)
-  ""
-  `(eval-when-compile ,@(el-clone :repo clone)))
+(eval-when-compile
+  (add-to-list 'load-path (locate-user-emacs-file "local-packages"))
+  (require 'minima))
 
 ;; ------------------------------------------------------------------------------------------
 
@@ -91,85 +93,50 @@
 (minima
  :clone "emacs-compat/compat")
 
-(with-delayed-execution-priority-high
-  (add-to-list 'load-path (locate-user-emacs-file "el-clone/compat")))
-
 ;; dash
 (minima
  :clone "magnars/dash.el")
-
-(with-delayed-execution-priority-high
-  (add-to-list 'load-path (locate-user-emacs-file "el-clone/dash")))
 
 ;; s
 (minima
  :clone "magnars/s.el")
 
-(with-delayed-execution-priority-high
-  (add-to-list 'load-path (locate-user-emacs-file "el-clone/s")))
-
 ;; f
 (minima
  :clone "rejeep/f.el")
-
-(with-delayed-execution-priority-high
-  (add-to-list 'load-path (locate-user-emacs-file "el-clone/f")))
 
 ;; ht
 (minima
  :clone "Wilfred/ht.el")
 
-(with-delayed-execution-priority-high
-  (add-to-list 'load-path (locate-user-emacs-file "el-clone/ht")))
-
 ;; pfuture
 (minima
  :clone "Alexander-Miller/pfuture")
-
-(with-delayed-execution-priority-high
-  (add-to-list 'load-path (locate-user-emacs-file "el-clone/pfuture")))
 
 ;; shrink-path
 (minima
  :clone "zbelial/shrink-path.el")
 
-(with-delayed-execution-priority-high
-  (add-to-list 'load-path (locate-user-emacs-file "el-clone/shrink-path")))
-
 ;; svg-lib
 (minima
  :clone "rougier/svg-lib")
-
-(with-delayed-execution-priority-high
-  (add-to-list 'load-path (locate-user-emacs-file "el-clone/svg-lib")))
 
 ;; request
 (minima
  :clone "tkf/emacs-request")
 
-(with-delayed-execution-priority-high
-  (add-to-list 'load-path (locate-user-emacs-file "el-clone/emacs-request")))
-
 ;; spinner
 (minima
  :clone "Malabarba/spinner.el")
-
-(with-delayed-execution-priority-high
-  (add-to-list 'load-path (locate-user-emacs-file "el-clone/spinner")))
 
 ;; hydra
 (minima
  :clone "abo-abo/hydra")
 
-(with-delayed-execution-priority-high
-  (add-to-list 'load-path (locate-user-emacs-file "el-clone/hydra")))
-
 ;; yasnippet
 (minima
- :clone "joaotavora/yasnippet")
-
-(with-delayed-execution
-  (add-to-list 'load-path (locate-user-emacs-file "el-clone/yasnippet")))
+ :clone "joaotavora/yasnippet"
+ :priority 'low)
 
 (with-delayed-execution
   (setq indent-tabs-mode nil
@@ -216,7 +183,7 @@
  :clone "protesilaos/modus-themes")
 
 (with-delayed-execution-priority-high
-  (add-to-list 'load-path (locate-user-emacs-file "el-clone/modus-themes"))
+  ;; (add-to-list 'load-path (locate-user-emacs-file "el-clone/modus-themes"))
 
   (when (require 'modus-operandi-theme)
     (load-theme 'modus-operandi-tinted t))
@@ -225,9 +192,6 @@
 ;; all-the-icons
 (minima
  :clone "domtronn/all-the-icons.el")
-
-(with-delayed-execution-priority-high
-  (add-to-list 'load-path (locate-user-emacs-file "el-clone/all-the-icons")))
 
 ;; doom-modeline
 
@@ -336,9 +300,6 @@
 
 (minima
  :clone "tumashu/posframe")
-
-(with-delayed-execution-priority-high
-  (add-to-list 'load-path (locate-user-emacs-file "el-clone/posframe")))
 
 ;; anzu
 (minima
@@ -574,7 +535,7 @@
 
 ;; highlight-indent-guides
 (minima
- :clone "DarthFennec/highlight-indent-guides")
+ :clone "eowiz/highlight-indent-guides")
 
 (with-delayed-execution
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/highlight-indent-guides"))
@@ -632,6 +593,12 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 
 ;; magit
 (minima
+ :clone "magit/with-editor")
+
+(with-delayed-execution
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/with-editor/lisp")))
+
+(minima
  :clone "magit/magit")
 
 (with-delayed-execution
@@ -640,12 +607,6 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   (autoload-if-found '(magit) "magit" nil t)
 
   (global-set-key (kbd "C-x g") #'magit))
-
-(minima
- :clone "magit/with-editor")
-
-(with-delayed-execution
-  (add-to-list 'load-path (locate-user-emacs-file "el-clone/with-editor/lisp")))
 
 ;; git-modes
 (minima
@@ -742,7 +703,7 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 
 ;; treesit-auto
 (minima
- :clone "renzman/treesit-auto")
+ :clone "renzmann/treesit-auto")
 
 (with-delayed-execution
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/treesit-auto"))
@@ -781,15 +742,24 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 (minima
  :clone "nschum/fringe-helper.el")
 
-(with-delayed-execution
-  (add-to-list 'load-path (locate-user-emacs-file "el-clone/fringe-helper")))
+;;
+;; For Programming Lanaugages
+;;
+
+;; paredit
+(minima
+ :clone "emacsmirror/paredit")
+
+(with-delayed-execution-priority-high
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/paredit"))
+
+  (autoload-if-found '(enable-paredit-mode) "paredit" nil t)
+
+  (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode))
 
 ;; js-mode
 (with-delayed-execution
-  (add-hook 'js-mode-hook
-	    (lambda ()
-	      (make-local-variable 'js-indent-level)
-	      (setq js-indent-level 2)))
+  (setq js-indent-level 2)
 
   (with-eval-after-load 'lsp-mode
     (add-hook 'js-mode-hook #'lsp-deferred)))
@@ -908,6 +878,15 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   (setq org-agenda-files '("~/org"))
   (setq org-src-fontify-natively t))
 
+;; org-outer-indent
+(minima
+ :clone "rougier/org-outer-indent")
+
+(with-delayed-execution
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/org-outer-indent"))
+
+  (autoload-if-found '(org-outer-indent-mode) "org-outer-indent" nil t))
+
 ;; Markdown
 (minima
  :clone "polymode/polymode")
@@ -967,9 +946,6 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 ;; lsp-treemacs
 (minima
  :clone "emacs-lsp/lsp-treemacs")
-
-(with-delayed-execution-priority-high
-  (add-to-list 'load-path (locate-user-emacs-file "el-clone/lsp-treemacs")))
 
 ;; lsp-ui
 (minima

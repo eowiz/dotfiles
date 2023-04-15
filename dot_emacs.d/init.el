@@ -367,7 +367,8 @@
 
     (global-corfu-mode)
 
-    (corfu-popupinfo-mode)))
+    ;; (corfu-popupinfo-mode)
+    ))
 
 ;; cape
 (minima

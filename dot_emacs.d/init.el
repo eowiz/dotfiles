@@ -211,6 +211,21 @@
   (setq doom-modeline-major-mode-icon t)
   (setq doom-modeline-minor-modes nil))
 
+;; mini-frame
+;; (minima
+;;  :clone "muffinmad/emacs-mini-frame")
+
+;; (with-delayed-execution-priority-high
+;;   (autoload-if-found '(mini-frame-mode) "mini-frame" nil t)
+
+;;   (mini-frame-mode)
+
+;;   (custom-set-variables
+;;    '(mini-frame-show-parameters
+;;      '((top . 1.0)
+;;        (width . 1.0)
+;;        (left . 0)))))
+
 ;; scroll
 
 (with-delayed-execution
@@ -341,7 +356,7 @@
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/corfu"))
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/corfu/extensions"))
 
-  (autoload-if-found '(corfu-popupinfo-mode) "corfu-popupinfo" nil t)
+  (autoload-if-found '(corfu-popupinfo-mode corfu-complete) "corfu-popupinfo" nil t)
 
   (when (require 'corfu)
     (setq corfu-auto t)
@@ -421,14 +436,16 @@
 
   (autoload-if-found '(consult-customize consult-line) "consult" nil t)
 
+  (define-key global-map (kbd "M-c") nil)
   (global-set-key (kbd "M-y") #'consult-yank-pop)
   (global-set-key (kbd "C-s") #'consult-line)
-  (global-set-key (kbd "M-s s") #'isearch-forward)
-  (global-set-key (kbd "M-s r") #'consult-ripgrep)
+  (global-set-key (kbd "M-c s") #'isearch-forward)
+  (global-set-key (kbd "M-c r") #'consult-ripgrep)
   
   (setq consult-preview-raw-size 1024000)
+  (setq consult-preview-max-size 1024000)
   (consult-customize
-   :preview-key "M-."))
+   :preview-key (kbd "M-.")))
 
 ;; orderless
 (minima
@@ -522,7 +539,7 @@
 
 ;; hl-line
 (with-delayed-execution-priority-high
-  (hl-line-mode))
+  (global-hl-line-mode))
 
 ;; volatile-highlights
 (minima
@@ -689,7 +706,8 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 
   (autoload-if-found '(sideline-mode) "sideline" nil t)
 
-  (add-hook 'flycheck-mode-hook #'sideline-mode))
+  ;; (add-hook 'flycheck-mode-hook #'sideline-mode)
+  )
 
 ;; sideline-flycheck
 ;; 横幅の計算が正しく行われないためコメントアウト
@@ -776,15 +794,15 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 ;;
 
 ;; paredit
-;; (minima
-;;  :clone "emacsmirror/paredit")
+(minima
+ :clone "emacsmirror/paredit")
 
-;; (with-delayed-execution-priority-high
-;;   (add-to-list 'load-path (locate-user-emacs-file "el-clone/paredit"))
+(with-delayed-execution-priority-high
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/paredit"))
 
-;;   (autoload-if-found '(enable-paredit-mode) "paredit" nil t)
+  (autoload-if-found '(enable-paredit-mode) "paredit" nil t)
 
-;;   (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode))
+  (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode))
 
 ;; js-mode
 (with-delayed-execution
@@ -1037,6 +1055,22 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   (autoload-if-found '(yaml-mode) "yaml-mode" nil t)
 
   (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
+
+;; coq
+(minima
+ :clone "ProofGeneral/PG")
+
+(with-delayed-execution
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/PG/generic"))
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/PG/lib"))
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/PG/coq"))
+
+  (autoload-if-found '(coq-mode) "coq" nil t)
+
+  (add-to-list 'auto-mode-alist '("\\.v\\'" . (lambda ()
+						(load "~/.emacs.d/el-clone/PG/generic/proof-site")
+						(coq-mode))))
+  )
 
 ;;;###autoload
 (defun open-init-org ()

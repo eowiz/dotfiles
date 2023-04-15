@@ -29,4 +29,4 @@ touch-highlight-indent-guides:
 .PHONY: clean
 clean:
 	rm -rf elpa el-clone eln-cache init.eln init.elc early-init.eln early-init.elc
-	unlink $(HOMEBREW_EMACS_SITE_LISP)
+	rm -rf $(HOMEBREW_EMACS_SITE_LISP)

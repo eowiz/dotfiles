@@ -662,17 +662,42 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 (minima
  :clone "alexmurray/flycheck-posframe")
 
-(with-delayed-execution
-  (add-to-list 'load-path (locate-user-emacs-file "el-clone/flycheck-posframe"))
+;; (with-delayed-execution
+;;   (add-to-list 'load-path (locate-user-emacs-file "el-clone/flycheck-posframe"))
 
-  (autoload-if-found '(flycheck-posframe-mode flycheck-posframe-configure-pretty-defaults) "flycheck-posframe" nil t)
+;;   (autoload-if-found '(flycheck-posframe-mode flycheck-posframe-configure-pretty-defaults) "flycheck-posframe" nil t)
 
-  (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode)
+;;   (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode)
 
-  (flycheck-posframe-configure-pretty-defaults)
-  (setq flycheck-posframe-border-use-error-face t)
-  (setq flycheck-posframe-border-width 1)
-  )
+;;   (flycheck-posframe-configure-pretty-defaults)
+;;   (setq flycheck-posframe-border-use-error-face t)
+;;   (setq flycheck-posframe-border-width 1)
+;;   )
+
+;; sideline
+(minima
+ :clone "emacs-sideline/sideline")
+
+(with-delayed-execution-priority-high
+  (setq sideline-backends-right '((sideline-flycheck . down)))
+
+  (add-to-list 'load-path (locate-user-emacs-file "el-clone/sideline"))
+
+  (autoload-if-found '(sideline-mode) "sideline" nil t)
+
+  (add-hook 'flycheck-mode-hook #'sideline-mode))
+
+;; sideline-flycheck
+;; 横幅の計算が正しく行われないためコメントアウト
+;; (minima
+;;  :clone "emacs-sideline/sideline-flycheck")
+
+;; (with-delayed-execution-priority-high
+;;   (add-to-list 'load-path (locate-user-emacs-file "el-clone/sideline-flycheck"))
+
+;;   (autoload-if-found '(sideline-flycheck-setup) "sideline-flycheck" nil t)
+
+;;   (add-hook 'flycheck-mode-hook #'sideline-flycheck-setup))
 
 ;; treemacs
 (minima
@@ -747,15 +772,15 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 ;;
 
 ;; paredit
-(minima
- :clone "emacsmirror/paredit")
+;; (minima
+;;  :clone "emacsmirror/paredit")
 
-(with-delayed-execution-priority-high
-  (add-to-list 'load-path (locate-user-emacs-file "el-clone/paredit"))
+;; (with-delayed-execution-priority-high
+;;   (add-to-list 'load-path (locate-user-emacs-file "el-clone/paredit"))
 
-  (autoload-if-found '(enable-paredit-mode) "paredit" nil t)
+;;   (autoload-if-found '(enable-paredit-mode) "paredit" nil t)
 
-  (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode))
+;;   (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode))
 
 ;; js-mode
 (with-delayed-execution
@@ -1020,9 +1045,6 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 
 (with-delayed-execution-priority-high
   (global-set-key (kbd "M-SPC") #'open-init-org))
-
-(native-compile-async "~/.emacs.d/init.el")
-(native-compile-async "~/.emacs.d/early-init.el")
 
 ;;;###autoload
 (defun my/native-comp-packages ()

@@ -520,6 +520,10 @@
 
   (add-hook 'prog-mode-hook #'smartparens-mode))
 
+;; hl-line
+(with-delayed-execution-priority-high
+  (hl-line-mode))
+
 ;; volatile-highlights
 (minima
  :clone "k-talo/volatile-highlights.el")
@@ -1053,26 +1057,6 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   (native-compile-async "~/.emacs.d/early-init.el")
   (native-compile-async "~/.emacs.d/el-clone" 'recursively))
 
-;; (leaf mac
-;;   :when (eq system-type 'darwin)
-;;   :custom ((dired-use-ls-dired . t))
-;;   :config
-;;   (let ((gls (executable-find "gls")))
-;;     (when gls
-;;       (setq insert-directory-program gls
-;;             dired-listing-switches "-aBhl --group-directories-first")))
-
-;;   (leaf key-config
-;;     :custom ((mac-command-modifier . 'alt)
-;;              (mac-option-modifier . 'meta)
-;;              (default-directory . "~/")
-;;              (command-line-default-directory . "~/"))))
-
-;; ;; バッファの一番上にある関数の名前を表示するためのパッケージ
-;; (leaf topsy
-;;   :el-get alphapapa/topsy.el
-;;   :hook ((prog-mode-hook . topsy-mode)))
-
 ;; ;; org-mode
 
 ;; (leaf org
@@ -1164,41 +1148,10 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 ;;           (if file-name
 ;;               (neotree-find file-name)))))))
 
-;; (leaf tree-sitter
-;;   :ensure t
-;;   :hook ((tree-sitter-after-on-hook . tree-sitter-hl-mode))
-;;   :global-minor-mode global-tree-sitter-mode
-
-;;   :config
-;;   (leaf tree-sitter-langs
-;;     :ensure t
-;;     :config
-;;     (tree-sitter-require 'c)
-;;     (tree-sitter-require 'rust)
-;;     (tree-sitter-require 'typescript)
-;;     (tree-sitter-require 'java)
-;;     (tree-sitter-require 'elm)))
-
 ;; (leaf display-fill-column-indicator
 ;;   :hook git-commit-mode-hook
 ;;   :custom
 ;;   (display-fill-column-indicator-column . 50))
-
-;; (leaf rainbow-mode
-;;   :diminish ""
-;;   :ensure t
-;;   :hook prog-mode-hook)
-
-;; (leaf lsp-mode
-;;   :ensure t
-;;   :pre-setq ((lsp-keymap-prefix . "M-l")
-;;              (lsp-idle-delay . 0.5)
-;;              (lsp-log-io . nil)
-;;              (lsp-completion-provider . :none))
-;;   :custom ((lsp-document-sync-method lsp--sync-incremental)))
-
-;; (leaf lsp-ui
-;;   :ensure t)
 
 ;; (leaf dumb-jump
 ;;   :ensure t
@@ -1213,21 +1166,6 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 ;;     ("i" dumb-jump-go-prompt "Prompt")
 ;;     ("l" dumb-jump-quick-look "Quick look")
 ;;     ("b" dumb-jump-back "Back")))
-
-;; (leaf web-mode
-;;   :ensure t
-;;   :mode ("\\.html?\\'" "\\.njk\\'")
-;;   :custom ((web-mode-markup-indent-offset . 2)))
-
-;; (leaf js-mode
-;;   :custom ((js-indent-level . 2)))
-
-;; (leaf typescript-mode
-;;   ;; :ensure t
-;;   :el-get emacs-typescript/typescript.el
-;;   :mode ("\\.ts?\\'" "\\.tsx?\\'")
-;;   :custom ((indent-tabs-mode . nil)
-;;            (typescript-indent-level . 2)))
 
 ;; (leaf fsharp-mode
 ;;   :ensure t)

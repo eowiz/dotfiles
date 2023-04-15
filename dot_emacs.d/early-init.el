@@ -34,7 +34,7 @@
 ;; ツールバーを無効
 (push '(tool-bar-lines . 0) default-frame-alist)
 ;; カーソルを縦棒に設定
-(push '(cursor-type . bar) default-frame-alist)
+;; (push '(cursor-type . bar) default-frame-alist)
 
 (push '(undecorated-round . t) default-frame-alist)
 

@@ -138,7 +138,7 @@
  :clone "joaotavora/yasnippet"
  :priority 'low)
 
-(with-delayed-execution-priority-high
+(with-delayed-execution
   (autoload-if-found '(yas-global-mode) "yasnippet" nil t)
   
   (yas-global-mode 1))
@@ -601,15 +601,6 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
-;; eshell
-(with-delayed-execution
-  (require 'ansi-color)
-  (require 'eshell)
-  (defun eshell-handle-ansi-color ()
-    (ansi-color-apply-on-region eshell-last-output-start
-                                eshell-last-output-end))
-  (add-to-list 'eshell-output-filter-functions 'eshell-handle-ansi-color))
-
 ;; git
 (minima
  :clone "Artawower/blamer.el")
@@ -735,6 +726,18 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 ;;   (autoload-if-found '(sideline-flycheck-setup) "sideline-flycheck" nil t)
 
 ;;   (add-hook 'flycheck-mode-hook #'sideline-flycheck-setup))
+
+;; Projectile
+(minima
+ :clone "bbatsov/projectile"
+ :priority 'low)
+
+(with-delayed-execution
+  (autoload-if-found '(projectile-mode projectile-mode-map) "projectile" nil t)
+
+  (projectile-mode +1)
+
+  (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map))
 
 ;; treemacs
 (minima
@@ -1231,29 +1234,6 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 
 ;; (leaf fsharp-mode
 ;;   :ensure t)
-
-;; (leaf java
-;;   :config
-;;   (let* ((lombok-version "1.18.24")
-;;          (lombok-jar-dir (expand-file-name (format "~/.m2/repository/org/projectlombok/lombok/%s/" lombok-version)))
-;;          (lombok-jar-path (expand-file-name (format "~/.m2/repository/org/projectlombok/lombok/%s/lombok-%s.jar" lombok-version lombok-version)))
-;;          (lombok-jar-url (format "https://repo1.maven.org/maven2/org/projectlombok/lombok/%s/lombok-%s.jar" lombok-version lombok-version)))
-;;     (progn
-;;       (if (not (file-exists-p lombok-jar-path))
-;;           (progn
-;;             (make-directory lombok-jar-dir t)
-;;             (url-copy-file lombok-jar-url lombok-jar-path)))
-
-;;       (leaf lsp-java
-;;         :ensure t
-;;         :custom ((lsp-java-format-enabled . t)
-;;                  (lsp-java-vmargs . `("-Xmx1G"
-;;                                       "-XX:+UseG1GC"
-;;                                       "-XX:+UseStringDeduplication"
-;;                                       ,(concat "-javaagent:" lombok-jar-path)
-;;                                       ,(concat "-Xbootclasspath/a:" lombok-jar-path))))
-;;         :hook ((java-mode-hook . lsp)
-;;                (java-mode-hook . (lambda () (setq c-basic-offset 2))))))))
 
 ;; (leaf gradle-mode
 ;;   :ensure t)

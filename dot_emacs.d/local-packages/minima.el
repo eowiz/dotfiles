@@ -106,14 +106,19 @@
 
     (add-to-list 'load-path (concat minima-root-dir package-name))))
 
-(cl-defmacro minima (&key clone (priority 'high))
+(cl-defmacro minima (&key clone
+			  (priority 'high)
+			  (disable nil))
   ""
-  `(eval-when-compile
-     ,@(minima-clone :repo clone))
+  (if disable
+      nil
+    `(eval-when-compile
+       ,@(minima-clone :repo clone))
 
-  (let ((add-load-path-sexp `(add-to-list 'load-path ,(concat minima-root-dir "/" (minima--package-name :repo clone)))))
-    (cond ((eq priority 'high) `(with-delayed-execution-priority-high ,add-load-path-sexp))
-	  (t                   `(with-delayed-execution ,add-load-path-sexp)))))
+    (let ((add-load-path-sexp `(add-to-list 'load-path ,(concat minima-root-dir "/" (minima--package-name :repo clone)))))
+      (cond ((eq priority 'high) `(with-delayed-execution-priority-high ,add-load-path-sexp))
+	    (t                   `(with-delayed-execution ,add-load-path-sexp)))))
+  )
 
 (provide 'minima)
 

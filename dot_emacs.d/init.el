@@ -138,6 +138,11 @@
  :clone "joaotavora/yasnippet"
  :priority 'low)
 
+(with-delayed-execution-priority-high
+  (autoload-if-found '(yas-global-mode) "yasnippet" nil t)
+  
+  (yas-global-mode 1))
+
 (with-delayed-execution
   (setq indent-tabs-mode nil
 	make-backup-files nil
@@ -441,7 +446,7 @@
   (global-set-key (kbd "M-y") #'consult-yank-pop)
   (global-set-key (kbd "C-s") #'consult-line)
   (global-set-key (kbd "M-c s") #'isearch-forward)
-  (global-set-key (kbd "M-c r") #'consult-ripgrep)
+  (global-set-key (kbd "M-s r") #'consult-ripgrep)
   
   (setq consult-preview-raw-size 1024000)
   (setq consult-preview-max-size 1024000)
@@ -595,6 +600,15 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   (autoload-if-found '(rainbow-delimiters-mode) "rainbow-delimiters" nil t)
 
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+
+;; eshell
+(with-delayed-execution
+  (require 'ansi-color)
+  (require 'eshell)
+  (defun eshell-handle-ansi-color ()
+    (ansi-color-apply-on-region eshell-last-output-start
+                                eshell-last-output-end))
+  (add-to-list 'eshell-output-filter-functions 'eshell-handle-ansi-color))
 
 ;; git
 (minima
@@ -1057,9 +1071,22 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 
   (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
 
+;; java
+
+;; groovy
+(minima
+ :clone "Groovy-Emacs-Modes/groovy-emacs-modes"
+ :priority 'low)
+
+(with-delayed-execution
+  (autoload-if-found '(groovy-mode) "groovy-emacs-modes" nil t)
+  
+  (add-to-list 'auto-mode-alist '("\\.groovy\\'" . groovy-mode)))
+
 ;; coq
 (minima
- :clone "ProofGeneral/PG")
+ :clone "ProofGeneral/PG"
+ :priority 'low)
 
 (with-delayed-execution
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/PG/generic"))

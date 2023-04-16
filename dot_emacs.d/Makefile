@@ -8,12 +8,15 @@ DDSKK_SITE_LISP_PATH     := $(shell emacs -Q --batch --eval '(print (concat (exp
 HOMEBREW_EMACS_SITE_LISP := /opt/homebrew/share/emacs/site-lisp/skk
 
 .PHONY: all
-all: byte-compile byte-compile-libraries touch-highlight-indent-guides
+all: byte-compile make-ProofGeneral byte-compile-libraries touch-highlight-indent-guides
 
 .PHONY: byte-compile
 byte-compile:
 	$(EMACS) -Q --batch -f batch-byte-compile early-init.el
 	$(EMACS) -Q --batch -f batch-byte-compile init.el
+
+make-ProofGeneral:
+	cd ~/.emacs.d/el-clone/PG && make
 
 .PHONY: byte-compile-libraries
 byte-compile-libraries:
@@ -27,6 +30,11 @@ touch-highlight-indent-guides:
 	touch el-clone/highlight-indent-guides/highlight-indent-guides.el
 
 .PHONY: clean
-clean:
+clean: clean-init
 	rm -rf elpa el-clone eln-cache init.eln init.elc early-init.eln early-init.elc
 	rm -rf $(HOMEBREW_EMACS_SITE_LISP)
+
+.PHONY: clean-init
+clean-init:
+	rm -rf init.elc early-init.eln
+	rm -rf eln-cache/*/init-*.eln

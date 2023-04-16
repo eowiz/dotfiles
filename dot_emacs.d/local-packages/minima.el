@@ -28,7 +28,7 @@
 (eval-when-compile
   (require 'cl-lib))
 
-;; (require 'eshell)
+(require 'eshell)
 
 (defgroup minima nil
   "A minimal package support your `.emacs' configuration."
@@ -58,21 +58,21 @@
   ""
   (append minima-git-clone-command `(,repo-url ,package-name)))
 
-;; (with-current-buffer (get-buffer-create "*minima*")
-;;   (set (make-local-variable 'eshell-last-input-start) (point-marker))
-;;   (set (make-local-variable 'eshell-last-input-end) (point-marker))
-;;   (set (make-local-variable 'eshell-last-output-start) (point-marker))
-;;   (set (make-local-variable 'eshell-last-output-end) (point-marker))
-;;   (set (make-local-variable 'eshell-last-output-block-begin) (point)))
+(with-current-buffer (get-buffer-create "*minima*")
+  (set (make-local-variable 'eshell-last-input-start) (point-marker))
+  (set (make-local-variable 'eshell-last-input-end) (point-marker))
+  (set (make-local-variable 'eshell-last-output-start) (point-marker))
+  (set (make-local-variable 'eshell-last-output-end) (point-marker))
+  (set (make-local-variable 'eshell-last-output-block-begin) (point)))
 
-;; (defmacro minima--make-process (&key name command)
-;;   ""
-;;   (make-process
-;;    :name name
-;;    :buffer (get-buffer-create minima--buffer-name)
-;;    :command command
-;;    :filter (lambda (proc string)
-;; 	     (eshell-output-filter proc string))))
+(defmacro minima--make-process (&key name command)
+  ""
+  (make-process
+   :name name
+   :buffer (get-buffer-create minima--buffer-name)
+   :command command
+   :filter (lambda (proc string)
+	     (eshell-output-filter proc string))))
 
 (defmacro minima--make-clone-process (repo-url package-name)
   ""

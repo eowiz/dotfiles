@@ -945,12 +945,36 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 
 ;; org-outer-indent
 (minima
- :clone "rougier/org-outer-indent")
+ :clone "rougier/org-outer-indent"
+ :priority 'low)
 
 (with-delayed-execution
   (add-to-list 'load-path (locate-user-emacs-file "el-clone/org-outer-indent"))
 
   (autoload-if-found '(org-outer-indent-mode) "org-outer-indent" nil t))
+
+;; org-tree-slide
+(minima
+ :clone "takaxp/org-tree-slide"
+ :priority 'low)
+
+(with-delayed-execution
+  (autoload-if-found '(org-tree-slide-mode) "org-tree-slide" nil t)
+
+  (setq org-tree-slide-header t)
+  (setq org-tree-slide-slide-in-effect nil)
+  (setq org-tree-slide-activate-message "Presentation started!")
+  (setq org-tree-slide-deactivate-message "Presentation finished!")
+  (setq org-tree-slide-breadcrumbs " // ")
+  (setq org-image-actual-width nil)
+
+  (add-hook 'org-tree-slide-play-hook (lambda ()
+					(org-display-inline-images)
+
+					(setq-local face-remapping-alist '((default (:height 2.0) default)
+									   (org-block (:height 1.25) org-block)))))
+  (add-hook 'org-tree-slide-stop-hook (lambda ()
+					(setq-local face-remapping-alist '((default variable-pitch default))))))
 
 ;; Markdown
 (minima

@@ -1,2 +1,2 @@
 # Rust
-[ -f $HOME.cargo/env ] && source $HOME/.cargo/env
+[ -f $HOME/.cargo/env ] && source $HOME/.cargo/env

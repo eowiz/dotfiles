@@ -1127,6 +1127,33 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 						(coq-mode))))
   )
 
+;; rust
+(minima
+ :clone "brotzeit/rustic"
+ :priority 'low)
+
+(with-delayed-execution
+  (defun rustic-mode-auto-save-hook ()
+    "Enable auto-saving in rustic-mode buffers."
+    (when buffer-file-name
+      (setq-local compilation-ask-about-save nil)))
+  (add-hook 'rustic-mode-hook 'rustic-mode-auto-save-hook))
+
+;; commenter
+(minima
+ :clone "yuutayamada/commenter"
+ :priority 'low)
+
+;; nim
+(minima
+ :clone "nim-lang/nim-mode"
+ :priority 'low)
+
+(with-delayed-execution
+  (autoload-if-found '(nim-mode) "nim-mode" nil t)
+
+  (add-to-list 'auto-mode-alist '("\\.nim\\'" . nim-mode)))
+
 ;;;###autoload
 (defun open-init-org ()
   "Toggle current buffer between init.org."

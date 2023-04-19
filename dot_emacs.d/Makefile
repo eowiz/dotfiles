@@ -36,5 +36,5 @@ clean: clean-init
 
 .PHONY: clean-init
 clean-init:
-	rm -rf init.elc early-init.eln
+	rm -rf init.elc early-init.elc
 	rm -rf eln-cache/*/init-*.eln

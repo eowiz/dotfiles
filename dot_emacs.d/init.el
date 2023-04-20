@@ -558,7 +558,7 @@
  :clone "eowiz/highlight-indent-guides")
 
 (with-delayed-execution
-  (add-to-list 'load-path (miima-locate "highlight-indent-guides"))
+  (add-to-list 'load-path (minima-locate "highlight-indent-guides"))
 
   (autoload-if-found '(highlight-indent-guides-mode) "highlight-indent-guides" nil t)
 

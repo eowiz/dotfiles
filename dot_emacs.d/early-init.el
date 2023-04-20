@@ -42,7 +42,7 @@
 (push '(right-fringe . 0) default-frame-alist)
 
 ;; フォント設定
-(push '(font . "Cica-14") default-frame-alist)
+(push '(font . "Cica-20") default-frame-alist)
 
 ;; Emacs の起動画面を無効
 (setq inhibit-splash-screen t)

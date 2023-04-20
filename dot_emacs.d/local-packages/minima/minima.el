@@ -34,7 +34,7 @@
   "A minimal package support your `.emacs' configuration."
   :group 'lisp)
 
-(defcustom minima-root-dir (locate-user-emacs-file "el-clone")
+(defcustom minima-root-dir (locate-user-emacs-file "minima")
   "Set minima root directory."
   :group 'minima
   :type 'string)
@@ -43,6 +43,10 @@
   "Set a command to clone a git repository."
   :group 'minima
   :type '(list string))
+
+(defun minima-locate (path)
+  ""
+  (expand-file-name path minima-root-dir))
 
 (defun minima--create-directory ()
   ""
@@ -119,6 +123,11 @@
       (cond ((eq priority 'high) `(with-delayed-execution-priority-high ,add-load-path-sexp))
 	    (t                   `(with-delayed-execution ,add-load-path-sexp)))))
   )
+
+(cl-defun minima-byte-compile ()
+  (interactive)
+  (dolist (el (file-expand-wildcards (concat minima-root-dir "/**/*.el")))
+    (byte-compile-file el)))
 
 (provide 'minima)
 

@@ -82,6 +82,10 @@
 ;; packages
 ;;
 
+;; heap
+(minima
+ :clone "emacsmirror/heap")
+
 ;; compat
 (minima
  :clone "emacs-compat/compat")
@@ -188,8 +192,22 @@
   )
 
 ;; all-the-icons
+;; (minima
+;;  :clone "domtronn/all-the-icons.el")
+
+;; nerd
 (minima
- :clone "domtronn/all-the-icons.el")
+ :clone "rainstormstudio/nerd-icons.el"
+ :priority 'low)
+
+(minima
+ :clone "rainstormstudio/nerd-icons-dired"
+ :priority 'low)
+
+(with-delayed-execution
+  (autoload-if-found '(nerd-icons-dired-mode) "nerd-icons-dired" nil t)
+
+  (add-hook 'dired-mode-hook #'nerd-icons-dired-mode))
 
 ;; doom-modeline
 
@@ -234,54 +252,58 @@
   (setq scroll-preserve-screen-position t))
 
 ;; dirvish
+;; (minima
+;;  :clone "alexluigit/dirvish")
+
+;; (with-delayed-execution-priority-high
+;;   (add-to-list 'load-path (minima-locate "dirvish"))
+;;   (add-to-list 'load-path (minima-locate "dirvish/extensions"))
+
+;;   (autoload-if-found '(dirvish-override-dired-mode) "dirvish" nil t)
+;;   (autoload-if-found '(dirvish-quick-access) "dirvish-quick-access" nil t)
+;;   (autoload-if-found '(dirvish-emerge-mode dirvish-emerge-menu) "dirvish-emerge" nil t)
+;;   (autoload-if-found '(dirvish-side) "dirvish-side" nil t)
+
+;;   (dirvish-override-dired-mode)
+
+;;   (define-key dirvish-mode-map (kbd "TAB") #'dirvish-subtree-toggle)
+;;   (define-key dirvish-mode-map (kbd "a") #'dirvish-quick-access)
+;;   (define-key dirvish-mode-map (kbd "M-e") #'dirvish-emerge-menu)
+
+;;   (global-set-key (kbd "C-'") #'dirvish-side)
+
+;;   (setq dired-mouse-drag-files t)
+;;   (setq mouse-drag-and-drop-region-cross-program t)
+
+;;   (setq dirvish-subtree-prefix "  ")
+;;   (setq dirvish-subtree-always-show-state t)
+
+;;   (setq dirvish-attributes
+;; 	'(vc-state subtree-state all-the-icons collapse file-time file-size))
+;;   (setq dired-listing-switches
+;;         "-l --almost-all --human-readable --group-directories-first --no-group")
+
+;;   (setq dirvish-use-header-line 'global)
+;;   (setq dirvish-header-line-height '(25 . 35))
+;;   (setq dirvish-mode-line-height 25)
+;;   (setq dirvish-header-line-format
+;; 	'(:left (path) :right (free-space))
+;; 	dirvish-mode-line-format
+;; 	'(:left (sort file-time " " file-size symlink) :right (omit yank index)))
+
+;;   (setq dirvish-emerge-groups '(("READMD" (regex . "README"))
+;; 				("Emacs Lisp" (extensions "el"))))
+
+;;   (setq dirvish-quick-access-entries
+;; 	`(("h" "~/"                      "Home")
+;; 	  ("e" ,user-emacs-directory     "Emacs user directory")
+;; 	  ("c" "~/.local/share/chezmoi/" "chezmoi")
+;; 	  ("o" "~/org"                   "Org")))
+;;   )
+
+;; fd-dired
 (minima
- :clone "alexluigit/dirvish")
-
-(with-delayed-execution-priority-high
-  (add-to-list 'load-path (minima-locate "minima/dirvish"))
-  (add-to-list 'load-path (minima-locate "minima/dirvish/extensions"))
-
-  (autoload-if-found '(dirvish-override-dired-mode) "dirvish" nil t)
-  (autoload-if-found '(dirvish-quick-access) "dirvish-quick-access" nil t)
-  (autoload-if-found '(dirvish-emerge-mode dirvish-emerge-menu) "dirvish-emerge" nil t)
-  (autoload-if-found '(dirvish-side) "dirvish-side" nil t)
-
-  (dirvish-override-dired-mode)
-
-  (define-key dirvish-mode-map (kbd "TAB") #'dirvish-subtree-toggle)
-  (define-key dirvish-mode-map (kbd "a") #'dirvish-quick-access)
-  (define-key dirvish-mode-map (kbd "M-e") #'dirvish-emerge-menu)
-
-  (global-set-key (kbd "C-'") #'dirvish-side)
-
-  (setq dired-mouse-drag-files t)
-  (setq mouse-drag-and-drop-region-cross-program t)
-
-  (setq dirvish-subtree-prefix "  ")
-  (setq dirvish-subtree-always-show-state t)
-
-  (setq dirvish-attributes
-	'(vc-state subtree-state all-the-icons collapse file-time file-size))
-  (setq dired-listing-switches
-        "-l --almost-all --human-readable --group-directories-first --no-group")
-
-  (setq dirvish-use-header-line 'global)
-  (setq dirvish-header-line-height '(25 . 35))
-  (setq dirvish-mode-line-height 25)
-  (setq dirvish-header-line-format
-	'(:left (path) :right (free-space))
-	dirvish-mode-line-format
-	'(:left (sort file-time " " file-size symlink) :right (omit yank index)))
-
-  (setq dirvish-emerge-groups '(("READMD" (regex . "README"))
-				("Emacs Lisp" (extensions "el"))))
-
-  (setq dirvish-quick-access-entries
-	`(("h" "~/"                      "Home")
-	  ("e" ,user-emacs-directory     "Emacs user directory")
-	  ("c" "~/.local/share/chezmoi/" "chezmoi")
-	  ("o" "~/org"                   "Org")))
-  )
+ :clone "yqrashawn/fd-dired")
 
 ;; ddskk
 

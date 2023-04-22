@@ -121,9 +121,12 @@ Use FETCHER, URL, REPO, and NAME as inputs."
 
 ;;;###autoload
 (defun minima-native-compile ()
-  ""
+  "Asynchronously \='native-compile\=' \='minima-packages-dir\=' recursively.
+ 
+This interactive function compiles all Emacs Lisp files
+in the \='minima-packages-dir\=' directory."
   (interactive)
-  (native-compile-async "~/.emacs.d/minima" 'recursively))
+  (native-compile-async minima-packages-dir 'recursively))
 
 (provide 'minima)
 

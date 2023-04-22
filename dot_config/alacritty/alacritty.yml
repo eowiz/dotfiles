@@ -9,10 +9,10 @@ window:
 
 font:
   normal:
-    family: 'Cica'
+    family: 'HackGen Console NFJ'
     style: Regular
   bold:
-    family: 'Cica'
+    family: 'HackGen Console NFJ'
     style: Bold
   size: 16.0
   offset:

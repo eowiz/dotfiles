@@ -23,110 +23,100 @@
 
 ;;; Commentary:
 
+;; see: https://github.com/takeokunn/.emacs.d
+
 ;;; Code:
 
 (eval-when-compile
   (require 'cl-lib))
 
-(require 'eshell)
-
 (defgroup minima nil
-  "A minimal package support your `.emacs' configuration."
+  "A minimal package support your \='.emacs\=' configuration."
   :group 'lisp)
 
-(defcustom minima-root-dir (locate-user-emacs-file "minima")
-  "Set minima root directory."
+(defcustom minima-packages-dir (locate-user-emacs-file "minima")
+  "Specify the directory for packages installed by minima."
   :group 'minima
   :type 'string)
 
 (defcustom minima-git-clone-command '("git" "clone" "--recursive" "--depth" "1")
-  "Set a command to clone a git repository."
+  "Configure the \='git clone\=' command options for minima."
   :group 'minima
   :type '(list string))
 
+;;;###autoload
 (defun minima-locate (path)
-  ""
-  (expand-file-name path minima-root-dir))
+  "Return the absolute path of PATH relative to the minima-packages-dir.
+If PATH is a relative path, it is expanded to an absolute path
+using minima-packages-dir as the base directory."
+  (expand-file-name path minima-packages-dir))
 
-(defun minima--create-directory ()
-  ""
-  (unless (file-directory-p minima-root-dir)
-    (make-directory minima-root-dir)))
+(defun minima--create-dir ()
+  "Create a directory for packages installed by minima if doesn't exist."
+  (unless (file-directory-p minima-packages-dir)
+    (make-directory minima-packages-dir)))
 
-(defcustom minima--buffer-name "*minima*"
-  ""
-  :group 'minima
-  :type 'string)
+(cl-defun minima--repo-url (&key (fetcher "github") url repo)
+  "Construct a repository URL based on the given FETCHER, URL, and REPO."
+  (or url (format "https://www.%s.com/%s.git" fetcher repo)))
+
+(cl-defun minima--package-name (&key repo name)
+  "Determine the package name based on the given REPO name or the specified NAME."
+  (or name (file-name-base repo)))
 
 (defun minima--git-clone-command (repo-url package-name)
-  ""
+  "Generate a `git clone' command based on the given REPO-URL and PACKAGE-NAME."
   (append minima-git-clone-command `(,repo-url ,package-name)))
 
-(with-current-buffer (get-buffer-create "*minima*")
-  (set (make-local-variable 'eshell-last-input-start) (point-marker))
-  (set (make-local-variable 'eshell-last-input-end) (point-marker))
-  (set (make-local-variable 'eshell-last-output-start) (point-marker))
-  (set (make-local-variable 'eshell-last-output-end) (point-marker))
-  (set (make-local-variable 'eshell-last-output-block-begin) (point)))
-
-(defmacro minima--make-process (&key name command)
-  ""
-  (make-process
-   :name name
-   :buffer (get-buffer-create minima--buffer-name)
-   :command command
-   :filter (lambda (proc string)
-	     (eshell-output-filter proc string))))
-
-(defmacro minima--make-clone-process (repo-url package-name)
-  ""
-  (make-process package-name (minima--git-clone-command repo-url package-name)))
-
 (defun minima--clone (repo-url package-name)
-  ""
+  "Run \='git clone\=' with given REPO-URL and PACKAGE-NAME."
   (shell-command-to-string
    (mapconcat #'shell-quote-argument
 	      (minima--git-clone-command repo-url package-name)
 	      " ")))
 
-(cl-defun minima--repo-url (&key (fetcher "github") url repo)
-  ""
-  (or url (format "https://www.%s.com/%s.git" fetcher repo)))
-
-(cl-defun minima--package-name (&key repo name)
-  ""
-  (or name (file-name-base repo)))
-
 (cl-defun minima-clone (&key (fetcher "github") url repo name)
-  ""
-  (minima--create-directory)
+  "Clone a package, add it to \='load-path\='.
+Use FETCHER, URL, REPO, and NAME as inputs."
+  (minima--create-dir)
   
   (let* ((repo-url (or url (format "https://www.%s.com/%s.git" fetcher repo)))
 	 (package-name (or name (file-name-base repo)))
-	 (default-directory minima-root-dir))
-    (unless (file-directory-p (expand-file-name package-name minima-root-dir))
+	 (default-directory minima-packages-dir))
+    (unless (file-directory-p (expand-file-name package-name minima-packages-dir))
       (message (concat "Install " repo-url "..."))
       (minima--clone repo-url package-name))
 
-    (add-to-list 'load-path (concat minima-root-dir package-name))))
+    (add-to-list 'load-path (minima-locate package-name))))
+
+(defun minima--load-path-sexp (path)
+  "Generate an S-expression to add the located PATH to the \='load-path\='."
+  `(add-to-list 'load-path ,(minima-locate path)))
 
 (cl-defmacro minima (&key clone
 			  (priority 'high)
+			  (path '())
 			  (disable nil))
   ""
   (if disable
       nil
     `(eval-when-compile
-       ,@(minima-clone :repo clone))
+       ,@(minima-clone :repo clone)
 
-    (let ((add-load-path-sexp `(add-to-list 'load-path ,(concat minima-root-dir "/" (minima--package-name :repo clone)))))
-      (cond ((eq priority 'high) `(with-delayed-execution-priority-high ,add-load-path-sexp))
-	    (t                   `(with-delayed-execution ,add-load-path-sexp)))))
+       ,(if path
+	    (let ((add-load-path-sexp `(add-to-list 'load-path ,(minima-locate (minima--package-name :repo clone))))
+		  (load-pathes (cl-mapcar #'minima--load-path-sexp path))
+		  (with-execution (cond ((eq priority 'high) 'with-delayed-execution-priority-high)
+					(t                   'with-delayed-execution))))
+	      (list with-execution load-pathes add-load-path-sexp))))
+    )
   )
 
+;;;###autoload
 (cl-defun minima-byte-compile ()
+  "Byte-compile all \='.el\=' files in the \='minima-packages-dir\=' recursively."
   (interactive)
-  (dolist (el (file-expand-wildcards (concat minima-root-dir "/**/*.el")))
+  (dolist (el (file-expand-wildcards (concat minima-packages-dir "/**/*.el")))
     (byte-compile-file el)))
 
 (provide 'minima)

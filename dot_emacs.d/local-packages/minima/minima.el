@@ -113,11 +113,17 @@ Use FETCHER, URL, REPO, and NAME as inputs."
   )
 
 ;;;###autoload
-(cl-defun minima-byte-compile ()
+(defun minima-byte-compile ()
   "Byte-compile all \='.el\=' files in the \='minima-packages-dir\=' recursively."
   (interactive)
   (dolist (el (file-expand-wildcards (concat minima-packages-dir "/**/*.el")))
     (byte-compile-file el)))
+
+;;;###autoload
+(defun minima-native-compile ()
+  ""
+  (interactive)
+  (native-compile-async "~/.emacs.d/minima" 'recursively))
 
 (provide 'minima)
 

@@ -44,6 +44,46 @@
   :group 'minima
   :type '(list string))
 
+(defconst my/saved-file-name-handler-alist file-name-handler-alist)
+(setq file-name-handler-alist nil)
+
+(defvar my/delayed-priority-high-configurations '())
+(defvar my/delayed-priority-high-configuration-timer nil)
+
+(defvar my/delayed-priority-low-configurations '())
+(defvar my/delayed-priority-low-configuration-timer nil)
+
+(add-hook 'emacs-startup-hook
+	  (lambda ()
+            (setq my/delayed-priority-high-configuration-timer
+                  (run-with-timer
+                   0.1 0.001
+                   (lambda ()
+                     (if my/delayed-priority-high-configurations
+                         (let ((inhibit-message t))
+                           (eval (pop my/delayed-priority-high-configurations)))
+                       (progn
+                         (cancel-timer my/delayed-priority-high-configuration-timer))))))
+            (setq my/delayed-priority-low-configuration-timer
+                  (run-with-timer
+                   0.3 0.001
+                   (lambda ()
+                     (if my/delayed-priority-low-configurations
+                         (let ((inhibit-message t))
+                           (eval (pop my/delayed-priority-low-configurations)))
+                       (progn
+                         (cancel-timer my/delayed-priority-low-configuration-timer))))))))
+
+(defmacro with-delayed-execution-priority-high (&rest body)
+    (declare (indent 0))
+    `(setq my/delayed-priority-high-configurations
+           (append my/delayed-priority-high-configurations ',body)))
+
+(defmacro with-delayed-execution (&rest body)
+  (declare (indent 0))
+  `(setq my/delayed-priority-low-configurations
+         (append my/delayed-priority-low-configurations ',body)))
+
 ;;;###autoload
 (defun minima-locate (path)
   "Return the absolute path of PATH relative to the minima-packages-dir.
@@ -85,32 +125,44 @@ Use FETCHER, URL, REPO, and NAME as inputs."
 	 (default-directory minima-packages-dir))
     (unless (file-directory-p (expand-file-name package-name minima-packages-dir))
       (message (concat "Install " repo-url "..."))
-      (minima--clone repo-url package-name))
+      (minima--clone repo-url package-name))))
 
-    (add-to-list 'load-path (minima-locate package-name))))
-
-(defun minima--load-path-sexp (path)
+(defun minima--add-load-path-sexp (path)
   "Generate an S-expression to add the located PATH to the \='load-path\='."
-  `(add-to-list 'load-path ,(minima-locate path)))
+  `(add-to-list 'load-path ,path))
+
+(defun minima--with-delayed (priority &rest body)
+  "Execute BODY with delayed execution based on PRIORITY.
+  
+PRIORITY can be either \='high\=' or any other value,
+which defaults to normal priority.
+This is an internal utility function."
+  (let ((with-delayed (cond ((eq priority 'high) 'with-delayed-execution-priority-high)
+			    (t                   'with-delayed-execution))))
+    (eval `(with-delayed-execution-priority-high ,@body))))
 
 (cl-defmacro minima (&key clone
 			  (priority 'high)
 			  (path '())
 			  (disable nil))
   ""
-  (if disable
-      nil
-    `(eval-when-compile
-       ,@(minima-clone :repo clone)
+  `(eval-and-compile
+     (eval-when-compile
+       (unless ,disable
+	 (minima-clone :repo ,clone)))
 
-       ,(if path
-	    (let ((add-load-path-sexp `(add-to-list 'load-path ,(minima-locate (minima--package-name :repo clone))))
-		  (load-pathes (cl-mapcar #'minima--load-path-sexp path))
-		  (with-execution (cond ((eq priority 'high) 'with-delayed-execution-priority-high)
-					(t                   'with-delayed-execution))))
-	      (list with-execution load-pathes add-load-path-sexp))))
-    )
+     ,@(let* ((package-name (minima--package-name :repo clone))
+	     (add-load-path-sexp (minima--add-load-path-sexp (minima-locate package-name)))
+	     (load-pathes (cl-mapcar #'minima--add-load-path-sexp (cl-mapcar #'minima-locate (cl-mapcar (lambda (p) (concat package-name "/" p)) path)))))
+	 (minima--with-delayed priority (minima--add-load-path-sexp (minima-locate package-name)))))
   )
+
+       ;; (let* ((package-name (minima--package-name :repo ,clone))
+       ;; 	      (add-load-path-sexp (minima--add-load-path-sexp (minima-locate package-name)))
+       ;; 	      (load-pathes (cl-mapcar #'minima--add-load-path-sexp (cl-mapcar #'minima-locate (cl-mapcar (lambda (p) (concat package-name "/" p)) ,path)))))
+       ;; 	 (minima--with-delayed ',priority (minima--add-load-path-sexp (minima-locate package-name)))))
+
+;; (minima :clone "emacs-compat/compat")
 
 ;;;###autoload
 (defun minima-byte-compile ()

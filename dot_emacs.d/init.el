@@ -7,46 +7,6 @@
 
 
 
-(defconst my/saved-file-name-handler-alist file-name-handler-alist)
-(setq file-name-handler-alist nil)
-
-(defvar my/delayed-priority-high-configurations '())
-(defvar my/delayed-priority-high-configuration-timer nil)
-
-(defvar my/delayed-priority-low-configurations '())
-(defvar my/delayed-priority-low-configuration-timer nil)
-
-(add-hook 'emacs-startup-hook
-	  (lambda ()
-            (setq my/delayed-priority-high-configuration-timer
-                  (run-with-timer
-                   0.1 0.001
-                   (lambda ()
-                     (if my/delayed-priority-high-configurations
-                         (let ((inhibit-message t))
-                           (eval (pop my/delayed-priority-high-configurations)))
-                       (progn
-                         (cancel-timer my/delayed-priority-high-configuration-timer))))))
-            (setq my/delayed-priority-low-configuration-timer
-                  (run-with-timer
-                   0.3 0.001
-                   (lambda ()
-                     (if my/delayed-priority-low-configurations
-                         (let ((inhibit-message t))
-                           (eval (pop my/delayed-priority-low-configurations)))
-                       (progn
-                         (cancel-timer my/delayed-priority-low-configuration-timer))))))))
-
-(defmacro with-delayed-execution-priority-high (&rest body)
-  (declare (indent 0))
-  `(setq my/delayed-priority-high-configurations
-         (append my/delayed-priority-high-configurations ',body)))
-
-(defmacro with-delayed-execution (&rest body)
-  (declare (indent 0))
-  `(setq my/delayed-priority-low-configurations
-         (append my/delayed-priority-low-configurations ',body)))
-
 ;;;###autoload
 (defun autoload-if-found (functions file &optional docstring interactive type)
   "set autoload iff. FILE has found."

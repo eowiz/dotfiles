@@ -114,8 +114,6 @@
  :clone "purcell/exec-path-from-shell")
 
 (with-delayed-execution-priority-high
-  (add-to-list 'load-path (minima-locate "exec-path-from-shell"))
-
   (when (require 'exec-path-from-shell)
     (exec-path-from-shell-initialize)))
 
@@ -145,15 +143,9 @@
  :clone "protesilaos/modus-themes")
 
 (with-delayed-execution-priority-high
-  ;; (add-to-list 'load-path (locate-user-emacs-file "el-clone/modus-themes"))
-
   (when (require 'modus-operandi-theme)
     (load-theme 'modus-operandi-tinted t))
   )
-
-;; all-the-icons
-;; (minima
-;;  :clone "domtronn/all-the-icons.el")
 
 ;; nerd
 (minima
@@ -175,8 +167,6 @@
  :clone "seagle0128/doom-modeline")
 
 (with-delayed-execution-priority-high
-  (add-to-list 'load-path (minima-locate "doom-modeline"))
-
   (autoload-if-found '(doom-modeline-mode) "doom-modeline" nil t)
 
   (doom-modeline-mode 1))
@@ -271,9 +261,6 @@
  :clone "skk-dev/ddskk")
 
 (with-delayed-execution-priority-high
-  (add-to-list 'load-path (minima-locate "ddskk"))
-  ;; (autoload-if-found '(skk-mode) "skk" nil t)
-
   (require 'skk-autoloads)
 
   (setq skk-preload t)
@@ -286,8 +273,6 @@
  :clone "conao3/ddskk-posframe.el")
 
 (with-delayed-execution-priority-high
-  (add-to-list 'load-path (minima-locate "ddskk-posframe"))
-
   (autoload-if-found '(ddskk-posframe-mode) "ddskk-posframe" nil t)
 
   (with-eval-after-load 'skk
@@ -301,8 +286,6 @@
  :clone "emacsorphanage/anzu")
 
 (with-delayed-execution-priority-high
-  (add-to-list 'load-path (minima-locate "anzu"))
-
   (autoload-if-found '(anzu-query-replace anzu-query-replace-regex anzu-mode-line) "anzu" nil t)
 
   (global-set-key [remap query-replace] #'anzu-query-replace)
@@ -321,8 +304,6 @@
  :clone "justbur/emacs-which-key")
 
 (with-delayed-execution
-  (add-to-list 'load-path (minima-locate "emacs-which-key"))
-
   (autoload-if-found '(which-key-mode which-key-setup-side-window-bottom) "which-key" nil t)
 
   (which-key-mode)
@@ -330,12 +311,10 @@
 
 ;; corfu
 (minima
- :clone "minad/corfu")
+ :clone "minad/corfu"
+ :path ("extensions"))
 
 (with-delayed-execution-priority-high
-  (add-to-list 'load-path (minima-locate "corfu"))
-  (add-to-list 'load-path (minima-locate "corfu/extensions"))
-
   (autoload-if-found '(corfu-popupinfo-mode corfu-complete) "corfu-popupinfo" nil t)
 
   (when (require 'corfu)
@@ -355,8 +334,6 @@
  :clone "minad/cape")
 
 (with-delayed-execution
-  (add-to-list 'load-path (minima-locate "cape"))
-
   (autoload-if-found '(cape-super-capf cape-file cape-tex cape-dabbrev cape-symbol) "cape" nil t)
   (autoload-if-found '(cape-keyword) "cape-keyword" nil t)
 
@@ -371,8 +348,6 @@
  :clone "jdtsmith/kind-icon")
 
 (with-delayed-execution
-  (add-to-list 'load-path (minima-locate "kind-icon"))
-
   (autoload-if-found '(kind-icon-margin-formatter corfu-default) "kind-icon" nil t)
 
   (with-eval-after-load 'corfu
@@ -385,8 +360,6 @@
  :clone "minad/vertico")
 
 (with-delayed-execution-priority-high
-  (add-to-list 'load-path (minima-locate "vertico"))
-
   (when (require 'vertico)
     (setq vertico-count 20)
     (vertico-mode)))
@@ -395,8 +368,6 @@
  :clone "radian-software/prescient.el")
 
 (with-delayed-execution-priority-high
-  (add-to-list 'load-path (minima-locate "prescient"))
-
   (autoload-if-found '(prescient-persist-mode) "prescient" nil t)
   (autoload-if-found '(corfu-prescient-mode) "corfu-prescient" nil t)
   (autoload-if-found '(vertico-prescient-mode) "vertico-prescient" nil t)
@@ -413,8 +384,6 @@
  :clone "minad/consult")
 
 (with-delayed-execution-priority-high
-  (add-to-list 'load-path (minima-locate "consult"))
-
   (autoload-if-found '(consult-customize consult-line) "consult" nil t)
 
   (define-key global-map (kbd "M-c") nil)
@@ -433,8 +402,6 @@
  :clone "oantolin/orderless")
 
 (with-delayed-execution-priority-high
-  (add-to-list 'load-path (minima-locate "orderless"))
-
   (when (require 'orderless)
     (setq completion-styles '(orderless basic))
     (setq completion-category-overrides '((file (styles basic partial-completion))))))
@@ -444,8 +411,6 @@
  :clone "minad/marginalia")
 
 (with-delayed-execution-priority-high
-  (add-to-list 'load-path (minima-locate "marginalia"))
-
   (when (require 'marginalia)
     (marginalia-mode)))
 
@@ -454,8 +419,6 @@
  :clone "minad/affe")
 
 (with-delayed-execution-priority-high
-  (add-to-list 'load-path (minima-locate "affe"))
-
   (autoload-if-found '(affe-grep affe-find) "affe" nil t)
   (autoload-if-found '(orderless-highlight-matches orderless-pattern-compiler) "orderless" nil t)
 
@@ -470,8 +433,6 @@
  :clone "tomoya/consult-ghq")
 
 (with-delayed-execution-priority-high
-  (add-to-list 'load-path (minima-locate "consult-ghq"))
-
   (autoload-if-found '(consult-ghq-find) "consult-ghq" nil t)
 
   (global-set-key (kbd "C-c C-g") #'consult-ghq-find))
@@ -490,8 +451,6 @@
  :clone "emacsorphanage/undohist")
 
 (with-delayed-execution
-  (add-to-list 'load-path (minima-locate "undohist"))
-
   (when (require 'undohist)
     (undohist-initialize)))
 
@@ -500,8 +459,6 @@
  :clone "casouri/vundo")
 
 (with-delayed-execution
-  (add-to-list 'load-path (minima-locate "vundo"))
-
   (when (require 'vundo)
     (global-set-key (kbd "C-x u") #'vundo)
     (setq vundo-glyph-alist vundo-unicode-symbols)
@@ -512,8 +469,6 @@
  :clone "Fuco1/smartparens")
 
 (with-delayed-execution
-  (add-to-list 'load-path (minima-locate "smartparens"))
-
   (autoload-if-found '(smartparens-mode) "smartparens-config" nil t)
 
   (add-hook 'prog-mode-hook #'smartparens-mode))
@@ -527,8 +482,6 @@
  :clone "k-talo/volatile-highlights.el")
 
 (with-delayed-execution
-  (add-to-list 'load-path (minima-locate "volatile-highlights"))
-
   (autoload-if-found '(volatile-highlights-mode) "volatile-highlights" nil t)
 
   (custom-set-faces '(vhl/default-face ((nil (:foreground "#FF3333" :background "#FFCDCD")))))
@@ -540,8 +493,6 @@
  :clone "eowiz/highlight-indent-guides")
 
 (with-delayed-execution
-  (add-to-list 'load-path (minima-locate "highlight-indent-guides"))
-
   (autoload-if-found '(highlight-indent-guides-mode) "highlight-indent-guides" nil t)
 
   (defun my/highlight-indent-guides--bitmap-line (width height crep zrep)
@@ -570,8 +521,6 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
  :clone "Fanael/rainbow-delimiters")
 
 (with-delayed-execution
-  (add-to-list 'load-path (minima-locate "rainbow-delimiters"))
-
   (autoload-if-found '(rainbow-delimiters-mode) "rainbow-delimiters" nil t)
 
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
@@ -581,31 +530,23 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
  :clone "Artawower/blamer.el")
 
 (with-delayed-execution
-  (add-to-list 'load-path (minima-locate "blamer"))
-
   (autoload-if-found '(blamer-mode) "blamer" nil t))
 
 (minima
  :clone "emacsmirror/git-timemachine")
 
 (with-delayed-execution
-  (add-to-list 'load-path (minima-locate "git-timemachine"))
-
   (autoload-if-found '(git-timemachine) "git-timemachine" nil t))
 
 ;; magit
 (minima
  :clone "magit/with-editor")
 
-(with-delayed-execution
-  (add-to-list 'load-path (minima-locate "with-editor/lisp")))
-
 (minima
- :clone "magit/magit")
+ :clone "magit/magit"
+ :path ("lisp"))
 
 (with-delayed-execution
-  (add-to-list 'load-path (minima-locate "magit/lisp"))
-
   (autoload-if-found '(magit) "magit" nil t)
 
   (global-set-key (kbd "C-x g") #'magit))
@@ -615,8 +556,6 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
  :clone "magit/git-modes")
 
 (with-delayed-execution
-  (add-to-list 'load-path (minima-locate "git-modes"))
-
   (autoload-if-found '(gitattribute-mode gitconfig-mode gitignore-mode) "git-modes" nil t))
 
 ;; git-gutter
@@ -624,8 +563,6 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
  :clone "emacsorphanage/git-gutter")
 
 (with-delayed-execution
-  (add-to-list 'load-path (minima-locate "git-gutter"))
-
   (when (require 'git-gutter)
     (global-git-gutter-mode +1)
 
@@ -644,8 +581,6 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
  :clone "hlissner/emacs-hide-mode-line")
 
 (with-delayed-execution
-  (add-to-list 'load-path (minima-locate "emacs-hide-mode-line"))
-
   (add-hook 'neotree-mode-hook #'hide-mode-line-mode)
   (add-hook 'imenu-list-minor-mode-hook #'hide-mode-line-mode)
   (add-hook 'minimap-mode-hook #'hide-mode-line-mode))
@@ -655,8 +590,6 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
  :clone "flycheck/flycheck")
 
 (with-delayed-execution
-  (add-to-list 'load-path (minima-locate "flycheck"))
-
   (when (require 'flycheck)
     (global-flycheck-mode)))
 
@@ -678,12 +611,11 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 
 ;; sideline
 (minima
- :clone "emacs-sideline/sideline")
+ :clone "emacs-sideline/sideline"
+ :path ("slideline"))
 
 (with-delayed-execution-priority-high
   (setq sideline-backends-right '((sideline-flycheck . down)))
-
-  (add-to-list 'load-path (minima-locate "sideline"))
 
   (autoload-if-found '(sideline-mode) "sideline" nil t)
 
@@ -716,21 +648,15 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 
 ;; treemacs
 (minima
- :clone "Alexander-Miller/treemacs")
-
-(with-delayed-execution-priority-high
-  (add-to-list 'load-path (minima-locate "treemacs/src/elisp"))
-  (add-to-list 'load-path (minima-locate "treemacs/src/extra")))
+ :clone "Alexander-Miller/treemacs"
+ :path ("src/elisp" "src/extra"))
 
 ;; tree-sitter
 (minima
- :clone "emacs-tree-sitter/elisp-tree-sitter")
+ :clone "emacs-tree-sitter/elisp-tree-sitter"
+ :path ("core" "lisp" "langs"))
 
 (with-delayed-execution
-  (add-to-list 'load-path (minima-locate "elisp-tree-sitter/core"))
-  (add-to-list 'load-path (minima-locate "elisp-tree-sitter/lisp"))
-  (add-to-list 'load-path (minima-locate "elisp-tree-sitter/langs"))
-
   (require 'tree-sitter)
   (require 'tree-sitter-hl)
   (require 'tree-sitter-debug)
@@ -746,8 +672,6 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
  :clone "renzmann/treesit-auto")
 
 (with-delayed-execution
-  (add-to-list 'load-path (minima-locate "treesit-auto"))
-
   (autoload-if-found '(make-treesit-auto-recipe global-treesit-auto-mode) "treesit-auto" nil t)
 
   ;; Some one make astro-ts-mode then uncomment
@@ -770,8 +694,6 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
  :clone "emacs-tree-sitter/ts-fold")
 
 (with-delayed-execution
-  (add-to-list 'load-path (minima-locate "ts-fold"))
-
   (autoload-if-found '(ts-fold-indicators-mode ts-fold-toggle) "ts-fold-indicators" nil t)
 
   (add-hook 'tree-sitter-after-on-hook #'ts-fold-indicators-mode)
@@ -791,8 +713,6 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
  :clone "emacsmirror/paredit")
 
 (with-delayed-execution-priority-high
-  (add-to-list 'load-path (minima-locate "paredit"))
-
   (autoload-if-found '(enable-paredit-mode) "paredit" nil t)
 
   (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode))
@@ -809,8 +729,6 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
  :clone "emacs-typescript/typescript.el")
 
 (with-delayed-execution
-  (add-to-list 'load-path (minima-locate "typescript"))
-
   (autoload-if-found '(typescript-ts-mode) "typescript" nil t)
 
   (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
@@ -824,8 +742,6 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
  :clone "fxbois/web-mode")
 
 (with-delayed-execution
-  (add-to-list 'load-path (minima-locate "web-mode"))
-
   (autoload-if-found '(web-mode) "web-mode" nil t))
 
 ;; Astro
@@ -864,8 +780,6 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
  :clone "prettier/prettier-emacs")
 
 (with-delayed-execution
-  (add-to-list 'load-path (minima-locate "prettier-emacs"))
-
   (autoload-if-found '(prettier-js-mode) "prettier-js" nil t)
 
   (add-hook 'js2-mode-hook 'prettier-js-mode)
@@ -877,8 +791,6 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
  :clone "minad/org-modern")
 
 (with-delayed-execution
-  (add-to-list 'load-path (minima-locate "org-modern"))
-
   (autoload-if-found '(org-modern-mode org-modern-agenda) "org-modern" nil t)
 
   (add-hook 'org-mode-hook #'org-modern-mode)
@@ -924,8 +836,6 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
  :priority 'low)
 
 (with-delayed-execution
-  (add-to-list 'load-path (minima-locate "org-outer-indent"))
-
   (autoload-if-found '(org-outer-indent-mode) "org-outer-indent" nil t))
 
 ;; org-tree-slide
@@ -934,8 +844,6 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
  :priority 'low)
 
 (with-delayed-execution
-  (autoload-if-found '(org-tree-slide-mode) "org-tree-slide" nil t)
-
   (setq org-tree-slide-header t)
   (setq org-tree-slide-slide-in-effect nil)
   (setq org-tree-slide-activate-message "Presentation started!")
@@ -955,9 +863,6 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 (minima
  :clone "polymode/polymode")
 
-(with-delayed-execution
-  (add-to-list 'load-path (minima-locate "polymode")))
-
 (minima
  :clone "polymode/poly-markdown")
 
@@ -965,9 +870,6 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
  :clone "jrblevin/markdown-mode")
 
 (with-delayed-execution
-  (add-to-list 'load-path (minima-locate "poly-markdown"))
-  (add-to-list 'load-path (minima-locate "markdown-mode"))
-
   (autoload-if-found '(markdown-mode gfm-mode) "markdown-mode" nil t)
   (autoload-if-found '(poly-markdown-mode) "poly-markdown" nil t)
 
@@ -983,12 +885,10 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 ;; lsp-mode
 (setq lsp-use-plists t)
 (minima
- :clone "emacs-lsp/lsp-mode")
+ :clone "emacs-lsp/lsp-mode"
+ :path ("clients"))
 
 (with-delayed-execution
-  (add-to-list 'load-path (minima-locate "lsp-mode"))
-  (add-to-list 'load-path (minima-locate "lsp-mode/clients"))
-
   (require 'lsp-mode)
   (require 'lsp-lens)
   (require 'lsp-modeline)
@@ -1016,8 +916,6 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
  :clone "emacs-lsp/lsp-ui")
 
 (with-delayed-execution-priority-high
-  (add-to-list 'load-path (minima-locate "lsp-ui"))
-
   (with-eval-after-load 'lsp-mode
     (require 'lsp-ui)
 
@@ -1054,8 +952,6 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
  :clone "emacs-lsp/lsp-java")
 
 (with-delayed-execution-priority-high
-  (add-to-list 'load-path (minima-locate "lsp-java"))
-
   (autoload-if-found '(lsp) "lsp-mode" nil t)
 
   (with-eval-after-load 'lsp-mode
@@ -1067,8 +963,6 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
  :clone "yoshiki/yaml-mode")
 
 (with-delayed-execution
-  (add-to-list 'load-path (minima-locate "yaml-mode"))
-
   (autoload-if-found '(yaml-mode) "yaml-mode" nil t)
 
   (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
@@ -1081,20 +975,15 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
  :priority 'low)
 
 (with-delayed-execution
-  (autoload-if-found '(groovy-mode) "groovy-emacs-modes" nil t)
-  
   (add-to-list 'auto-mode-alist '("\\.groovy\\'" . groovy-mode)))
 
 ;; coq
 (minima
  :clone "ProofGeneral/PG"
- :priority 'low)
+ :priority 'low
+ :path ("generic" "lib" "coq"))
 
 (with-delayed-execution
-  (add-to-list 'load-path (minima-locate "PG/generic"))
-  (add-to-list 'load-path (minima-locate "PG/lib"))
-  (add-to-list 'load-path (minima-locate "PG/coq"))
-
   (autoload-if-found '(coq-mode) "coq" nil t)
 
   (add-to-list 'auto-mode-alist '("\\.v\\'" . (lambda ()
@@ -1125,8 +1014,6 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
  :priority 'low)
 
 (with-delayed-execution
-  (autoload-if-found '(nim-mode) "nim-mode" nil t)
-
   (add-to-list 'auto-mode-alist '("\\.nim\\'" . nim-mode)))
 
 ;;;###autoload

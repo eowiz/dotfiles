@@ -127,7 +127,7 @@ Use FETCHER, URL, REPO, and NAME as inputs."
       (message (concat "Install " repo-url "..."))
       (minima--clone repo-url package-name))))
 
-(defun minima--add-load-path-sexp (path)
+(defun minima--generate-add-load-path-sexp (path)
   "Generate an S-expression to add the located PATH to the \='load-path\='."
   `(add-to-list 'load-path ,path))
 
@@ -139,11 +139,21 @@ which defaults to normal priority.
 This is an internal utility function."
   (let ((with-delayed (cond ((eq priority 'high) 'with-delayed-execution-priority-high)
 			    (t                   'with-delayed-execution))))
-    (eval `(with-delayed-execution-priority-high ,@body))))
+    (eval `(,with-delayed ,@body))))
+
+(defun minima--expand-paths-with-package (package-name paths)
+  "Return a list of expanded paths with PACKAGE-NAME as a subdirectory in PATHS.
+
+For each path in PATHS, this function appends PACKAGE-NAME as a subdirectory
+and expands the resulting path using `minima-locate`. This is an internal
+utility function used in the `minima` macro."
+  (mapcar (lambda (path)
+            (expand-file-name path (minima-locate package-name)))
+          paths))
 
 (cl-defmacro minima (&key clone
 			  (priority 'high)
-			  (path '())
+			  (path nil)
 			  (disable nil))
   ""
   `(eval-and-compile
@@ -151,18 +161,11 @@ This is an internal utility function."
        (unless ,disable
 	 (minima-clone :repo ,clone)))
 
-     ,@(let* ((package-name (minima--package-name :repo clone))
-	     (add-load-path-sexp (minima--add-load-path-sexp (minima-locate package-name)))
-	     (load-pathes (cl-mapcar #'minima--add-load-path-sexp (cl-mapcar #'minima-locate (cl-mapcar (lambda (p) (concat package-name "/" p)) path)))))
-	 (minima--with-delayed priority (minima--add-load-path-sexp (minima-locate package-name)))))
-  )
-
-       ;; (let* ((package-name (minima--package-name :repo ,clone))
-       ;; 	      (add-load-path-sexp (minima--add-load-path-sexp (minima-locate package-name)))
-       ;; 	      (load-pathes (cl-mapcar #'minima--add-load-path-sexp (cl-mapcar #'minima-locate (cl-mapcar (lambda (p) (concat package-name "/" p)) ,path)))))
-       ;; 	 (minima--with-delayed ',priority (minima--add-load-path-sexp (minima-locate package-name)))))
-
-;; (minima :clone "emacs-compat/compat")
+     ,@(let ((package-name (minima--package-name :repo clone)))
+	 (apply #'minima--with-delayed priority
+		(cons
+		 (minima--generate-add-load-path-sexp (minima-locate package-name))
+		 (mapcar #'minima--generate-add-load-path-sexp (minima--expand-paths-with-package package-name path)))))))
 
 ;;;###autoload
 (defun minima-byte-compile ()

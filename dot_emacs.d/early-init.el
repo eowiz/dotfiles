@@ -42,8 +42,8 @@
 (push '(right-fringe . 0) default-frame-alist)
 
 ;; フォント設定
-;; (push '(font . "Cica-20") default-frame-alist)
-(push '(font . "HackGen-20") default-frame-alist)
+(push '(font . "Cica-20") default-frame-alist)
+;; (push '(font . "HackGen-20") default-frame-alist)
 
 ;; Emacs の起動画面を無効
 (setq inhibit-splash-screen t)
@@ -62,8 +62,11 @@
 (setq ring-bell-function 'ignore)
 
 ;; 行番号を表示
-(global-display-line-numbers-mode t)
+(add-hook 'prog-mode-hook #'display-line-numbers-mode)
+(add-hook 'text-mode-hook #'display-line-numbers-mode)
+;; (global-display-line-numbers-mode t)
 ;; ddskk を使うときのガタつきを抑制
 (custom-set-variables '(display-line-numbers-width-start t))
+
 
 ;;; early-init.el ends here

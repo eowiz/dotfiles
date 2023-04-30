@@ -51,7 +51,7 @@
              (progn (message "disabling query-on-exit for '%s'" proc)
                     (set-process-query-on-exit-flag proc nil))))
 
-  (defun ef-ignore-processes-on-exit (&rest r)
+  (defun eaf-ignore-processes-on-exit (&rest r)
     (process-ignore-on-exit "EAF EPC"))
 
   (advice-add #'save-some-buffers :before #'eaf-ignore-processes-on-exit))

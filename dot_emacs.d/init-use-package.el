@@ -41,7 +41,20 @@
 
 	delete-by-moving-to-trash t)
   (setq insert-directory-program "gls")
-  (defalias 'yes-or-no-p 'y-or-n-p))
+  (defalias 'yes-or-no-p 'y-or-n-p)
+
+  ;; see: https://stackoverflow.com/questions/2706527/make-emacs-stop-asking-active-processes-exist-kill-them-and-exit-anyway
+  (defun process-ignore-on-exit (regexp)
+    (cl-loop for proc in (process-list)
+             when (s-matches-p regexp (process-name proc))
+             do
+             (progn (message "disabling query-on-exit for '%s'" proc)
+                    (set-process-query-on-exit-flag proc nil))))
+
+  (defun ef-ignore-processes-on-exit (&rest r)
+    (process-ignore-on-exit "EAF EPC"))
+
+  (advice-add #'save-some-buffers :before #'eaf-ignore-processes-on-exit))
 
 (use-package exec-path-from-shell
   :straight t
@@ -145,7 +158,7 @@
    ^ ^            ^ ^  ^  ^            [_C-4_] move to 4  [_C-9_] move to 9
    ^ ^            ^ ^  ^  ^            [_C-5_] move to 5  [_C-0_] move to 10
   ╭^^^^^^^^^^───────────────────────────────────────────────────────────────────────────╯
-   [_q_]: quit
+                                    [_q_]: quit
 "
     ("n" tab-bar-switch-to-next-tab nil :exit nil)
     ("p" tab-bar-switch-to-prev-tab nil :exit nil)
@@ -410,6 +423,10 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   :defer t
   :hook ((prog-mode . rainbow-delimiters-mode)))
 
+(use-package vterm
+  :straight t
+  :defer t)
+
 (use-package projectile
   :straight t
   :defer t
@@ -431,13 +448,27 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   :straight t
   :defer t
   :custom
-  (org-ellipsis "▽"))
+  (org-ellipsis " ▼"))
 
 (use-package org-modern
   :straight t
   :defer t
+  :hook ((emacs-startup . global-org-modern-mode)
+	 (org-mode . org-indent-mode))
+  :init
+  (setq org-modern-star (list #("󰎥" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
+			      #("󰎨" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
+			      #("󰎫" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
+			      #("󰎲" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
+			      #("󰎯" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
+		     ))
+  )
+
+(use-package org-tree-slide
+  :straight t
+  :defer t
   :config
-  (global-org-modern-mode))
+  (org-tree-slide-simple-profile))
 
 (use-package markdown-mode
   :straight t

@@ -41,20 +41,7 @@
 
 	delete-by-moving-to-trash t)
   (setq insert-directory-program "gls")
-  (defalias 'yes-or-no-p 'y-or-n-p)
-
-  ;; see: https://stackoverflow.com/questions/2706527/make-emacs-stop-asking-active-processes-exist-kill-them-and-exit-anyway
-  (defun process-ignore-on-exit (regexp)
-    (cl-loop for proc in (process-list)
-             when (s-matches-p regexp (process-name proc))
-             do
-             (progn (message "disabling query-on-exit for '%s'" proc)
-                    (set-process-query-on-exit-flag proc nil))))
-
-  (defun eaf-ignore-processes-on-exit (&rest r)
-    (process-ignore-on-exit "EAF EPC"))
-
-  (advice-add #'save-some-buffers :before #'eaf-ignore-processes-on-exit))
+  (defalias 'yes-or-no-p 'y-or-n-p))
 
 (use-package exec-path-from-shell
   :straight t
@@ -88,20 +75,36 @@
 (use-package consult
   :straight t
   :defer t
+  :after (hydra)
   :bind (("C-c M-x" . consult-mode-command)
 	 ("C-c k" . consult-kmacro)
 	 ("C-x b" . consult-buffer)
 	 :map isearch-mode-map
 	 ("M-l" . consult-line)
-	 ("M-g" . consult-ripgrep))
+	 ("M-g" . consult-ripgrep)
+	 :map minibuffer-mode-map
+	 ("M-s" . consult-history)
+         ("M-r" . consult-history))
   :custom
   (consult-preview-raw-size 1024000)
   (consult-preview-max-size 1024000)
   :config
   (consult-customize
-   consult-ripgrep consult-git-grep consult-grep
-   consult-bookmark consult-recent-file consult-xref
-   :preview-key (kbd "M-.")))
+   consult-buffer :preview-key "M-.")
+
+  (defhydra hydra-consult (:hint nil :exit t)
+    "
+  Serach
+  ^^^^^^^^^^─────────────────────────────────────────────────────────────────╨─────────╜
+  [_l_] line
+  [_L_] line-multi
+  [_g_] git-grep
+  [_r_] ripgrep
+  "
+    ("l" consult-line)
+    ("L" consult-line-multi)
+    ("g" consult-git-grep)
+    ("r" consult-ripgrep)))
 
 (use-package orderless
   :straight t
@@ -388,6 +391,8 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 (use-package undo-tree
   :straight t
   :defer 2
+  :custom
+  (undo-tree-auto-save-history nil)
   :config
   (global-undo-tree-mode))
 
@@ -450,19 +455,42 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   :custom
   (org-ellipsis " ▼"))
 
+(use-package org-bars
+  :straight (org-bars :type git
+		      :host github
+		      :repo "tonyaldon/org-bars")
+  :defer t
+  :hook ((org-mode . (lambda ()
+		       (require 'org-bars)
+		       (org-bars-mode)))))
+
 (use-package org-modern
   :straight t
   :defer t
-  :hook ((emacs-startup . global-org-modern-mode)
-	 (org-mode . org-indent-mode))
+  :hook ((emacs-startup . global-org-modern-mode))
+  :custom
+  (org-modern-hide-stars nil)
+  (org-modern-list
+   '((?- . "-")
+     (?* . "•")
+     (?+ . "‣")))
   :init
   (setq org-modern-star (list #("󰎥" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
 			      #("󰎨" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
 			      #("󰎫" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
 			      #("󰎲" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
 			      #("󰎯" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
-		     ))
+			      ))
   )
+
+(use-package org-modern-indent
+  :disabled t
+  :straight (org-modern-indent :type git
+			       :host github
+			       :repo "jdtsmith/org-modern-indent")
+  :defer t
+  :config
+  (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
 
 (use-package org-tree-slide
   :straight t
@@ -531,30 +559,33 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 ;; application-framework
 
 (use-package eaf
+  :disabled t
   :straight (eaf :host github
 		 :repo "emacs-eaf/emacs-application-framework"
 		 :files ("*.el" "*.py" "*.json"
 			 "core" "swaymsg-treefetch" "extension" "app")
 		 :includes (eaf-pdf-viewer eaf-browser eaf-git eaf-terminal)
 		 :pre-build ("python3" "install-eaf.py" "--install" "pdf-viewer" "browser" "git" "terminal" "--ignore-sys-deps"))
-  :defer 1)
-
-(use-package eaf-browser
-  :defer 3
-  :custom
-  (browse-url-browser-function #'eaf-open-browser)
-  (eaf-browser-enable-adblocker t)
+  :defer 1
   :config
-  (defalias 'browse-web #'eaf-open-browser))
 
-(use-package eaf-terminal
-  :defer 3
-  :custom
-  (eaf-terminal-font-family "HackGen Console NFJ")
-  (eaf-terminal-font-size 20))
+  (use-package eaf-browser
+    :defer 3
+    :custom
+    (browse-url-browser-function #'eaf-open-browser)
+    (eaf-browser-enable-adblocker t)
+    :config
+    (defalias 'browse-web #'eaf-open-browser))
 
-(use-package eaf-git
-  :defer 3)
+  (use-package eaf-terminal
+    :defer 3
+    :custom
+    (eaf-terminal-font-family "HackGen Console NFJ")
+    (eaf-terminal-font-size 20))
 
-(use-package eaf-pdf-viewer
-  :defer 3)
+  (use-package eaf-git
+    :defer 3)
+
+  (use-package eaf-pdf-viewer
+    :defer 3))
+

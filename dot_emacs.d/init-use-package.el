@@ -82,7 +82,7 @@
 	 :map isearch-mode-map
 	 ("M-l" . consult-line)
 	 ("M-g" . consult-ripgrep)
-	 :map minibuffer-mode-map
+	 :map minibuffer-local-map
 	 ("M-s" . consult-history)
          ("M-r" . consult-history))
   :custom

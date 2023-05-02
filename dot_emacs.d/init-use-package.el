@@ -453,7 +453,8 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   :straight t
   :defer t
   :custom
-  (org-ellipsis " ▼"))
+  (org-ellipsis " ▼")
+  (org-fontify-quote-and-verse-blocks t))
 
 (use-package org-bars
   :straight (org-bars :type git
@@ -481,6 +482,11 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 			      #("󰎲" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
 			      #("󰎯" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
 			      ))
+  :config
+  (let ((comment-color (face-attribute 'font-lock-comment-face :foreground)))
+    (custom-theme-set-faces
+     'user
+     `(org-quote ((t (:inherit org-block :slant italic :foreground ,comment-color))))))
   )
 
 (use-package org-modern-indent

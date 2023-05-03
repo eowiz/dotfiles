@@ -195,7 +195,7 @@
   :custom
   (tab-bar-tab-hints t)
   :bind-keymap
-  ("C-z" . my/tab-bar-map)
+  ("C-t" . my/tab-bar-map)
   :bind (:map my/tab-bar-map
 	      ("h" . hydra-tab-bar/body)
 	      ("n" . tab-bar-switch-to-next-tab)
@@ -297,17 +297,22 @@
      ((t
        (:foreground "deep sky blue" :bold t :height 3.0))))))
 
-  (use-package anzu
-    :straight t
-    :defer 1
-    :commands (anzu-query-replace anzu-query-replace-regex anzu-mode-line)
-    :bind (([remap query-replace] . anzu-query-replace)
-	   ([remap query-replace-regexp] . anzu-query-replace-regex))
-    :custom ((anzu-replace-threshold 1000)
-	     (anzu-search-threshold 1000))
-    :hook ((emacs-startup . (lambda () (global-anzu-mode +1))))
-    :config
-    (copy-face 'mode-line 'anzu-mode-line))
+(use-package ace-jump-mode
+  :straight t
+  :defer t
+  :bind (("C-c SPC" . ace-jump-mode)))
+
+(use-package anzu
+  :straight t
+  :defer 1
+  :commands (anzu-query-replace anzu-query-replace-regex anzu-mode-line)
+  :bind (([remap query-replace] . anzu-query-replace)
+	 ([remap query-replace-regexp] . anzu-query-replace-regex))
+  :custom ((anzu-replace-threshold 1000)
+	   (anzu-search-threshold 1000))
+  :hook ((emacs-startup . (lambda () (global-anzu-mode +1))))
+  :config
+  (copy-face 'mode-line 'anzu-mode-line))
 
 (use-package nerd-icons
   :straight t
@@ -810,6 +815,9 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
     :config
     (elfeed-org))
 
+  (defun elfeed-search-format-date (date)
+    (format-time-string "%Y-%m-%d %H:%M" (seconds-to-time date)))
+
   (setq elfeed-show-mode-hook
 	(lambda ()
 	  (set-face-attribute 'variable-pitch (selected-frame)
@@ -829,4 +837,55 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 (use-package md4rd
   :straight t
   :defer t)
+
+;; evil
+
+(use-package evil
+  :after (tab-bar)
+  :straight t
+  :defer t
+  :custom
+  (evil-insert-state-map nil)
+  (evil-want-integration t)
+  (evil-want-keybinding nil)
+  :bind (:map evil-insert-state-map
+	      ([escape] . evil-normal-state)
+	      :map evil-normal-state-map
+	      ("C-t" . my/tab-bar-map))
+  :config
+
+  (use-package evil-collection
+    :straight t
+    :after (evil)
+    :config
+    (evil-collection-init))
+  
+  ;; see: https://tarao.hatenablog.com/entry/20130304/evil_config
+  (defadvice update-buffer-local-cursor-color
+      (around evil-update-buffer-local-cursor-color-in-insert-state activate)
+    ;; SKKによるカーソル色変更を, 挿入ステートかつ日本語モードの場合に限定
+    "Allow ccc to update cursor color only when we are in insert
+state and in `skk-j-mode'."
+    (when (and (eq evil-state 'insert) (bound-and-true-p skk-j-mode))
+      ad-do-it))
+  (defadvice evil-refresh-cursor
+      (around evil-refresh-cursor-unless-skk-mode activate)
+    ;; Evilによるカーソルの変更を, 挿入ステートかつ日本語モードではない場合に限定
+    "Allow ccc to update cursor color only when we are in insert
+state and in `skk-j-mode'."
+    (unless (and (eq evil-state 'insert) (bound-and-true-p skk-j-mode))
+      ad-do-it))
+  (defadvice evil-ex-search-update-pattern
+      (around evil-inhibit-ex-search-update-pattern-in-skk-henkan activate)
+    ;; SKKの未確定状態(skk-henkan-mode)ではない場合だけ, 検索パターンをアップデート
+    "Inhibit search pattern update during `skk-henkan-mode'.
+This is reasonable since inserted text during `skk-henkan-mode'
+is a kind of temporary one which is not confirmed yet."
+    (unless (bound-and-true-p skk-henkan-mode)
+      ad-do-it)))
+
+(use-package origami
+  :straight t
+  :defer t
+  :hook ((emacs-startup . global-origami-mode)))
 

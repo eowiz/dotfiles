@@ -297,10 +297,10 @@
      ((t
        (:foreground "deep sky blue" :bold t :height 3.0))))))
 
-(use-package ace-jump-mode
+(use-package avy
   :straight t
   :defer t
-  :bind (("C-c SPC" . ace-jump-mode)))
+  :bind (("C-;" . avy-goto-char)))
 
 (use-package anzu
   :straight t
@@ -841,7 +841,7 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 ;; evil
 
 (use-package evil
-  :after (tab-bar)
+  :after (tab-bar avy)
   :straight t
   :defer t
   :custom
@@ -853,7 +853,6 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 	      :map evil-normal-state-map
 	      ("C-t" . my/tab-bar-map))
   :config
-
   (use-package evil-collection
     :straight t
     :after (evil)

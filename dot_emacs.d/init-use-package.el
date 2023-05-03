@@ -54,7 +54,11 @@
   :hook (emacs-startup . my/load-theme)
   :init
   (defun my/load-theme ()
-    (load-theme 'modus-operandi-tinted t)))
+    (load-theme 'modus-operandi-tinted t)
+    ;; (load-theme 'modus-vivendi t)
+    ;; (load-theme 'modus-vivendi-tinted t)
+    ;; (load-theme 'modus-vivendi-deuteranopia t)
+    ))
 
 (use-package doom-modeline
   :straight t
@@ -88,23 +92,32 @@
   :custom
   (consult-preview-raw-size 1024000)
   (consult-preview-max-size 1024000)
+  (xref-show-xrefs-function #'consult-xref)
+  (xref-show-definitions-function #'consult-xref)
   :config
   (consult-customize
    consult-buffer :preview-key "M-.")
 
   (defhydra hydra-consult (:hint nil :exit t)
     "
-  Serach
-  ^^^^^^^^^^─────────────────────────────────────────────────────────────────╨─────────╜
-  [_l_] line
-  [_L_] line-multi
-  [_g_] git-grep
+   ^ ^               ^ ^                                                ╔═════════╗
+  Serach^^          Jump^^                                              ║ Consult ║
+  ^^^^──────────────────────────────────────────────────────────────────╨─────────╜
+  [_l_] line        [_m_] imenu
+  [_L_] line-multi  [_M_] imenu-multi
+  [_g_] git-grep    [_o_] outline
   [_r_] ripgrep
+  ╭^^^^^───────────────────────────────────────────────────────────────────────────╯
+                                  [_q_]: quit
   "
     ("l" consult-line)
     ("L" consult-line-multi)
     ("g" consult-git-grep)
-    ("r" consult-ripgrep)))
+    ("r" consult-ripgrep)
+    ("m" consult-imenu)
+    ("M" consult-imenu-multi)
+    ("o" consult-outline)
+    ("q" nil nil)))
 
 (use-package orderless
   :straight t
@@ -142,7 +155,6 @@
   :commands (ddskk-posframe-mode)
   :hook ((skk-mode . ddskk-posframe-mode)))
 
-;; elscreen
 (use-package tab-bar
   :straight t
   :demand t
@@ -268,17 +280,34 @@
 
   (tab-bar-mode 1))
 
-(use-package anzu
+(use-package mlscroll
   :straight t
-  :defer 1
-  :commands (anzu-query-replace anzu-query-replace-regex anzu-mode-line)
-  :bind (([remap query-replace] . anzu-query-replace)
-	 ([remap query-replace-regexp] . anzu-query-replace-regex))
-  :custom ((anzu-replace-threshold 1000)
-	   (anzu-search-threshold 1000))
-  :hook ((emacs-startup . (lambda () (global-anzu-mode +1))))
+  :defer t
+  :hook ((emacs-startup . mlscroll-mode)))
+
+(use-package ace-window
+  :straight t
+  :defer t
+  :bind (("C-x o" . ace-window))
+  :custom
+  (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
   :config
-  (copy-face 'mode-line 'anzu-mode-line))
+  (custom-set-faces
+   '(aw-leading-char-face
+     ((t
+       (:foreground "deep sky blue" :bold t :height 3.0))))))
+
+  (use-package anzu
+    :straight t
+    :defer 1
+    :commands (anzu-query-replace anzu-query-replace-regex anzu-mode-line)
+    :bind (([remap query-replace] . anzu-query-replace)
+	   ([remap query-replace-regexp] . anzu-query-replace-regex))
+    :custom ((anzu-replace-threshold 1000)
+	     (anzu-search-threshold 1000))
+    :hook ((emacs-startup . (lambda () (global-anzu-mode +1))))
+    :config
+    (copy-face 'mode-line 'anzu-mode-line))
 
 (use-package nerd-icons
   :straight t
@@ -396,7 +425,25 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   :config
   (global-undo-tree-mode))
 
+(use-package flymake
+  :straight t
+  :defer t)
+
+(use-package flymake-diagnostic-at-point
+  :straight t
+  :defer t)
+
+(use-package posframe
+  :straight t
+  :defer t)
+
+(use-package flymake-posframe
+  :straight (flymake-posframe :type git :host github :repo "Ladicle/flymake-posframe")
+  :defer t
+  :hook (flymake-mode . flymake-posframe-mode))
+
 (use-package flycheck
+  :disabled t
   :straight t
   :defer 2
   :config
@@ -408,20 +455,19 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   :defer t
   :hook ((flycheck-mode . sideline-mode))
   :init
-  (setq sideline-backends-skip-current-line t  ; don't display on current line
-        sideline-order-left 'down              ; or 'up
-        sideline-order-right 'up               ; or 'down
-        sideline-format-left "%s   "           ; format for left aligment
-        sideline-format-right "   %s"          ; format for right aligment
-        sideline-priority 100                  ; overlays' priority
+  (setq sideline-backends-skip-current-line t ; don't display on current line
+        sideline-order-left 'down	      ; or 'up
+        sideline-order-right 'up	      ; or 'down
+        sideline-format-left "%s   "	; format for left aligment
+        sideline-format-right "   %s"	; format for right aligment
+        sideline-priority 100		; overlays' priority
         sideline-display-backend-name t)
-  (setq sideline-backends-right '(sideline-flycheck)))
-
-(use-package sideline-flycheck
-  :disabled t
-  :straight t
-  :defer t
-  :hook ((flycheck-mode . sideline-flycheck-setup)))
+  (setq sideline-backends-right '(sideline-flycheck))
+  :config
+  (use-package sideline-flycheck
+    :straight t
+    :defer t
+    :hook ((flycheck-mode . sideline-flycheck-setup))))
 
 (use-package rainbow-delimiters
   :straight t
@@ -431,6 +477,26 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 (use-package vterm
   :straight t
   :defer t)
+
+(use-package vterm-toggle
+  :straight t
+  :defer t
+  :bind (("C-'" . vterm-toggle))
+  :custom
+  (vterm-toggle-scope 'project)
+  :config
+  (setq vterm-toggle-fullscreen-p nil)
+  (add-to-list 'display-buffer-alist
+               '((lambda (buffer-or-name _)
+                   (let ((buffer (get-buffer buffer-or-name)))
+                     (with-current-buffer buffer
+                       (or (equal major-mode 'vterm-mode)
+                           (string-prefix-p vterm-buffer-name (buffer-name buffer))))))
+		 (display-buffer-reuse-window display-buffer-in-side-window)
+		 (side . bottom)
+		 ;;(dedicated . t) ;dedicated is supported in emacs27
+		 (reusable-frames . visible)
+		 (window-height . 0.3))))
 
 (use-package projectile
   :straight t
@@ -449,12 +515,49 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   :straight (consult-projectile :type git :host gitlab :repo "OlMon/consult-projectile" :branch "master")
   :defer t)
 
+(use-package treemacs
+  :straight t
+  :defer t
+  :bind (("C-\\" . treemacs-select-window))
+  :config
+  (treemacs-indent-guide-mode t)
+  (treemacs-fringe-indicator-mode t)
+  (treemacs-filewatch-mode t)
+  (treemacs-git-commit-diff-mode t)
+
+  (pcase (cons (not (null (executable-find "git")))
+               (not (null (treemacs--find-python3))))
+    (`(t . t)
+     (treemacs-git-mode 'deferred))
+    (`(t . _)
+     (treemacs-git-mode 'simple)))
+  
+  (use-package treemacs-nerd-icons
+    :straight t
+    :config
+    (treemacs-load-theme "nerd-icons")))
+
+(use-package treemacs-projectile
+  :straight t
+  :defer t)
+
+(use-package treemacs-magit
+  :straight t
+  :defer t)
+
+(use-package apheleia
+  :straight t
+  :defer t
+  :config
+  (apheleia-global-mode +1))
+
 (use-package org-mode
   :straight t
   :defer t
   :custom
   (org-ellipsis " ▼")
-  (org-fontify-quote-and-verse-blocks t))
+  (org-fontify-quote-and-verse-blocks t)
+  (org-use-speed-commands t))
 
 (use-package org-bars
   :straight (org-bars :type git
@@ -525,16 +628,113 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   :hook ((emacs-lisp-mode . enable-paredit-mode)))
 
 (use-package lsp-bridge
+  :disabled t
   :straight (lsp-bridge :host github
 			:repo "manateelazycat/lsp-bridge"
 			:files ("*.el" "*.py" "acm" "core" "languageserver"
 				"multiserver" "resources"))
   :defer 2
-  :hook ((acm-mode . (lambda () (corfu-mode -1)))))
+  :hook ((acm-mode . (lambda () (corfu-mode -1))))
+  :config
 
-(use-package acm-terminal
+  (use-package acm-terminal
   :straight (acm-terminal :host github :repo "twlz0ne/acm-terminal")
+  :defer t))
+
+(defvar lombok-path (expand-file-name "~/.m2/repository/org/projectlombok/lombok/1.18.26/lombok-1.18.26.jar"))
+
+(use-package eglot
+  :disabled t
+  :straight t
+  :defer t
+  :config
+  (use-package eglot-java
+    :straight t
+    :defer t
+    :hook ((java-ts-mode . eglot-java-mode))
+    :custom
+    (eglot-java-eclipse-jdt-args
+     `(
+       "-noverify"
+       "-Xmx1G"
+       "-XX:+UseG1GC"
+       "-XX:+UseStringDeduplication"
+       ,(concat "-javaagent:" lombok-path)
+       ,(concat "-Xbootclasspath/a:" lombok-path)))))
+
+(use-package lsp-mode
+  :straight t
+  :defer t
+  :hook ((lsp-mode . lsp-enable-which-key-integration)))
+
+(use-package consult-lsp
+  :straight t
+  :defer t
+  :after (lsp-mode consult)
+  :bind (:map lsp-mode-map
+	      ([remap xref-find-apropos] . consult-lsp-symbols)))
+
+(use-package lsp-treemacs
+  :straight t
   :defer t)
+
+(use-package lsp-java
+  :straight t
+  :defer t
+  :after (lsp-mode)
+  :custom
+  (lsp-java-vmargs
+   `("-noverify"
+     "-Xmx4G"
+     "-XX:+UseG1GC"
+     "-XX:+UseStringDeduplication"
+     ,(concat "-javaagent:" lombok-path)
+     ,(concat "-Xbootclasspath/a:" lombok-path)))
+
+  (add-hook 'java-mode-hook #'lsp))
+
+(use-package lsp-ui
+  :straight t
+  :defer t
+  :after (lsp-mode)
+  :hook ((lsp-mode . lsp-ui-mode))
+  :bind (:map lsp-ui-mode-map
+	      ("C-," . lsp-ui-doc-show)
+	      ("C-." . lsp-ui-doc-focus-frame)
+	      ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
+	      ([remap xref-find-references] . lsp-ui-peek-find-references))
+  :custom
+  (lsp-print-io nil)
+  (lsp-trace nil)
+  (lsp-print-performance nil)
+
+  (lsp-ui-doc-use-childframe t)
+  ;; (lsp-ui-doc-use-webkit t)
+
+  (lsp-ui-flycheck-enable nil)
+
+  (lsp-auto-guess-root t)
+  (lsp-ui-sideline-show-hover t)
+  (lsp-ui-sideline-show-diagnostics t)
+  (lsp-ui-peek-enable t)
+  (lsp-ui-doc-enable t)
+  (lsp-ui-doc-position 'at-point)
+  (lsp-document-sync-method 'incremental))
+
+(use-package tree-sitter
+  :straight t
+  :defer t
+  :hook ((tree-sitter-after-on-hook . tree-sitter-hl-mode))
+  :config
+  (global-tree-sitter-mode))
+
+(use-package tree-sitter-langs
+  :straight t
+  :defer t
+  :after tree-sitter)
+
+(use-package java-mode
+  :hook ((java-mode . flymake-mode)))
 
 (use-package yaml-mode
   :straight t
@@ -594,4 +794,39 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 
   (use-package eaf-pdf-viewer
     :defer 3))
+
+;; other
+
+(use-package elfeed
+  :straight t
+  :defer t
+  :custom
+  (elfeed-search-title-max-width 100)
+  :config
+  (use-package elfeed-org
+    :straight t
+    :custom    
+    (rmh-elfeed-org-file `(,(locate-user-emacs-file "elfeed.org")))
+    :config
+    (elfeed-org))
+
+  (setq elfeed-show-mode-hook
+	(lambda ()
+	  (set-face-attribute 'variable-pitch (selected-frame)
+			      :font (font-spec :family "HackGen Console NFJ" :size 14))
+	  (setq fill-column 120)
+	  (setq elfeed-show-entry-switch #'my-show-elfeed)))
+
+  (defun my-show-elfeed (buffer)
+    (with-current-buffer buffer
+      (setq buffer-read-only nil)
+      (goto-char (point-min))
+      (re-search-forward "\n\n")
+      (fill-individual-paragraphs (point) (point-max))
+      (setq buffer-read-only t))
+    (switch-to-buffer buffer)))
+
+(use-package md4rd
+  :straight t
+  :defer t)
 

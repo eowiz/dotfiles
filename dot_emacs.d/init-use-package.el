@@ -28,7 +28,9 @@
 	scroll-preserve-screen-position t)
   (pixel-scroll-precision-mode t)
 
-  (global-auto-revert-mode 1)
+  (setq dired-do-revert-buffer t)
+  (setq global-auto-revert-non-file-buffers t)
+  (global-auto-revert-mode)
 
   (savehist-mode)
   (recentf-mode)
@@ -195,7 +197,7 @@
   :custom
   (tab-bar-tab-hints t)
   :bind-keymap
-  ("C-t" . my/tab-bar-map)
+  ("C-z" . my/tab-bar-map)
   :bind (:map my/tab-bar-map
 	      ("h" . hydra-tab-bar/body)
 	      ("n" . tab-bar-switch-to-next-tab)
@@ -299,8 +301,29 @@
 
 (use-package avy
   :straight t
+  :defer t)
+
+(use-package migemo
+  :straight t
   :defer t
-  :bind (("C-;" . avy-goto-char)))
+  :custom
+  (migemo-options '("-q" "--emacs"))
+  (migemo-command "/opt/homebrew/bin/cmigemo")
+  (migemo-dictionary "/opt/homebrew/share/migemo/utf-8/migemo-dict")
+  (migemo-user-dictionary nil)
+  (migemo-regex-dictionary nil)
+  (migemo-coding-system 'utf-8-unix)
+  :config
+  (migemo-init))
+
+(use-package avy-migemo
+  :straight t
+  :defer t
+  :bind (("C-;" . avy-migemo-goto-char-timer))
+  :custom
+  (avy-timeout-seconds nil)
+  :config
+  (avy-migemo-mode 1))
 
 (use-package anzu
   :straight t
@@ -316,7 +339,9 @@
 
 (use-package nerd-icons
   :straight t
-  :defer 1)
+  :defer 1
+  :config
+  (delete '("code" nerd-icons-octicon "nf-oct-code") nerd-icons-dir-icon-alist))
 
 (use-package nerd-icons-dired
   :straight t
@@ -374,6 +399,15 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 	   (highlight-indent-guides-auto-enabled t)
 	   (highlight-indent-guides-responsive t))
   :hook ((prog-mode . highlight-indent-guides-mode)))
+
+(use-package dimmer
+  :straight t
+  :defer t
+  :hook ((emacs-startup . dimmer-mode))
+  :custom
+  (dimmer-fraction 0.6)
+  :config
+  (dimmer-configure-which-key))
 
 ;;
 ;; Git
@@ -559,10 +593,33 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 (use-package org-mode
   :straight t
   :defer t
+  :init
+  (setq system-time-locate nil)
   :custom
   (org-ellipsis " ▼")
   (org-fontify-quote-and-verse-blocks t)
-  (org-use-speed-commands t))
+  (org-use-speed-commands t)
+
+  (org-display-custom-times t)
+  (org-image-actual-width nil)
+
+  ;; see: https://misohena.jp/blog/2021-08-29-colorize-saturday-and-japanese-holidays-in-org-agenda.html
+  (org-agenda-day-face-function (lambda (date)
+				  (let ((face (cond
+					       ;; 土曜日
+					       ((= (calendar-day-of-week date) 6)
+						'(:inherit org-agenda-date :foreground "#0df"))
+					       ;; 日曜日か日本の祝日
+					       ((or (= (calendar-day-of-week date) 0)
+						    (let ((calendar-holidays japanese-holidays))
+						      (calendar-check-holidays date)))
+						'org-agenda-date-weekend)
+					       ;; 普通の日
+					       (t 'org-agenda-date))))
+				    ;; 今日は色を反転
+				    (if (org-agenda-today-p date) (list :inherit face :inverse-video t) face))))
+  :config
+  (setq org-time-stamp-custom-formats '("<%Y年%m月%d日(%a)>" . "<%Y年%m月%d日(%a)%H時%M分>")))
 
 (use-package org-bars
   :straight (org-bars :type git
@@ -583,6 +640,7 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
    '((?- . "-")
      (?* . "•")
      (?+ . "‣")))
+  (org-modern-timestamp '(" %Y年%m月%d日(%a) " . " %H時%M分 "))
   :init
   (setq org-modern-star (list #("󰎥" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
 			      #("󰎨" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
@@ -611,6 +669,16 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   :defer t
   :config
   (org-tree-slide-simple-profile))
+
+(use-package org-download
+  :straight t
+  :defer t
+  :hook ((dired-mode . org-download-enable)
+	 (org-mode . org-download-enable))
+  :init
+  (setq org-download-image-dir "images")
+  :custom
+  (org-download-method 'directory))
 
 (use-package markdown-mode
   :straight t
@@ -841,24 +909,39 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 ;; evil
 
 (use-package evil
-  :after (tab-bar avy)
   :straight t
-  :defer t
+  :demand t
+  :hook ((emacs-startup . evil-mode)
+	 (evil-mode . my/evil-setup))
   :custom
-  (evil-insert-state-map nil)
   (evil-want-integration t)
   (evil-want-keybinding nil)
-  :bind (:map evil-insert-state-map
-	      ([escape] . evil-normal-state)
-	      :map evil-normal-state-map
-	      ("C-t" . my/tab-bar-map))
+  (evil-toggle-key "C-t")
+  :init
   :config
+  (defun my/evil-setup ()
+    (setq evil-insert-state-map nil)
+    (bind-keys :map evil-insert-state-map
+	       ([escape] . evil-normal-state)))
+
   (use-package evil-collection
     :straight t
-    :after (evil)
     :config
     (evil-collection-init))
-  
+
+  (use-package evil-paredit
+    :straight t
+    :hook ((emacs-lisp-mode . evil-paredit-mode)))
+
+  ;; TODO 動くようにする
+  (use-package evil-org
+    :disabled t
+    :straight t
+    :hook ((org-mode . (lambda () (evil-org-mode))))
+    :config
+    (require 'evil-org-agenda)
+    (evil-org-agenda-set-keys))
+
   ;; see: https://tarao.hatenablog.com/entry/20130304/evil_config
   (defadvice update-buffer-local-cursor-color
       (around evil-update-buffer-local-cursor-color-in-insert-state activate)
@@ -887,4 +970,3 @@ is a kind of temporary one which is not confirmed yet."
   :straight t
   :defer t
   :hook ((emacs-startup . global-origami-mode)))
-

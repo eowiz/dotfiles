@@ -795,6 +795,7 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   (lsp-document-sync-method 'incremental))
 
 (use-package tree-sitter
+  :disabled t
   :straight t
   :defer t
   :hook ((tree-sitter-after-on-hook . tree-sitter-hl-mode))
@@ -802,6 +803,7 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   (global-tree-sitter-mode))
 
 (use-package tree-sitter-langs
+  :disabled t
   :straight t
   :defer t
   :after tree-sitter)

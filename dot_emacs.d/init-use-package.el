@@ -23,6 +23,8 @@
 (use-package emacs
   :bind (("M-SPC" . open-init-org))
   :init
+  (setq custom-file "~/.emacs.d/custom.el")
+  
   (setq scroll-margin 0
 	scroll-conservatively 100000
 	scroll-preserve-screen-position t)
@@ -597,11 +599,21 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   (setq system-time-locate nil)
   :custom
   (org-ellipsis " ▼")
+  (org-startup-with-inline-images t)
   (org-fontify-quote-and-verse-blocks t)
   (org-use-speed-commands t)
 
   (org-display-custom-times t)
   (org-image-actual-width nil)
+
+  (org-agenda-tags-column 0)
+  (org-agenda-block-separator ?─)
+  (org-agenda-time-grid
+   '((daily today require-timed)
+     (800 1000 1200 1400 1600 1800 2000)
+     " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
+   org-agenda-current-time-string
+   "⭠ now ─────────────────────────────────────────────────")
 
   ;; see: https://misohena.jp/blog/2021-08-29-colorize-saturday-and-japanese-holidays-in-org-agenda.html
   (org-agenda-day-face-function (lambda (date)
@@ -679,6 +691,33 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   (setq org-download-image-dir "images")
   :custom
   (org-download-method 'directory))
+
+(use-package org-roam
+  :straight t
+  :defer t
+  :custom
+  ;; 環境依存のため customize で設定
+  ;; (org-roam-directory "")
+  ;; (org-roam-db-location "")
+  :config
+  (org-roam-setup))
+
+(use-package org-roam-ui
+  :straight t
+  :defer t
+  :custom
+  (org-roam-ui-sync-theme t)
+  (org-roam-ui-follow t)
+  (org-roam-ui-update-on-save t)
+  (org-roam-ui-open-on-start t))
+
+(use-package ob-mermaid
+  :straight t
+  :defer t
+  :config
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((mermaid . t))))
 
 (use-package markdown-mode
   :straight t
@@ -837,6 +876,10 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   :straight t
   :defer t)
 
+(use-package proof-general
+  :straight t
+  :defer t)
+
 ;; application-framework
 
 (use-package eaf
@@ -937,11 +980,10 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 
   ;; TODO 動くようにする
   (use-package evil-org
-    :disabled t
     :straight t
+    :requires (evil-org-agenda)
     :hook ((org-mode . (lambda () (evil-org-mode))))
     :config
-    (require 'evil-org-agenda)
     (evil-org-agenda-set-keys))
 
   ;; see: https://tarao.hatenablog.com/entry/20130304/evil_config

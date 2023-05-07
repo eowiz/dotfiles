@@ -24,6 +24,7 @@
   :bind (("M-SPC" . open-init-org))
   :init
   (setq custom-file "~/.emacs.d/custom.el")
+  (load custom-file)
   
   (setq scroll-margin 0
 	scroll-conservatively 100000
@@ -409,7 +410,10 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   :custom
   (dimmer-fraction 0.6)
   :config
-  (dimmer-configure-which-key))
+  (dimmer-configure-which-key)
+  (dimmer-configure-hydra)
+  (dimmer-configure-posframe)
+  (dimmer-configure-magit))
 
 ;;
 ;; Git
@@ -597,9 +601,9 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   :defer t
   :init
   (setq system-time-locate nil)
+  (setq org-startup-with-inline-images t)
   :custom
   (org-ellipsis " ▼")
-  (org-startup-with-inline-images t)
   (org-fontify-quote-and-verse-blocks t)
   (org-use-speed-commands t)
 
@@ -665,6 +669,11 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
     (custom-theme-set-faces
      'user
      `(org-quote ((t (:inherit org-block :slant italic :foreground ,comment-color))))))
+
+  (setq org-ditaa-jar-path "/opt/homebrew/Cellar/ditaa/0.11.0_1/libexec/ditaa-0.11.0-standalone.jar")
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((ditaa . t)))
   )
 
 (use-package org-modern-indent
@@ -695,16 +704,41 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 (use-package org-roam
   :straight t
   :defer t
-  :custom
+  :init
+  (defhydra hydra-org-roam (:hint nil :exit t)
+    "
+    ^ ^            ^   ^            ^ ^                 ╔══════════╗
+   Find/Insert^^  Today            Graphic^^            ║ Org Roam ║
+  ^^^^──────────────────────────────────────────────────╨──────────╜
+   [_f_] find     [_C-f_] find     [_m_] roam-ui
+   [_i_] inert    [_C-c_] capture  [_o_] open ui
+   [_c_] capture   ^   ^           [_g_] graph
+   
+  ╭^^^^^^^─────────────────────────────────────────────────────────╯
+                             [_q_]: quit
+"
+    ("f" org-roam-node-find nil)
+    ("i" org-roam-node-insert nil)
+    ("c" org-roam-capture nil)
+    ("C-f" org-roam-dailies-find-today nil)
+    ("C-c" org-roam-dailies-capture-today nil)
+    ("m" org-roam-mode)
+    ("o" org-roam-ui-open)
+    ("g" org-roam-graph nil)
+    ("q" nil nil))
+  :bind ("C-c n" . hydra-org-roam/body)
+  ;; :custom
   ;; 環境依存のため customize で設定
   ;; (org-roam-directory "")
   ;; (org-roam-db-location "")
   :config
-  (org-roam-setup))
+  (org-roam-setup)
+  )
 
 (use-package org-roam-ui
   :straight t
   :defer t
+  :after (org-roam)
   :custom
   (org-roam-ui-sync-theme t)
   (org-roam-ui-follow t)
@@ -713,7 +747,7 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 
 (use-package ob-mermaid
   :straight t
-  :defer t
+  :after (org)
   :config
   (org-babel-do-load-languages
    'org-babel-load-languages

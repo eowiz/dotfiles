@@ -31,7 +31,6 @@
 	scroll-preserve-screen-position t)
   (pixel-scroll-precision-mode t)
 
-  (setq dired-do-revert-buffer t)
   (setq global-auto-revert-non-file-buffers t)
   (global-auto-revert-mode)
 
@@ -47,6 +46,13 @@
 	delete-by-moving-to-trash t)
   (setq insert-directory-program "gls")
   (defalias 'yes-or-no-p 'y-or-n-p))
+
+(use-package dired
+  :custom
+  (dired-dwim-target t)
+  (dired-do-revert-buffer t)
+  (dired-recursive-copies 'always)
+  (dired-isearch-filenames t))
 
 (use-package exec-path-from-shell
   :straight t

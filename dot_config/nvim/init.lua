@@ -1,3 +1,6 @@
+vim.g.loaded_matchparen = 1
+vim.g.mapleader = ' '
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
@@ -17,14 +20,46 @@ require("lazy").setup({
    "folke/neodev.nvim",
    -- { "ellisonleao/gruvbox.nvim", priority = 1000 },
    -- { "joshdick/onedark.vim", priority = 1000 },
-   { "tomasr/molokai", priority = 1000 },
+   -- { "tomasr/molokai", priority = 1000 },
+   -- { "catppuccin/nvim",
+   --   name = "catppuccin",
+   --   priority = 1000,
+   --   config = function()
+   --     require("catppuccin").setup({
+   --       flavour = "frappe"
+   --     })
+   --   end
+   -- },
+   { "savq/melange-nvim", priority = 1000 },
    { "xiyaowong/transparent.nvim", run = ":TransparentEnable" },
    { "nvim-lualine/lualine.nvim", dependencies = { "nvim-tree/nvim-web-devicons" } },
-   {'akinsho/bufferline.nvim', version = "*", dependencies = 'nvim-tree/nvim-web-devicons' },
-   { "dinhhuy258/git.nvim", config = function() require("git").setup() end },
+   { "akinsho/bufferline.nvim", version = "*", dependencies = "nvim-tree/nvim-web-devicons" },
+   {
+     "dinhhuy258/git.nvim",
+     config = function()
+       require("git").setup()
+     end
+   },
+   { "andymass/vim-matchup" },
    {
      "nvim-telescope/telescope-file-browser.nvim",
-     dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" }
+     dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
+     keys = {
+       { "<leader>fb", ":Telescope file_browser path=%:p:h select_buffer=true<CR>", desc = "FileBrowser" },
+     },
+     config = function()
+       require("telescope").load_extension("file_browser")
+     end,
+   },
+   { 
+     "nvim-telescope/telescope-ghq.nvim",
+     dependencies = { "nvim-telescope/telescope.nvim" }, 
+     keys = {
+       { "<C-g>", ":Telescope ghq list<CR>", desc = "ghq list" },
+     },
+     config = function()
+       require("telescope").load_extension("ghq")
+     end,
    },
    { "nvim-treesitter/nvim-treesitter", run = ":TSUpdate" },
    "vim-denops/denops.vim",
@@ -59,9 +94,15 @@ vim.opt.shiftwidth = 2
 vim.opt.expandtab = true
 vim.opt.termguicolors = true
 
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
+vim.opt.wrapscan = true
+
+vim.opt.clipboard:append({ unnamedeplus = true })
+
 -- Theme
-vim.o.background = "dark"
-vim.cmd([[colorscheme molokai]])
+-- vim.cmd.color.scheme catppuccin
+vim.cmd.colorscheme 'melange'
 vim.opt.fillchars = {
   vert = ' ',
 }
@@ -74,10 +115,9 @@ vim.opt.fillchars = {
 require("lualine").setup()
 
 vim.wo.number = true
+vim.wo.relativenumber = true
 
 -- Key config
-vim.g.mapleader = ' '
-
 vim.keymap.set("i", "<C-p>", "<Up>")
 vim.keymap.set("i", "<C-n>", "<Down>")
 vim.keymap.set("i", "<C-f>", "<Right>")
@@ -97,6 +137,15 @@ vim.keymap.set("i", "<C-Space>", "<Esc>lv")
 
 vim.keymap.set("n", "<C-l>", "zz")
 vim.keymap.set("i", "<C-l>", "<Esc>zza")
+
+vim.keymap.set("n", "s", "<NOP>")
+vim.keymap.set("n", "sj", "<C-w>j")
+vim.keymap.set("n", "sk", "<C-w>k")
+vim.keymap.set("n", "sl", "<C-w>l")
+vim.keymap.set("n", "sh", "<C-w>h")
+
+vim.keymap.set("n", "<C-w>-", "<C-w>s")
+vim.keymap.set("n", "<C-w>\\", "<C-w>v")
 
 vim.api.nvim_create_autocmd("BufEnter", {
   pattern = "*",
@@ -127,14 +176,6 @@ vim.keymap.set('i', '<C-j>', '<Plug>(skkeleton-enable)')
 vim.keymap.set('c', '<C-j>', '<Plug>(skkeleton-enable)')
 
 -- telecope
-require("telescope").load_extension "file_browser"
-
-vim.api.nvim_set_keymap(
-  "n",
-  "<space>fb",
-  ":Telescope file_browser path=%:p:h select_buffer=true<CR>",
-  { noremap = true }
-)
 
 -- nvim-tree
 vim.g.loaded_netrw = 1
@@ -164,8 +205,9 @@ vim.keymap.set("n", "<leader>lg", "<cmd>lua _lazygit_toggle()<CR>", { noremap = 
 
 -- indent-blankline
 vim.opt.list = true
-vim.opt.listchars:append "space:⋅"
-vim.opt.listchars:append "eol:↴"
+vim.opt.listchars = { tab='>-', trail='⋅', nbsp='+' }
+-- vim.opt.listchars:append "space:⋅"
+-- vim.opt.listchars:append "eol:↴"
 
 require("indent_blankline").setup {
     space_char_blankline = " ",

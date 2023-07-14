@@ -9,5 +9,17 @@ if [[ $(command -v exa) ]]; then
   alias lta='exa -T -a -I ".git" --git-ignore --color=always --icons | less -r'
 fi
 
-alias grep='rg'
-alias cat='bat'
+## grep
+if [[ $(command -v rg) ]]; then
+  alias grep='rg'
+fi
+
+## cat
+if [[ $(command -v bat) ]]; then
+  alias cat='bat'
+fi
+
+## vim
+if [[ $(command -v nvim) ]]; then
+  alias vim='nvim'
+fi

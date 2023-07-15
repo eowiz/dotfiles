@@ -15,90 +15,139 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-   "folke/which-key.nvim",
-   { "folke/neoconf.nvim", cmd = "Neoconf" },
-   "folke/neodev.nvim",
-   -- { "ellisonleao/gruvbox.nvim", priority = 1000 },
-   -- { "joshdick/onedark.vim", priority = 1000 },
-   -- { "tomasr/molokai", priority = 1000 },
-   -- { "catppuccin/nvim",
-   --   name = "catppuccin",
-   --   priority = 1000,
-   --   config = function()
-   --     require("catppuccin").setup({
-   --       flavour = "frappe"
-   --     })
-   --   end
-   -- },
-   { "savq/melange-nvim", priority = 1000 },
-   { "xiyaowong/transparent.nvim", run = ":TransparentEnable" },
-   { "nvim-lualine/lualine.nvim", dependencies = { "nvim-tree/nvim-web-devicons" } },
-   { "akinsho/bufferline.nvim", version = "*", dependencies = "nvim-tree/nvim-web-devicons" },
-   {
-     "dinhhuy258/git.nvim",
-     config = function()
-       require("git").setup()
-     end
-   },
-   { "andymass/vim-matchup" },
-   {
-     "nvim-telescope/telescope-file-browser.nvim",
-     dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
-     keys = {
-       { "<leader>fb", ":Telescope file_browser path=%:p:h select_buffer=true<CR>", desc = "FileBrowser" },
-     },
-     config = function()
-       require("telescope").load_extension("file_browser")
-     end,
-   },
-   { 
-     "nvim-telescope/telescope-ghq.nvim",
-     dependencies = { "nvim-telescope/telescope.nvim" }, 
-     keys = {
-       { "<C-g>", ":Telescope ghq list<CR>", desc = "ghq list" },
-     },
-     config = function()
-       require("telescope").load_extension("ghq")
-     end,
-   },
-   { "nvim-treesitter/nvim-treesitter", run = ":TSUpdate" },
-   "vim-denops/denops.vim",
-   "vim-skk/skkeleton",
-   { "nvim-tree/nvim-tree.lua", dependencies = { "nvim-tree/nvim-web-devicons" } },
-   { 'numToStr/Comment.nvim', config = function() require('Comment').setup() end },
-   { 'windwp/nvim-autopairs', event = "InsertEnter", opts = {} },
-   { 'akinsho/toggleterm.nvim', config = function() require("toggleterm").setup() end },
-   { "lukas-reineke/indent-blankline.nvim" },
-   { 'folke/noice.nvim', 
-     event = "VeryLazy",
-     dependencies = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify" },
-     config = function()
-       require("noice").setup({
-       })
-       require("notify").setup({
+  "folke/which-key.nvim",
+  { "folke/neoconf.nvim", cmd = "Neoconf" },
+  "folke/neodev.nvim",
+  -- { "ellisonleao/gruvbox.nvim", priority = 1000 },
+  -- { "joshdick/onedark.vim", priority = 1000 },
+  -- { "tomasr/molokai", priority = 1000 },
+  -- { "catppuccin/nvim",
+  --   name = "catppuccin",
+  --   priority = 1000,
+  --   config = function()
+  --     require("catppuccin").setup({
+  --       flavour = "frappe"
+  --     })
+  --   end
+  -- },
+  { "savq/melange-nvim", priority = 1000 },
+  { "xiyaowong/transparent.nvim", run = ":TransparentEnable" },
+  { 
+    "nvim-lualine/lualine.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      require("lualine").setup()
+    end,
+  },
+  { "akinsho/bufferline.nvim",
+    version = "*",
+    dependencies = "nvim-tree/nvim-web-devicons",
+    config = function()
+      require("bufferline").setup()
+    end
+  },
+  {
+    "dinhhuy258/git.nvim",
+    config = function()
+      require("git").setup()
+    end
+  },
+  { "andymass/vim-matchup" },
+  {
+    "nvim-telescope/telescope-file-browser.nvim",
+    dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
+    keys = {
+      { "<leader>fb", ":Telescope file_browser path=%:p:h select_buffer=true<CR>", desc = "FileBrowser" },
+    },
+    config = function()
+      require("telescope").load_extension("file_browser")
+    end,
+  },
+  { 
+    "nvim-telescope/telescope-ghq.nvim",
+    dependencies = { "nvim-telescope/telescope.nvim" }, 
+    keys = {
+      { "<C-g>", ":Telescope ghq list<CR>", desc = "ghq list" },
+    },
+    config = function()
+      require("telescope").load_extension("ghq")
+    end,
+  },
+  { "nvim-treesitter/nvim-treesitter", run = ":TSUpdate" },
+  "vim-denops/denops.vim",
+  "vim-skk/skkeleton",
+  { "nvim-tree/nvim-tree.lua",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      -- nvim-tree
+      vim.g.loaded_netrw = 1
+      vim.g.loaded_netrwPlugin = 1
+
+      -- set termguicolors to enable highlight groups
+      vim.opt.termguicolors = true
+
+      require("nvim-tree").setup()
+    end,
+  },
+  { 'numToStr/Comment.nvim', 
+    config = function()
+      require('Comment').setup()
+    end,
+  },
+  { 'windwp/nvim-autopairs', event = "InsertEnter", opts = {} },
+  { 'akinsho/toggleterm.nvim',
+    config = function()
+      require("toggleterm").setup()
+    end,
+  },
+  { "lukas-reineke/indent-blankline.nvim",
+    config = function()
+      require("indent_blankline").setup({
+        space_char_blankline = " ",
+        show_current_context = true,
+        show_current_context_start = true,
+      })
+    end,
+  },
+  { 'folke/noice.nvim', 
+    event = "VeryLazy",
+    dependencies = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify" },
+    config = function()
+      require("noice").setup({})
+      require("notify").setup({
         background_colour = "#000000",
-       })
-     end,
-   },
+      })
+    end,
+  },
+  { "VidocqH/lsp-lens.nvim",
+    config = function()
+      require("lsp-lens").setup({})
+    end,
+  },
 })
  
-vim.scriptencoding = "utf-8"
-vim.opt.encoding = "utf-8"
-vim.opt.fileencoding = "utf-8"
-vim.opt.autoindent = true
-vim.opt.smartindent = true
-vim.opt.cursorline = true
-vim.opt.tabstop = 2
-vim.opt.softtabstop = 2
-vim.opt.shiftwidth = 2
-vim.opt.expandtab = true
+vim.scriptencoding    = "utf-8"
+vim.opt.encoding      = "utf-8"
+vim.opt.fileencoding  = "utf-8"
+vim.opt.autoindent    = true
+vim.opt.smartindent   = true
+vim.opt.cursorline    = true
+vim.opt.tabstop       = 2
+vim.opt.softtabstop   = 2
+vim.opt.shiftwidth    = 2
+vim.opt.expandtab     = true
 vim.opt.termguicolors = true
 
 vim.opt.ignorecase = true
-vim.opt.smartcase = true
-vim.opt.wrapscan = true
+vim.opt.smartcase  = true
+vim.opt.wrapscan   = true
 
 vim.opt.clipboard:append({ unnamedeplus = true })
+
+vim.opt.list = true
+vim.opt.listchars = { tab = '>-', trail = '⋅', nbsp = '+' }
+-- vim.opt.listchars:append "space:⋅"
+-- vim.opt.listchars:append "eol:↴"
 
 -- Theme
 -- vim.cmd.color.scheme catppuccin
@@ -106,13 +155,6 @@ vim.cmd.colorscheme 'melange'
 vim.opt.fillchars = {
   vert = ' ',
 }
--- 
--- -- Font
--- -- vim.opt.guifont = { "HackGen Console NF", ":h21" }
--- -- vim.opt.guifontwide = { "HackGen Console NF", ":h21" }
--- 
--- Status Line
-require("lualine").setup()
 
 vim.wo.number = true
 vim.wo.relativenumber = true
@@ -159,8 +201,6 @@ vim.api.nvim_create_autocmd({ "BufReadPost" }, {
   end,
 })
 
--- Tab
-require("bufferline").setup()
 -- タブを作成、削除
 vim.keymap.set('n', '<leader>to', ':tabnew<CR>')
 vim.keymap.set('n', '<leader>tx', ':tabclose<CR>')
@@ -176,16 +216,6 @@ vim.keymap.set('i', '<C-j>', '<Plug>(skkeleton-enable)')
 vim.keymap.set('c', '<C-j>', '<Plug>(skkeleton-enable)')
 
 -- telecope
-
--- nvim-tree
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
-
--- set termguicolors to enable highlight groups
-vim.opt.termguicolors = true
-
--- empty setup using defaults
-require("nvim-tree").setup()
 
 vim.api.nvim_set_keymap("n", "<leader>e", ":NvimTreeToggle<CR>", { silent = true })
 
@@ -203,14 +233,3 @@ end
 
 vim.keymap.set("n", "<leader>lg", "<cmd>lua _lazygit_toggle()<CR>", { noremap = true, silent = true })
 
--- indent-blankline
-vim.opt.list = true
-vim.opt.listchars = { tab='>-', trail='⋅', nbsp='+' }
--- vim.opt.listchars:append "space:⋅"
--- vim.opt.listchars:append "eol:↴"
-
-require("indent_blankline").setup {
-    space_char_blankline = " ",
-    show_current_context = true,
-    show_current_context_start = true,
-}

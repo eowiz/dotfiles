@@ -1,5 +1,17 @@
 vim.g.loaded_matchparen = 1
 vim.g.mapleader = ' '
+vim.opt.autochdir = true
+
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+vim.opt.termguicolors = true
+
+vim.cmd([[
+  if has('persistent_undo')
+    set undodir=~/.vim/undo
+    set undofile
+  endif
+]])
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -8,7 +20,7 @@ if not vim.loop.fs_stat(lazypath) then
     "clone",
     "--filter=blob:none",
     "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable", -- latest stable release
+    "--branch=stable",
     lazypath,
   })
 end
@@ -28,15 +40,54 @@ require("lazy").setup({
   --     require("catppuccin").setup({
   --       flavour = "frappe"
   --     })
+  --     vim.cmd.colorscheme 'catppuccin'
   --   end
   -- },
-  { "savq/melange-nvim", priority = 1000 },
+  -- {
+  --   "savq/melange-nvim", priority = 1000,
+  --   config = function()
+  --     vim.cmd.colorscheme 'melange'
+  --   end,
+  -- },
+  {
+    "folke/tokyonight.nvim",
+    lazy = false,
+    priority = 1000,
+    config = function()
+      require("tokyonight").setup({
+        transparent = true,
+        styles = {
+          sidebars = "transparent",
+          floats = "transparent"
+        }
+      })
+      vim.cmd.colorscheme 'tokyonight'
+    end,
+  },
+  -- {
+  --   "rebelot/kanagawa.nvim",
+  --   priority = 1000,
+  --   config = function()
+  --     require("kanagawa").setup({
+  --       compile = true,
+  --       theme = "dragon",
+  --       background = {
+  --         dark = "dragon",
+  --       },
+  --     })
+  --     vim.cmd.colorscheme 'kanagawa'
+  --   end,
+  -- },
   { "xiyaowong/transparent.nvim", run = ":TransparentEnable" },
-  { 
+  {
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
-      require("lualine").setup()
+      require("lualine").setup({
+        options = {
+          theme = 'tokyonight'
+        }
+      })
     end,
   },
   { "akinsho/bufferline.nvim",
@@ -46,47 +97,191 @@ require("lazy").setup({
       require("bufferline").setup()
     end
   },
+  { "andymass/vim-matchup" },
   {
-    "dinhhuy258/git.nvim",
+    "hrsh7th/nvim-cmp",
+    dependencies = {
+      "hrsh7th/nvim-lspconfig",
+      "hrsh7th/cmp-nvim-lsp",
+      "hrsh7th/cmp-buffer", 
+      "hrsh7th/cmp-path",
+      "hrsh7th/cmp-cmdline",
+      "hrsh7th/nvim-cmp",
+      "petertriho/cmp-git",
+      "nvim-lua/plenary.nvim",
+    },
     config = function()
-      require("git").setup()
+      local cmp = require("cmp")
+
+      cmp.setup({
+        window = {
+          completion = cmp.config.window.bordered({
+            border = "single"
+          }),
+          documentation = cmp.config.window.bordered({
+            border = "single"
+          }),
+        },
+        snippets = {
+          expand = function(args)
+            vim.fn["vsnip#anonymous"](args.body)
+          end,
+        },
+        sources = cmp.config.sources({
+          { name = "nvim_lsp" },
+          { name = "nvim_lsp_signature_help" },
+          { name = "buffer" },
+          { name = "path" },
+          { name = "git" },
+        }),
+        mapping = cmp.mapping.preset.insert({
+          ["<A-p>"] = cmp.mapping.select_prev_item(),
+          ["<S-Tab>"] = cmp.mapping.select_prev_item(),
+          ["<A-n>"] = cmp.mapping.select_next_item(),
+          ["<Tab>"] = cmp.mapping.select_next_item(),
+          ["<A-l>"] = cmp.mapping.complete(),
+          ["<A-c>"] = cmp.mapping.abort(),
+          ["<CR>"] = cmp.mapping.confirm({ select = true })
+        })
+      })
+      cmp.setup.cmdline(':', {
+        mapping = cmp.mapping.preset.cmdline(),
+        sources = cmp.config.sources({
+          { name = 'path' }
+        }, {
+          { name = 'cmdline' }
+        })
+      })
+    end,
+  },
+  {
+    "hrsh7th/vim-vsnip",
+    dependencies = { "hrsh7th/vim-vsnip-integ" }
+  },
+  {
+    "stevearc/dressing.nvim",
+    config = function()
+      require("dressing").setup({
+        input = {
+          border = "single"
+        },
+        builtin = {
+          border = "single"
+        },
+      })
     end
   },
-  { "andymass/vim-matchup" },
+  {
+    "nvim-telescope/telescope.nvim",
+    lazy = false,
+    keys = { { "<leader>fb", ":Telescope buffers<CR>", silent = true } },
+    config = function()
+      require('telescope').setup({
+        defaults = {
+          borderchars = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
+          layout_strategy = "vertical",
+          layout_config = {
+            width = 0.9,
+            preview_cutoff = 0,
+          },
+        },
+      })
+      vim.cmd "autocmd User TelescopePreviewerLoaded setlocal number"
+    end,
+  },
   {
     "nvim-telescope/telescope-file-browser.nvim",
     dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
     keys = {
-      { "<leader>fb", ":Telescope file_browser path=%:p:h select_buffer=true<CR>", desc = "FileBrowser" },
+      { "<leader>fr", ":Telescope file_browser path=%:p:h select_buffer=true<CR>", desc = "FileBrowser", silent = true },
     },
     config = function()
       require("telescope").load_extension("file_browser")
     end,
   },
-  { 
+  {
     "nvim-telescope/telescope-ghq.nvim",
     dependencies = { "nvim-telescope/telescope.nvim" }, 
     keys = {
-      { "<C-g>", ":Telescope ghq list<CR>", desc = "ghq list" },
+      { "<leader>gg", ":Telescope ghq list<CR>", desc = "ghq list", silent = true, noremap = true },
     },
     config = function()
       require("telescope").load_extension("ghq")
     end,
   },
+  {
+    "nvim-telescope/telescope-live-grep-args.nvim",
+    dependencies = { "nvim-telescope/telescope.nvim" },
+    keys = {
+      { "<leader>fg", ":Telescope live_grep_args<CR>", silent = true }
+    },
+    config = function()
+      require("telescope").load_extension("live_grep_args")
+    end,
+  },
+  {
+    "nvim-telescope/telescope-frecency.nvim",
+    dependencies = { "nvim-telescope/telescope.nvim", "kkharji/sqlite.lua" },
+    keys = {
+      { "<leader>fr", ":Telescope frecency<CR>", silent = true },
+      { "<leader>fc", ":lua require('telescope').extensions.frecency.frecency({ workspace = 'CWD' })<CR>", silent = true },
+    },
+    config = function()
+      require("telescope").load_extension("frecency")
+    end,
+  },
+  {
+    "delphinus/telescope-memo.nvim",
+    dependencies = { "nvim-telescope/telescope.nvim", "glidenote/memolist.vim" },
+    keys = {
+      { "<leader>mn", ":MemoNew<CR>", silent = true },
+      { "<leader>ml", ":Telescope memo list<CR>", silent = true },
+      { "<leader>mg", ":Telescope memo live_grep<CR>", silent = true },
+    },
+    config = function()
+      require("telescope").load_extension("memo")
+    end,
+  },
+  -- {
+  --   "Allianaab2m/telescope-kensaku.nvim",
+  --   dependencies = { "nvim-telescope/telescope.nvim", "lambdalisue/kensaku.vim", "vim-denops/denops.vim" },
+  --   keys = { { "<leader>fk", ":Telescope kensaku<CR>", silent = true } },
+  --   config = function()
+  --     require("telescope").load_extension("kensaku")
+  --   end,
+  -- },
   { "nvim-treesitter/nvim-treesitter", run = ":TSUpdate" },
+  { 
+    "windwp/nvim-ts-autotag",
+    config = function()
+      require('nvim-ts-autotag').setup()
+    end,
+  },
   "vim-denops/denops.vim",
   "vim-skk/skkeleton",
-  { "nvim-tree/nvim-tree.lua",
+  {
+    "nvim-tree/nvim-tree.lua",
     dependencies = { "nvim-tree/nvim-web-devicons" },
+    lazy = false,
+    keys = {
+      { "<leader>ee", ":NvimTreeToggle<CR>", silent = true },
+      { "<leader>ef", ":NvimTreeFocus<CR>", silent = true }
+    },
     config = function()
-      -- nvim-tree
-      vim.g.loaded_netrw = 1
-      vim.g.loaded_netrwPlugin = 1
-
-      -- set termguicolors to enable highlight groups
-      vim.opt.termguicolors = true
-
-      require("nvim-tree").setup()
+      require("nvim-tree").setup({
+        renderer = {
+          indent_markers = {
+            enable = true,
+            icons = {
+              corner = '└ ',
+              edge   = '│ ',
+              item   = '│ ',
+              none   = '  ',
+            },
+          },
+        },
+      })
+      vim.cmd "hi NvimTreeWinSeparator guifg=gray"
     end,
   },
   { 'numToStr/Comment.nvim', 
@@ -95,12 +290,14 @@ require("lazy").setup({
     end,
   },
   { 'windwp/nvim-autopairs', event = "InsertEnter", opts = {} },
-  { 'akinsho/toggleterm.nvim',
+  {
+    "akinsho/toggleterm.nvim",
     config = function()
       require("toggleterm").setup()
     end,
   },
-  { "lukas-reineke/indent-blankline.nvim",
+  {
+    "lukas-reineke/indent-blankline.nvim",
     config = function()
       require("indent_blankline").setup({
         space_char_blankline = " ",
@@ -109,13 +306,30 @@ require("lazy").setup({
       })
     end,
   },
-  { 'folke/noice.nvim', 
+  {
+    "folke/noice.nvim", 
     event = "VeryLazy",
     dependencies = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify" },
     config = function()
-      require("noice").setup({})
+      require("noice").setup({
+        views = {
+          cmdline_popup = {
+            border = {
+              style = "single"
+            },
+          },
+          popupmenu = {
+            border = {
+              style = "single"
+            },
+          },
+        },
+      })
       require("notify").setup({
         background_colour = "#000000",
+        on_open = function(win)
+          vim.api.nvim_win_set_config(win, { border = "single" })
+        end,
       })
     end,
   },
@@ -124,6 +338,81 @@ require("lazy").setup({
       require("lsp-lens").setup({})
     end,
   },
+  {
+    "stevearc/aerial.nvim",
+    keys = { { "<leader>a", ":AerialToggle!<CR>", silent = true } },
+    config = function()
+      require("aerial").setup({
+        on_attach = function(bufnr)
+          vim.keymap.set("n", "{", ":AerialPrev<CR>", { buffer = bufnr, silent = true })
+          vim.keymap.set("n", "}", ":AerialNext<CR>", { buffer = bufnr, silent = true })
+        end
+      })
+    end,
+  },
+  {
+    "monaqa/dial.nvim",
+    keys = {
+      { "<C-a>", "<Plug>(dial-increment)", noremap = true },
+      { "<C-x>", "<Plug>(dial-decrement)", noremap = true },
+      { "g<C-a>", "g<Plug>(dial-increment)", noremap = true },
+      { "g<C-x>", "g<Plug>(dial-decrement)", noremap = true },
+    },
+  },
+  {
+    "dinhhuy258/git.nvim",
+    config = function()
+      require("git").setup()
+    end
+  },
+  {
+    "NeogitOrg/neogit",
+    dependencies = 'nvim-lua/plenary.nvim',
+    config = function()
+      require("neogit").setup()
+    end,
+  },
+  { "sindrets/diffview.nvim"},
+  {
+    "lewis6991/gitsigns.nvim",
+    config = function()
+      require("gitsigns").setup()
+    end,
+  },
+  {
+    "rhysd/git-messenger.vim",
+    keys = { { "<leader>gm", ":GitMessenger" } },
+    config = function()
+      vim.g.git_messenger_floating_win_opts = { border = "single" }
+    end,
+  },
+  {
+    "utilyre/barbecue.nvim",
+    dependencies = { "SmiteshP/nvim-navic", "nvim-tree/nvim-web-devicons" },
+    config = function()
+      require("barbecue").setup()
+    end,
+  },
+  {
+    "tkmpypy/chowcho.nvim",
+    keys = { { "<C-w>w", ":Chowcho<CR>", silent = true } },
+    config = function()
+      require("chowcho").setup({
+        icon_enabled = true,
+        border_style = "rounded",
+      })
+    end,
+  },
+  {
+    "yuki-yano/fuzzy-motion.vim",
+    lazy = false,
+    dependencies = { "vim-denops/denops.vim" },
+    keys = { { "<leader><leader>", ":FuzzyMotion<CR>", silent = true } },
+  },
+  {
+    "kat0h/bufpreview.vim",
+    dependencies = { "vim-denops/denops.vim" },
+  }
 })
  
 vim.scriptencoding    = "utf-8"
@@ -151,10 +440,6 @@ vim.opt.listchars = { tab = '>-', trail = '⋅', nbsp = '+' }
 
 -- Theme
 -- vim.cmd.color.scheme catppuccin
-vim.cmd.colorscheme 'melange'
-vim.opt.fillchars = {
-  vert = ' ',
-}
 
 vim.wo.number = true
 vim.wo.relativenumber = true
@@ -166,7 +451,6 @@ vim.keymap.set("i", "<C-f>", "<Right>")
 vim.keymap.set("i", "<C-b>", "<Left>")
 vim.keymap.set("i", "<C-a>", "<Home>")
 vim.keymap.set("i", "<C-e>", "<End>")
-
 vim.keymap.set("i", "<C-h>", "<BS>")
 vim.keymap.set("i", "<C-d>", "<Del>")
 vim.keymap.set("i", "<C-k>", "<Esc>lDa")
@@ -214,10 +498,6 @@ vim.cmd([[
 
 vim.keymap.set('i', '<C-j>', '<Plug>(skkeleton-enable)')
 vim.keymap.set('c', '<C-j>', '<Plug>(skkeleton-enable)')
-
--- telecope
-
-vim.api.nvim_set_keymap("n", "<leader>e", ":NvimTreeToggle<CR>", { silent = true })
 
 -- lazygit
 local Terminal = require("toggleterm.terminal").Terminal

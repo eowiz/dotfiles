@@ -12,6 +12,8 @@ path=(
   /usr/local/sbin(N-/)
   # macOS
   /Library/Apple/usr/bin(N-/)
+  # local
+  $HOME/.local/bin
   # rbenv
   $HOME/.rbenv/bin(N-/)
   $HOME/.rbenv/shims(N-/)
@@ -39,6 +41,8 @@ bin=(
     "sdkman"
     "volta"
     "rbenv"
+    "go"
+    "nvim"
 )
 
 for filename in $bin; do

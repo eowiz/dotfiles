@@ -101,7 +101,7 @@ require("lazy").setup({
   {
     "hrsh7th/nvim-cmp",
     dependencies = {
-      "hrsh7th/nvim-lspconfig",
+      "neovim/nvim-lspconfig",
       "hrsh7th/cmp-nvim-lsp",
       "hrsh7th/cmp-buffer", 
       "hrsh7th/cmp-path",
@@ -203,7 +203,7 @@ require("lazy").setup({
     "nvim-telescope/telescope-ghq.nvim",
     dependencies = { "nvim-telescope/telescope.nvim" }, 
     keys = {
-      { "<leader>gg", ":Telescope ghq list<CR>", desc = "ghq list", silent = true, noremap = true },
+      { "<C-g>", ":Telescope ghq list<CR>", desc = "ghq list", silent = true, noremap = true },
     },
     config = function()
       require("telescope").load_extension("ghq")
@@ -242,6 +242,13 @@ require("lazy").setup({
       require("telescope").load_extension("memo")
     end,
   },
+  {
+    "gbrlsnchs/telescope-lsp-handlers.nvim",
+    dependencies = { "nvim-telescope/telescope.nvim" },
+    config = function()
+      require("telescope").load_extension("lsp_handlers")
+    end,
+  },
   -- {
   --   "Allianaab2m/telescope-kensaku.nvim",
   --   dependencies = { "nvim-telescope/telescope.nvim", "lambdalisue/kensaku.vim", "vim-denops/denops.vim" },
@@ -251,6 +258,18 @@ require("lazy").setup({
   --   end,
   -- },
   { "nvim-treesitter/nvim-treesitter", run = ":TSUpdate" },
+  {
+    "RRethy/nvim-treesitter-endwise",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    config = function()
+      require("nvim-treesitter.configs").setup({
+        endwise = {
+          enable = true
+        }
+      })
+    end,
+  },
+  { "RRethy/vim-illuminate" },
   { 
     "windwp/nvim-ts-autotag",
     config = function()
@@ -280,6 +299,18 @@ require("lazy").setup({
             },
           },
         },
+        on_attach = function(bufnr)
+          local api = require("nvim-tree.api")
+
+          local function opts(desc)
+            return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+          end
+
+          api.config.mappings.default_on_attach(bufnr)
+
+          vim.keymap.set("n", "<C-t>", api.tree.change_root_to_parent, opts("Up"))
+          vim.keymap.set("n", "?", api.tree.toggle_help, opts("Help"))
+        end,
       })
       vim.cmd "hi NvimTreeWinSeparator guifg=gray"
     end,
@@ -331,11 +362,6 @@ require("lazy").setup({
           vim.api.nvim_win_set_config(win, { border = "single" })
         end,
       })
-    end,
-  },
-  { "VidocqH/lsp-lens.nvim",
-    config = function()
-      require("lsp-lens").setup({})
     end,
   },
   {
@@ -412,7 +438,74 @@ require("lazy").setup({
   {
     "kat0h/bufpreview.vim",
     dependencies = { "vim-denops/denops.vim" },
-  }
+  },
+  {
+    "VidocqH/lsp-lens.nvim",
+    config = function()
+      require("lsp-lens").setup({})
+    end,
+  },
+  {
+    "williamboman/mason-lspconfig.nvim",
+    dependencies = {
+      "williamboman/mason.nvim",
+      "neovim/nvim-lspconfig",
+      "hrsh7th/cmp-nvim-lsp"
+    },
+    config = function()
+      require("mason").setup({
+        ui = {
+          border = "single"
+        }
+      })
+      require("mason-lspconfig").setup({
+        ensure_installed = { "lua_ls", "tsserver", "jsonls", "rust_analyzer" },
+        automatic_installation = true,
+      })
+
+      local handlers = {
+        -- ["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, { virtual_text = false }),
+        ["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "single" }),
+      }
+
+      -- require("lspconfig").lua_ls.setup({})
+      require("lspconfig").jdtls.setup({
+        cmd = { "jdtls" },
+        root_dir = function(fname)
+          return require("lspconfig").util.root_pattern("pom.xml", "gradle.build", ".git")(fname) or vim.fn.getcwd()
+        end,
+        handlers = handlers,
+      })
+      require("lspconfig").tsserver.setup({
+        handlers = handlers
+      })
+
+      vim.api.nvim_create_autocmd("LspAttach", {
+        callback = function(ev)
+          local opts = { buffer = ev.ops }
+          vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
+          vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+          vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+          vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
+          vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, opts)
+          vim.keymap.set("n", "<leader>D", vim.lsp.buf.type_definition, opts)
+          vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+          vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts)
+          vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+          vim.keymap.set("n", "<leader>f", function()
+            vim.lsp.buf.format { async = true }
+          end, opts)
+        end
+      })
+    end,
+  },
+  -- {
+  --   "pmizio/typescript-tools.nvim",
+  --   dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
+  --   config = function()
+  --     require("typescript-tools").setup({})
+  --   end,
+  -- },
 })
  
 vim.scriptencoding    = "utf-8"
@@ -512,4 +605,5 @@ function _lazygit_toggle()
 end
 
 vim.keymap.set("n", "<leader>lg", "<cmd>lua _lazygit_toggle()<CR>", { noremap = true, silent = true })
+
 

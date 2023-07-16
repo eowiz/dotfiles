@@ -103,12 +103,14 @@ require("lazy").setup({
     dependencies = {
       "neovim/nvim-lspconfig",
       "hrsh7th/cmp-nvim-lsp",
+      "hrsh7th/cmp-nvim-lsp-document-symbol",
       "hrsh7th/cmp-buffer", 
       "hrsh7th/cmp-path",
       "hrsh7th/cmp-cmdline",
       "hrsh7th/nvim-cmp",
       "petertriho/cmp-git",
       "nvim-lua/plenary.nvim",
+      "onsails/lspkind.nvim",
     },
     config = function()
       local cmp = require("cmp")
@@ -142,15 +144,28 @@ require("lazy").setup({
           ["<A-l>"] = cmp.mapping.complete(),
           ["<A-c>"] = cmp.mapping.abort(),
           ["<CR>"] = cmp.mapping.confirm({ select = true })
-        })
+        }),
+        formatting = {
+          format = require("lspkind").cmp_format({
+            mode = "symbol"
+          })
+        },
       })
-      cmp.setup.cmdline(':', {
+      cmp.setup.cmdline(":", {
         mapping = cmp.mapping.preset.cmdline(),
         sources = cmp.config.sources({
           { name = 'path' }
         }, {
           { name = 'cmdline' }
         })
+      })
+      cmp.setup.cmdline("/", {
+        sources = cmp.config.sources({
+          { name = "nvim_lsp_document_symbol" }
+        }, {
+          { name = "buffer" }
+        }),
+        mapping = cmp.mapping.preset.cmdline(),
       })
     end,
   },
@@ -499,6 +514,25 @@ require("lazy").setup({
       })
     end,
   },
+  {
+    "folke/trouble.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    keys = {
+      { "<leader>xx", ":TroubleToggle<CR>", silent = true },
+      { "gR", ":TroubleToggle lsp_references<CR>", silent = true },
+    },
+  },
+  -- {
+  --   "nvimdev/lspsaga.nvim",
+  --   dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
+  --   config = function()
+  --     require("lspsaga").setup({
+  --       lightbulb = {
+  --         enable = false
+  --       }
+  --     })
+  --   end,
+  -- },
   -- {
   --   "pmizio/typescript-tools.nvim",
   --   dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
@@ -605,5 +639,4 @@ function _lazygit_toggle()
 end
 
 vim.keymap.set("n", "<leader>lg", "<cmd>lua _lazygit_toggle()<CR>", { noremap = true, silent = true })
-
 

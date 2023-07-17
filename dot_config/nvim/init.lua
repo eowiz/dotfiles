@@ -340,6 +340,7 @@ require("lazy").setup({
           update_root = true,
         },
         renderer = {
+          group_empty = true,
           indent_markers = {
             enable = true,
             icons = {

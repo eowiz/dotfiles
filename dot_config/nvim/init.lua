@@ -97,6 +97,25 @@ require("lazy").setup({
       require("bufferline").setup()
     end
   },
+  {
+    "petertriho/nvim-scrollbar",
+    config = function()
+      local colors = require("tokyonight.colors").setup()
+      require("scrollbar").setup({
+        handle = {
+          color = colors.bg_highlight,
+        },
+        marks = {
+          Search = { color = colors.orange },
+          Error = { color = colors.error },
+          Warn = { color = colors.warning },
+          Info = { color = colors.info },
+          Hint = { color = colors.hint },
+          Misc = { color = colors.purple },
+        },
+      })
+    end,
+  },
   { "andymass/vim-matchup" },
   {
     "hrsh7th/nvim-cmp",
@@ -189,7 +208,10 @@ require("lazy").setup({
   {
     "nvim-telescope/telescope.nvim",
     lazy = false,
-    keys = { { "<leader>fb", ":Telescope buffers<CR>", silent = true } },
+    keys = {
+      { "<leader>fb", ":Telescope buffers<CR>", silent = true },
+      { "<leader>ff", ":Telescope fd<CR>", silent = true },
+    },
     config = function()
       require('telescope').setup({
         defaults = {
@@ -208,7 +230,7 @@ require("lazy").setup({
     "nvim-telescope/telescope-file-browser.nvim",
     dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
     keys = {
-      { "<leader>fr", ":Telescope file_browser path=%:p:h select_buffer=true<CR>", desc = "FileBrowser", silent = true },
+      { "<leader>fs", ":Telescope file_browser path=%:p:h select_buffer=true<CR>", desc = "FileBrowser", silent = true },
     },
     config = function()
       require("telescope").load_extension("file_browser")
@@ -311,6 +333,12 @@ require("lazy").setup({
     },
     config = function()
       require("nvim-tree").setup({
+        sync_root_with_cwd = true,
+        respect_buf_cwd = true,
+        update_focused_file = {
+          enable = true,
+          update_root = true,
+        },
         renderer = {
           indent_markers = {
             enable = true,
@@ -529,6 +557,13 @@ require("lazy").setup({
       { "<leader>xx", ":TroubleToggle<CR>", silent = true },
       { "gR", ":TroubleToggle lsp_references<CR>", silent = true },
     },
+  },
+  {
+    "ahmedkhalf/project.nvim",
+    config = function()
+      require("project_nvim").setup({})
+      require("telescope").load_extension("projects")
+    end,
   },
   -- {
   --   "nvimdev/lspsaga.nvim",

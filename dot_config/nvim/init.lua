@@ -264,6 +264,14 @@ require("lazy").setup({
       require("telescope").load_extension("lsp_handlers")
     end,
   },
+  {
+    "nvim-telescope/telescope-fzf-native.nvim",
+    dependencies = { "nvim-telescope/telescope.nvim" },
+    build = "make",
+    config = function()
+      require("telescope").load_extension("fzf")
+    end,
+  },
   -- {
   --   "Allianaab2m/telescope-kensaku.nvim",
   --   dependencies = { "nvim-telescope/telescope.nvim", "lambdalisue/kensaku.vim", "vim-denops/denops.vim" },

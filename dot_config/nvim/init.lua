@@ -30,7 +30,23 @@ require("lazy").setup({
   "folke/which-key.nvim",
   { "folke/neoconf.nvim", cmd = "Neoconf" },
   "folke/neodev.nvim",
-  -- { "ellisonleao/gruvbox.nvim", priority = 1000 },
+  {
+    "sainnhe/gruvbox-material",
+    priority = 1000,
+    config = function()
+      vim.opt.background = "dark"
+      vim.g.gruvbox_material_background = "medium"
+      vim.cmd.colorscheme "gruvbox-material"
+    end,
+  },
+  -- {
+  --   "ellisonleao/gruvbox.nvim",
+  --   priority = 1000,
+  --   config = function()
+  --     vim.cmd.colorscheme "gruvbox"
+  --     vim.opt.background = "dark"
+  --   end,
+  -- },
   -- { "joshdick/onedark.vim", priority = 1000 },
   -- { "tomasr/molokai", priority = 1000 },
   -- { "catppuccin/nvim",
@@ -49,21 +65,21 @@ require("lazy").setup({
   --     vim.cmd.colorscheme 'melange'
   --   end,
   -- },
-  {
-    "folke/tokyonight.nvim",
-    lazy = false,
-    priority = 1000,
-    config = function()
-      require("tokyonight").setup({
-        transparent = true,
-        styles = {
-          sidebars = "transparent",
-          floats = "transparent"
-        }
-      })
-      vim.cmd.colorscheme 'tokyonight'
-    end,
-  },
+  -- {
+  --   "folke/tokyonight.nvim",
+  --   lazy = false,
+  --   priority = 1000,
+  --   config = function()
+  --     require("tokyonight").setup({
+  --       transparent = true,
+  --       styles = {
+  --         sidebars = "transparent",
+  --         floats = "transparent"
+  --       }
+  --     })
+  --     vim.cmd.colorscheme 'tokyonight'
+  --   end,
+  -- },
   -- {
   --   "rebelot/kanagawa.nvim",
   --   priority = 1000,
@@ -85,7 +101,7 @@ require("lazy").setup({
     config = function()
       require("lualine").setup({
         options = {
-          theme = 'tokyonight'
+          theme = 'gruvbox-material'
         }
       })
     end,
@@ -100,19 +116,19 @@ require("lazy").setup({
   {
     "petertriho/nvim-scrollbar",
     config = function()
-      local colors = require("tokyonight.colors").setup()
+      -- local colors = require("gruvbox.colors").setup()
       require("scrollbar").setup({
-        handle = {
-          color = colors.bg_highlight,
-        },
-        marks = {
-          Search = { color = colors.orange },
-          Error = { color = colors.error },
-          Warn = { color = colors.warning },
-          Info = { color = colors.info },
-          Hint = { color = colors.hint },
-          Misc = { color = colors.purple },
-        },
+      --  handle = {
+      --    color = colors.bg_highlight,
+      --  },
+      --  marks = {
+      --    Search = { color = colors.orange },
+      --    Error = { color = colors.error },
+      --    Warn = { color = colors.warning },
+      --    Info = { color = colors.info },
+      --    Hint = { color = colors.hint },
+      --    Misc = { color = colors.purple },
+      --  },
       })
     end,
   },
@@ -308,13 +324,41 @@ require("lazy").setup({
     dependencies = { "nvim-treesitter/nvim-treesitter" },
     config = function()
       require("nvim-treesitter.configs").setup({
+        ensure_installed = {
+          "lua",
+          "typescript",
+          "tsx",
+          "java",
+          "prisma",
+        },
+        highlight = {
+          enable = true,
+        },
         endwise = {
           enable = true
-        }
+        },
       })
     end,
   },
   { "RRethy/vim-illuminate" },
+  {
+    "nvim-zh/colorful-winsep.nvim",
+    config = function()
+      require("colorful-winsep").setup()
+    end,
+    event = { "WinNew" },
+    symbols = { "━", "┃", "┏", "┓", "┗", "┛" },
+    no_exec_files = { "packer", "TelescopePrompt", "mason", "CompetiTest", "NvimTree" },
+  },
+  {
+    "levouh/tint.nvim",
+    config = function()
+      require("tint").setup({
+        tint = -45,
+        saturation = 0.6,
+      })
+    end,
+  },
   { 
     "windwp/nvim-ts-autotag",
     config = function()
@@ -324,49 +368,102 @@ require("lazy").setup({
   "vim-denops/denops.vim",
   "vim-skk/skkeleton",
   {
-    "nvim-tree/nvim-tree.lua",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-    lazy = false,
+    "lambdalisue/fern.vim",
     keys = {
-      { "<leader>ee", ":NvimTreeToggle<CR>", silent = true },
-      { "<leader>ef", ":NvimTreeFocus<CR>", silent = true }
+      { "<leader>e", ":Fern . -drawer<CR>", silent = true },
+      { "<leader>E", ":Fern . -drawer -reveal=%<CR>", silent = true },
     },
     config = function()
-      require("nvim-tree").setup({
-        sync_root_with_cwd = true,
-        respect_buf_cwd = true,
-        update_focused_file = {
-          enable = true,
-          update_root = true,
-        },
-        renderer = {
-          group_empty = true,
-          indent_markers = {
-            enable = true,
-            icons = {
-              corner = '└ ',
-              edge   = '│ ',
-              item   = '│ ',
-              none   = '  ',
-            },
-          },
-        },
-        on_attach = function(bufnr)
-          local api = require("nvim-tree.api")
-
-          local function opts(desc)
-            return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
-          end
-
-          api.config.mappings.default_on_attach(bufnr)
-
-          vim.keymap.set("n", "<C-t>", api.tree.change_root_to_parent, opts("Up"))
-          vim.keymap.set("n", "?", api.tree.toggle_help, opts("Help"))
-        end,
-      })
-      vim.cmd "hi NvimTreeWinSeparator guifg=gray"
+      vim.g.default_hidden = 1
     end,
   },
+  {
+    "lambdalisue/nerdfont.vim",
+  },
+  {
+    "lambdalisue/glyph-palette.vim",
+    config = function()
+      vim.cmd([[
+        augroup my-glyph-palette
+        autocmd! *
+        autocmd FileType fern call glyph_palette#apply()
+        autocmd FileType nerdtree,startify call glyph_palette#apply()
+        augroup END
+      ]])
+    end,
+  },
+  {
+    "lambdalisue/fern-renderer-nerdfont.vim",
+    config = function()
+      vim.g["fern#renderer"] = "nerdfont"
+      vim.g["fern#renderer#nerdfont#indent_markers"] = "1"
+    end,
+  },
+  { "lambdalisue/fern-git-status.vim" },
+  {
+    "yuki-yano/fern-preview.vim",
+    dependencies = { "lambdalisue/fern.vim" },
+    config = function()
+      vim.cmd([[
+        function! s:fern_settings() abort
+          nmap <silent> <buffer> p     <Plug>(fern-action-preview:toggle)
+          nmap <silent> <buffer> <C-p> <Plug>(fern-action-preview:auto:toggle)
+          nmap <silent> <buffer> <C-f> <Plug>(fern-action-preview:scroll:down:half)
+          nmap <silent> <buffer> <C-b> <Plug>(fern-action-preview:scroll:up:half)
+          nmap <silent> <buffer> q     <Plug>(fern-action-preview:close)
+        endfunction
+
+        augroup fern-settings
+          autocmd!
+          autocmd FileType fern call s:fern_settings()
+        augroup END
+      ]])
+    end,
+  },
+  -- {
+  --   "nvim-tree/nvim-tree.lua",
+  --   dependencies = { "nvim-tree/nvim-web-devicons" },
+  --   lazy = false,
+  --   keys = {
+  --     { "<leader>ee", ":NvimTreeToggle<CR>", silent = true },
+  --     { "<leader>ef", ":NvimTreeFocus<CR>", silent = true }
+  --   },
+  --   config = function()
+  --     require("nvim-tree").setup({
+  --       sync_root_with_cwd = true,
+  --       respect_buf_cwd = true,
+  --       update_focused_file = {
+  --         enable = true,
+  --         update_root = true,
+  --       },
+  --       renderer = {
+  --         group_empty = true,
+  --         indent_markers = {
+  --           enable = true,
+  --           icons = {
+  --             corner = '└ ',
+  --             edge   = '│ ',
+  --             item   = '│ ',
+  --             none   = '  ',
+  --           },
+  --         },
+  --       },
+  --       on_attach = function(bufnr)
+  --         local api = require("nvim-tree.api")
+
+  --         local function opts(desc)
+  --           return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+  --         end
+
+  --         api.config.mappings.default_on_attach(bufnr)
+
+  --         vim.keymap.set("n", "<C-t>", api.tree.change_root_to_parent, opts("Up"))
+  --         vim.keymap.set("n", "?", api.tree.toggle_help, opts("Help"))
+  --       end,
+  --     })
+  --     vim.cmd "hi NvimTreeWinSeparator guifg=gray"
+  --   end,
+  -- },
   { 'numToStr/Comment.nvim', 
     config = function()
       require('Comment').setup()
@@ -444,11 +541,8 @@ require("lazy").setup({
     end
   },
   {
-    "NeogitOrg/neogit",
-    dependencies = 'nvim-lua/plenary.nvim',
-    config = function()
-      require("neogit").setup()
-    end,
+    "lambdalisue/gin.vim",
+    dependencies = { "vim-denops/denops.vim" },
   },
   { "sindrets/diffview.nvim"},
   {
@@ -548,6 +642,16 @@ require("lazy").setup({
             vim.lsp.buf.format { async = true }
           end, opts)
         end
+      })
+    end,
+  },
+  {
+    "jay-babu/mason-null-ls.nvim",
+    dependencies = { "williamboman/mason.nvim", "jose-elias-alvarez/null-ls.nvim" },
+    config = function()
+      require("mason-null-ls").setup({
+        automatic_setup = true,
+        handlers = {},
       })
     end,
   },

@@ -394,6 +394,7 @@ require("lazy").setup({
   },
   {
     "lambdalisue/fern-renderer-nerdfont.vim",
+    dependencies = { "lambdalisue/fern.vim" },
     config = function()
       vim.g["fern#renderer"] = "nerdfont"
       vim.g["fern#renderer#nerdfont#indent_markers"] = "1"
@@ -641,6 +642,13 @@ require("lazy").setup({
           vim.keymap.set("n", "<leader>f", function()
             vim.lsp.buf.format { async = true }
           end, opts)
+
+          vim.api.nvim_create_autocmd("BufWritePre", {
+            buffer = buffer,
+            callback = function()
+              vim.lsp.buf.format { async = false }
+            end
+          })
         end
       })
     end,
@@ -768,7 +776,7 @@ vim.keymap.set('n', '<leader>tp', ':tabp<CR>')
 
 -- SKK
 vim.cmd([[
-  call skkeleton#config({ 'globalJisyo': '~/.skk-jisyo' })
+  call skkeleton#config({ 'globalJisyo': '~/SKK-JISYO.L' })
 ]])
 
 vim.keymap.set('i', '<C-j>', '<Plug>(skkeleton-enable)')

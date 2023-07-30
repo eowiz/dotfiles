@@ -606,7 +606,13 @@ require("lazy").setup({
         }
       })
       require("mason-lspconfig").setup({
-        ensure_installed = { "lua_ls", "tsserver", "jsonls", "rust_analyzer" },
+        ensure_installed = {
+          "lua_ls",
+          "tsserver",
+          "denols",
+          "jsonls",
+          "rust_analyzer",
+        },
         automatic_installation = true,
       })
 
@@ -616,15 +622,35 @@ require("lazy").setup({
       }
 
       -- require("lspconfig").lua_ls.setup({})
-      require("lspconfig").jdtls.setup({
+      local lspconfig = require("lspconfig");
+      lspconfig.jdtls.setup({
         cmd = { "jdtls" },
         root_dir = function(fname)
-          return require("lspconfig").util.root_pattern("pom.xml", "gradle.build", ".git")(fname) or vim.fn.getcwd()
+          return lspconfig.util.root_pattern("pom.xml", "gradle.build", ".git")(fname) or vim.fn.getcwd()
         end,
         handlers = handlers,
       })
-      require("lspconfig").tsserver.setup({
-        handlers = handlers
+
+      -- TypeScript
+      lspconfig.denols.setup({
+        root_dir = lspconfig.util.root_pattern("deno.json"),
+        init_options = {
+          lint = true,
+          unstable = true,
+          suggest = {
+            imports = {
+              hosts = {
+                ["https://deno.land"] = true,
+                ["https://cdn.nest.land"] = true,
+                ["https://crux.land"] = true,
+              },
+            },
+          },
+        },
+      })
+      lspconfig.tsserver.setup({
+        handlers = handlers,
+        root_dir = lspconfig.util.root_pattern("package.json"),
       })
 
       vim.api.nvim_create_autocmd("LspAttach", {

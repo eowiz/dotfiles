@@ -5,6 +5,7 @@ vim.opt.autochdir = true
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 vim.opt.termguicolors = true
+vim.opt.guifont="HackGen Console NF:h17"
 
 vim.cmd([[
   if has('persistent_undo')
@@ -12,6 +13,14 @@ vim.cmd([[
     set undofile
   endif
 ]])
+
+vim.filetype.add({
+  extension =  {
+    mdx = "markdown.mdx",
+  },
+  filename = {},
+  pattern = {},
+})
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -374,7 +383,9 @@ require("lazy").setup({
       { "<leader>E", ":Fern . -drawer -reveal=%<CR>", silent = true },
     },
     config = function()
-      vim.g.default_hidden = 1
+      vim.cmd([[
+        let g:fern#default_hidden = 1
+      ]])
     end,
   },
   {

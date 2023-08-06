@@ -391,3 +391,86 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
      ,(concat "-javaagent:" lombok-path)
      ,(concat "-Xbootclasspath/a:" lombok-path))))
 
+(use-package org-mode
+  :straight t
+  :custom
+  (system-time-locate nil)
+  (org-startup-with-inline-images t)
+  (org-ellipsis " ▼")
+  (org-fontify-quote-and-verse-blocks t)
+  (org-use-speed-commands t)
+
+  (org-display-custom-times t)
+  (org-image-actual-width nil)
+
+  (org-agenda-tags-column 0)
+  (org-agenda-block-separator ?─)
+  (org-agenda-time-grid
+   '((daily today require-timed)
+     (800 1000 1200 1400 1600 1800 2000)
+     " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
+   org-agenda-current-time-string
+   "⭠ now ─────────────────────────────────────────────────")
+
+  ;; see: https://misohena.jp/blog/2021-08-29-colorize-saturday-and-japanese-holidays-in-org-agenda.html
+  (org-agenda-day-face-function (lambda (date)
+				  (let ((face (cond
+					       ;; 土曜日
+					       ((= (calendar-day-of-week date) 6)
+						'(:inherit org-agenda-date :foreground "#0df"))
+					       ;; 日曜日か日本の祝日
+					       ((or (= (calendar-day-of-week date) 0)
+						    (let ((calendar-holidays japanese-holidays))
+						      (calendar-check-holidays date)))
+						'org-agenda-date-weekend)
+					       ;; 普通の日
+					       (t 'org-agenda-date))))
+				    ;; 今日は色を反転
+				    (if (org-agenda-today-p date) (list :inherit face :inverse-video t) face))))
+  :config
+  (setq org-time-stamp-custom-formats '("<%Y年%m月%d日(%a)>" . "<%Y年%m月%d日(%a)%H時%M分>")))
+
+(use-package org-bars
+  :straight (org-bars :type git
+		      :host github
+		      :repo "tonyaldon/org-bars")
+  :hook ((org-mode . (lambda ()
+		       (require 'org-bars)
+		       (org-bars-mode)))))
+
+(use-package org-modern
+  :straight t
+  :hook ((emacs-startup . global-org-modern-mode))
+  :custom
+  (org-modern-hide-stars nil)
+  (org-modern-list
+   '((?- . "-")
+     (?* . "•")
+     (?+ . "‣")))
+  (org-modern-timestamp '(" %Y年%m月%d日(%a) " . " %H時%M分 "))
+  :init
+  (setq org-modern-star (list #("󰎥" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
+			      #("󰎨" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
+			      #("󰎫" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
+			      #("󰎲" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
+			      #("󰎯" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
+			      ))
+  :config
+  (let ((comment-color (face-attribute 'font-lock-comment-face :foreground)))
+    (custom-theme-set-faces
+     'user
+     `(org-quote ((t (:inherit org-block :slant italic :foreground ,comment-color))))))
+
+  (setq org-ditaa-jar-path "/opt/homebrew/Cellar/ditaa/0.11.0_1/libexec/ditaa-0.11.0-standalone.jar")
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((ditaa . t)))
+  )
+
+(use-package org-modern-indent
+  :straight (org-modern-indent :type git
+			       :host github
+			       :repo "jdtsmith/org-modern-indent")
+  :defer t
+  :config
+  (add-hook 'org-mode-hook #'org-modern-indent-mode 90))

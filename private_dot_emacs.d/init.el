@@ -369,6 +369,11 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
   (typescript-tsx-indent-offset 2)
   (typescript-ts-mode typescript-mode-hook))
 
+(use-package javascript-mode
+  :straight t
+  :custom
+  (js-indent-level 2))
+
 (use-package yaml-mode
   :straight t)
 

@@ -1,0 +1,14 @@
+.cache/
+auto-save-list/
+eln-cache/
+history
+projectile-bookmarks.eld
+projects
+recentf
+share/
+straight/
+trainsient/
+tree-sitter/
+
+eglot-java-eclipse-jdt-cache/
+fonts/

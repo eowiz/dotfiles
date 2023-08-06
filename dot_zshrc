@@ -1,4 +1,5 @@
-export TERM=alacritty
+# export TERM=alacritty
+export TERM=xterm-256color
 
 typeset -U path PATH
 path=(
@@ -45,6 +46,8 @@ bin=(
     "rbenv"
     "go"
     "nvim"
+    "emacs"
+    "kitty"
 )
 
 for filename in $bin; do

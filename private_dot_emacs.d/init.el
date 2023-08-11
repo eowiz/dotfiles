@@ -51,7 +51,21 @@
   (xterm-mouse-mode t)
   (mouse-wheel-mode t)
   (global-set-key [mouse-4] '(lambda () (interactive) (scroll-down 3)))
-  (global-set-key [mouse-5] '(lambda () (interactive) (scroll-up 3))))
+  (global-set-key [mouse-5] '(lambda () (interactive) (scroll-up 3)))
+
+  ;; clipboard
+  (defun copy-from-osx ()
+    (shell-command-to-string "pbpaste"))
+
+  (defun paste-to-osx (text &optional push)
+    (let ((process-connection-type nil))
+    (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
+      (process-send-string proc text)
+      (process-send-eof proc))))
+
+  (setq interprogram-cut-function 'paste-to-osx)
+  (setq interprogram-paste-function 'copy-from-osx)
+  )
 
 (use-package dired
   :custom

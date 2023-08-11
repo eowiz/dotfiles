@@ -40,7 +40,6 @@
   (setq indent-tabs-mode nil
 	make-backup-files nil
 	auto-save-default nil
-
 	delete-by-moving-to-trash t)
 
   (defalias 'yes-or-no-p 'y-or-n-p)
@@ -64,8 +63,7 @@
       (process-send-eof proc))))
 
   (setq interprogram-cut-function 'paste-to-osx)
-  (setq interprogram-paste-function 'copy-from-osx)
-  )
+  (setq interprogram-paste-function 'copy-from-osx))
 
 (use-package dired
   :custom
@@ -110,6 +108,9 @@
   :bind (("C-x C-j" . skk-mode))
   :hook ((after-change-major-mode . my/enable-skk-latin-mode)))
 
+(use-package undohist
+  :straight t)
+
 (use-package undo-tree
   :straight t
   :custom
@@ -128,10 +129,16 @@
   :config
   (global-flymake-popon-mode))
 
+(use-package prescient
+  :straight t)
+
 (use-package vertico
   :straight t
   :init
   (vertico-mode))
+
+(use-package vertico-prescient
+  :straight t)
 
 (use-package marginalia
   :straight t
@@ -141,6 +148,12 @@
 (use-package consult
   :straight t
   :defer t
+  :bind (:map isearch-mode-map
+	 ("M-l" . consult-line)
+	 ("M-g" . consult-ripgrep)
+	 :map minibuffer-local-map
+	 ("M-s" . consult-hisotry)
+	 ("M-r" . consult-history))
   :custom
   (consult-preview-raw-size 1024000)
   (consult-preview-max-size 1024000)
@@ -183,6 +196,9 @@
   :defer t
   :custom
   (completion-styles '(orderless basic)))
+
+(use-package corfu-prescient
+  :straight t)
 
 (use-package treemacs
   :straight t
@@ -257,9 +273,10 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 (use-package ace-window
   :straight t
   :defer t
-  :bind (("C-x o" . ace-window))
+  :bind (("M-o" . ace-window))
   :custom
   (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+  (aw-background nil)
   :config
   (custom-set-faces
    '(aw-leading-char-face
@@ -292,9 +309,7 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
 ;;
 
 (use-package blamer
-  :straight t
-  :config
-  (global-blamer-mode))
+  :straight t)
 
 (use-package git-timemachine
   :straight t)

@@ -13,6 +13,7 @@
   (load bootstrap-file nil 'nomessage))
 
 (straight-use-package 'use-package)
+(straight-use-package 'org)
 
 (use-package emacs
   :init
@@ -58,9 +59,9 @@
 
   (defun paste-to-osx (text &optional push)
     (let ((process-connection-type nil))
-    (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
-      (process-send-string proc text)
-      (process-send-eof proc))))
+      (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
+	(process-send-string proc text)
+	(process-send-eof proc))))
 
   (setq interprogram-cut-function 'paste-to-osx)
   (setq interprogram-paste-function 'copy-from-osx))
@@ -425,7 +426,7 @@ Use WIDTH, HEIGHT, CREP, and ZREP as described in
      ,(concat "-javaagent:" lombok-path)
      ,(concat "-Xbootclasspath/a:" lombok-path))))
 
-(use-package org-mode
+(use-package org
   :straight t
   :custom
   (system-time-locate nil)
